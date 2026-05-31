@@ -64,13 +64,13 @@ export default function AboutPage() {
         <div className="absolute inset-0 grid-bg opacity-40" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 bg-[#39ff14]/10 border border-[#39ff14]/20 rounded-full px-4 py-1.5 mb-8">
-              <Zap className="w-3.5 h-3.5 text-[#39ff14]" fill="currentColor" />
-              <span className="text-xs font-bold uppercase tracking-widest text-[#39ff14]">About The Racing Files</span>
+            <div className="inline-flex items-center gap-2 bg-[E8000D]/10 border border-[E8000D]/20 rounded-full px-4 py-1.5 mb-8">
+              <Zap className="w-3.5 h-3.5 text-[E8000D]" fill="currentColor" />
+              <span className="text-xs font-bold uppercase tracking-widest text-[E8000D]">About The Racing Files</span>
             </div>
             <h1 className="text-5xl sm:text-6xl font-black text-white leading-tight mb-6">
               The aftermarket<br />
-              <span className="text-[#39ff14]">finally caught up.</span>
+              <span className="text-[E8000D]">finally caught up.</span>
             </h1>
             <p className="text-xl text-zinc-400 leading-relaxed max-w-2xl">
               The Racing Files was born because the parts we needed didn't exist — or cost $400 for a plastic clip.
@@ -114,7 +114,7 @@ export default function AboutPage() {
                   key={s.label}
                   className="rounded-xl border border-[#2a2a2a] bg-[#141414] p-6 text-center card-hover"
                 >
-                  <p className="text-3xl font-black text-[#39ff14] mb-2">{s.value}</p>
+                  <p className="text-3xl font-black text-[E8000D] mb-2">{s.value}</p>
                   <p className="text-xs text-zinc-500 uppercase tracking-widest">{s.label}</p>
                 </div>
               ))}
@@ -132,8 +132,8 @@ export default function AboutPage() {
               const Icon = v.icon;
               return (
                 <div key={v.title} className="rounded-xl border border-[#2a2a2a] bg-[#141414] p-6 card-hover">
-                  <div className="w-10 h-10 rounded-lg bg-[#39ff14]/10 border border-[#39ff14]/20 flex items-center justify-center mb-4">
-                    <Icon className="w-5 h-5 text-[#39ff14]" />
+                  <div className="w-10 h-10 rounded-lg bg-[E8000D]/10 border border-[E8000D]/20 flex items-center justify-center mb-4">
+                    <Icon className="w-5 h-5 text-[E8000D]" />
                   </div>
                   <h3 className="text-sm font-bold text-white mb-2">{v.title}</h3>
                   <p className="text-xs text-zinc-500 leading-relaxed">{v.desc}</p>
@@ -152,10 +152,10 @@ export default function AboutPage() {
             {team.map((member) => (
               <div key={member.name} className="rounded-xl border border-[#2a2a2a] bg-[#141414] p-6 card-hover">
                 <div className="w-16 h-16 rounded-2xl bg-[#252525] border border-[#2a2a2a] flex items-center justify-center mb-5">
-                  <span className="text-2xl font-black text-[#39ff14]">{member.initial}</span>
+                  <span className="text-2xl font-black text-[E8000D]">{member.initial}</span>
                 </div>
                 <h3 className="text-base font-black text-white mb-0.5">{member.name}</h3>
-                <p className="text-xs font-semibold text-[#39ff14] mb-3 uppercase tracking-wide">{member.role}</p>
+                <p className="text-xs font-semibold text-[E8000D] mb-3 uppercase tracking-wide">{member.role}</p>
                 <p className="text-xs text-zinc-500 leading-relaxed">{member.bio}</p>
               </div>
             ))}
@@ -171,9 +171,9 @@ export default function AboutPage() {
             <div className="absolute left-0 top-2 bottom-2 w-px bg-[#2a2a2a]" />
             {timeline.map((item, i) => (
               <div key={i} className="relative pb-10">
-                <div className="absolute -left-[25px] top-1.5 w-4 h-4 rounded-full bg-[#39ff14] border-2 border-[#0d0d0d]" />
+                <div className="absolute -left-[25px] top-1.5 w-4 h-4 rounded-full bg-[E8000D] border-2 border-[#0d0d0d]" />
                 <div className="ml-4">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-[#39ff14] mb-1">{item.year}</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-[E8000D] mb-1">{item.year}</p>
                   <p className="text-sm text-zinc-300">{item.event}</p>
                 </div>
               </div>
@@ -186,7 +186,7 @@ export default function AboutPage() {
       <section className="py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid sm:grid-cols-2 gap-5">
-            <div className="relative rounded-2xl border border-[#39ff14]/20 bg-[#0d1a0a] p-8 overflow-hidden">
+            <div className="relative rounded-2xl border border-[E8000D]/20 bg-[#1a0000] p-8 overflow-hidden">
               <div className="absolute inset-0 grid-bg opacity-20" />
               <div className="relative">
                 <h3 className="text-2xl font-black text-white mb-3">Browse the Parts Bin</h3>
