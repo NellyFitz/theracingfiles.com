@@ -57,7 +57,7 @@ export default function HomePage() {
     <main>
 
       {/* ── HERO ── */}
-      <section className="relative h-[calc(100vh-4rem)] flex items-center overflow-hidden carbon-bg">
+      <section className="relative h-[92vh] flex items-center overflow-hidden carbon-bg">
         <div className="absolute inset-0 grid-bg opacity-70" />
         <div className="absolute inset-0 speed-lines opacity-60" />
         <div className="absolute inset-0" style={{
@@ -97,7 +97,7 @@ export default function HomePage() {
               for cars, bikes, and trucks. Built by enthusiasts. For enthusiasts.
             </p>
 
-            <div className="flex flex-wrap gap-3 mb-20">
+            <div className="flex flex-wrap gap-3 mb-8">
               <Link href="/browse" className="btn-primary px-8 py-4 text-sm flex items-center gap-2 rounded-none">
                 Marketplace <ArrowRight className="w-4 h-4" />
               </Link>
