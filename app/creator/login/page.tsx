@@ -3,7 +3,8 @@
 import { useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Zap, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import Image from 'next/image';
 import { createClient } from '@/lib/supabase/client';
 
 function LoginForm() {
@@ -89,7 +90,7 @@ function LoginForm() {
 
       <p className="text-center text-xs text-zinc-500">
         No account?{' '}
-        <Link href="/creator/signup" className="text-[#39ff14] hover:text-white transition-colors font-semibold">
+        <Link href="/creator/signup" className="text-[#E8000D] hover:text-white transition-colors font-semibold">
           Apply as a Creator
         </Link>
       </p>
@@ -103,11 +104,9 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 mb-6">
-            <div className="w-8 h-8 bg-[#39ff14] rounded flex items-center justify-center">
-              <Zap className="w-5 h-5 text-[#0d0d0d]" fill="currentColor" />
-            </div>
+            <Image src="/rf-logo.png" alt="The Racing Files" width={36} height={36} className="object-contain" />
             <span className="text-xl font-black tracking-tight text-white">
-              Print<span className="text-[#39ff14]">Shift</span>
+              The Racing<span className="text-[#E8000D]"> Files</span>
             </span>
           </Link>
           <h1 className="text-3xl font-black text-white mb-2">Creator Login</h1>
