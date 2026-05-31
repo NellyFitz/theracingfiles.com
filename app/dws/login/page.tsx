@@ -2,11 +2,11 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Shield, Loader2, Lock, Mail } from 'lucide-react';
+import { Shield, Loader2, Lock, User } from 'lucide-react';
 
 export default function DwsLoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -19,7 +19,7 @@ export default function DwsLoginPage() {
     const res = await fetch('/api/dws-auth', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ username, password }),
     });
 
     const data = await res.json();
@@ -47,12 +47,12 @@ export default function DwsLoginPage() {
 
         <form onSubmit={handleSubmit} className="rounded-2xl border border-[#2a2a2a] bg-[#141414] p-6 space-y-3">
           <div className="relative">
-            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+            <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
             <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Email"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Username"
               autoFocus
               required
               className="w-full rounded-lg pl-11 pr-4 py-3 text-sm"
@@ -77,7 +77,7 @@ export default function DwsLoginPage() {
 
           <button
             type="submit"
-            disabled={loading || !email || !password}
+            disabled={loading || !username || !password}
             className="w-full btn-primary py-3 text-sm rounded-xl flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading && <Loader2 className="w-4 h-4 animate-spin" />}
