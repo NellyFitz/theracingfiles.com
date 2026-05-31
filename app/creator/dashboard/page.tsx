@@ -89,9 +89,9 @@ export default async function CreatorDashboard() {
           {/* Submissions list */}
           <div className="lg:col-span-2">
             <div className="flex items-center justify-between mb-5">
-              <h2 className="text-lg font-black text-white">Your Submissions</h2>
-              <Link href="/creator/submit" className="text-sm text-[#39ff14] hover:text-white transition-colors flex items-center gap-1">
-                + New <ArrowRight className="w-3.5 h-3.5" />
+              <h2 className="text-lg font-black text-white">Your Scans</h2>
+              <Link href="/creator/submit" className="btn-primary px-4 py-2 text-xs rounded-lg inline-flex items-center gap-1.5">
+                <Plus className="w-3.5 h-3.5" /> New
               </Link>
             </div>
 
@@ -101,7 +101,7 @@ export default async function CreatorDashboard() {
                 <h3 className="text-base font-bold text-white mb-2">No submissions yet</h3>
                 <p className="text-sm text-zinc-500 mb-6">Upload your first part to get started.</p>
                 <Link href="/creator/submit" className="btn-primary px-6 py-3 text-sm rounded-lg inline-flex items-center gap-2">
-                  <Plus className="w-4 h-4" /> Submit a Part
+                  <Plus className="w-4 h-4" /> Submit a Scan
                 </Link>
               </div>
             ) : (
