@@ -1,0 +1,125 @@
+'use client';
+
+import { useState, Suspense } from 'react';
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Zap, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { createClient } from '@/lib/supabase/client';
+
+function LoginForm() {
+  const router = useRouter();
+  const params = useSearchParams();
+  const next = params.get('next') ?? '/creator/dashboard';
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPw, setShowPw] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+
+    const supabase = createClient();
+    const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
+
+    if (authError) {
+      setError(authError.message);
+      setLoading(false);
+      return;
+    }
+
+    router.push(next);
+    router.refresh();
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-5">
+      <div>
+        <label className="block text-xs font-bold uppercase tracking-widest text-zinc-500 mb-2">Email</label>
+        <input
+          type="email"
+          required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="you@example.com"
+          className="w-full rounded-lg px-4 py-3 text-sm"
+          autoComplete="email"
+        />
+      </div>
+
+      <div>
+        <label className="block text-xs font-bold uppercase tracking-widest text-zinc-500 mb-2">Password</label>
+        <div className="relative">
+          <input
+            type={showPw ? 'text' : 'password'}
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="••••••••"
+            className="w-full rounded-lg px-4 py-3 pr-11 text-sm"
+            autoComplete="current-password"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPw(!showPw)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white transition-colors"
+          >
+            {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+          </button>
+        </div>
+      </div>
+
+      {error && (
+        <div className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3">
+          <p className="text-sm text-red-400">{error}</p>
+        </div>
+      )}
+
+      <button
+        type="submit"
+        disabled={loading}
+        className="w-full btn-primary py-4 text-sm rounded-xl flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+      >
+        {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+        {loading ? 'Signing in...' : 'Sign In'}
+      </button>
+
+      <p className="text-center text-xs text-zinc-500">
+        No account?{' '}
+        <Link href="/creator/signup" className="text-[#39ff14] hover:text-white transition-colors font-semibold">
+          Apply as a Creator
+        </Link>
+      </p>
+    </form>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <div className="min-h-screen flex items-center justify-center px-4 py-16">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <Link href="/" className="inline-flex items-center gap-2 mb-6">
+            <div className="w-8 h-8 bg-[#39ff14] rounded flex items-center justify-center">
+              <Zap className="w-5 h-5 text-[#0d0d0d]" fill="currentColor" />
+            </div>
+            <span className="text-xl font-black tracking-tight text-white">
+              Print<span className="text-[#39ff14]">Shift</span>
+            </span>
+          </Link>
+          <h1 className="text-3xl font-black text-white mb-2">Creator Login</h1>
+          <p className="text-sm text-zinc-500">Sign in to your creator dashboard.</p>
+        </div>
+
+        <div className="rounded-2xl border border-[#2a2a2a] bg-[#141414] p-8">
+          <Suspense>
+            <LoginForm />
+          </Suspense>
+        </div>
+      </div>
+    </div>
+  );
+}
