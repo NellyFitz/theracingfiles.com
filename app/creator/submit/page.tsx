@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   ArrowLeft, ArrowRight, CheckCircle, Loader2,
-  Car, Printer, Settings2, FileText, Upload, Eye,
+  Car, Printer, Settings2, FileText, Upload, Eye, Box,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import FileUpload from '@/components/FileUpload';
@@ -13,10 +13,11 @@ import ImageUpload from '@/components/ImageUpload';
 
 const STEPS = [
   { id: 'vehicle', label: 'Vehicle & Part', icon: Car },
+  { id: 'scans', label: 'Scan Files', icon: Box },
   { id: 'pricing', label: 'Pricing & Specs', icon: Printer },
   { id: 'print', label: 'Print Settings', icon: Settings2 },
   { id: 'details', label: 'Descriptions', icon: FileText },
-  { id: 'files', label: 'Files & Images', icon: Upload },
+  { id: 'images', label: 'Images', icon: Upload },
   { id: 'review', label: 'Review', icon: Eye },
 ] as const;
 
@@ -39,37 +40,40 @@ interface FormData {
   yearEnd: string;
   fitment: string;
   tags: string;
-  // Step 2
+  // Step 2 — Scan Files
+  stlUrl: string | null;
+  threemfUrl: string | null;
+  objUrl: string | null;
+  mtlUrl: string | null;
+  // Step 3
   filePrice: string;
   printedPrice: string;
   finishedAvailable: boolean;
   material: string;
   difficulty: string;
-  // Step 3
+  // Step 4
   layerHeight: string;
   infill: string;
   supports: boolean;
   nozzleTemp: string;
   bedTemp: string;
-  // Step 4
+  // Step 5
   description: string;
   fitmentNotes: string;
   installNotes: string;
-  // Step 5
-  stlUrl: string | null;
-  threemfUrl: string | null;
-  stepUrl: string | null;
+  // Step 6
   images: string[];
 }
 
 const defaultForm: FormData = {
   name: '', category: '', vehicleType: 'Car', make: '', model: '',
   yearStart: '', yearEnd: '', fitment: '', tags: '',
+  stlUrl: null, threemfUrl: null, objUrl: null, mtlUrl: null,
   filePrice: '', printedPrice: '', finishedAvailable: false,
   material: '', difficulty: 'Intermediate',
   layerHeight: '0.2mm', infill: '25%', supports: false, nozzleTemp: '', bedTemp: '',
   description: '', fitmentNotes: '', installNotes: '',
-  stlUrl: null, threemfUrl: null, stepUrl: null, images: [],
+  images: [],
 };
 
 function StepIndicator({ current }: { current: StepId }) {
@@ -132,6 +136,8 @@ export default function SubmitPartPage() {
   const prev = () => setStep(STEPS[stepIdx - 1].id);
   const next = () => setStep(STEPS[stepIdx + 1].id);
 
+  const hasNoScanFile = !form.stlUrl && !form.threemfUrl && !form.objUrl && !form.mtlUrl;
+
   const handleSubmit = async () => {
     setSubmitting(true);
     setError('');
@@ -165,7 +171,8 @@ export default function SubmitPartPage() {
       print_bed_temp: form.bedTemp,
       stl_url: form.stlUrl,
       threemf_url: form.threemfUrl,
-      step_url: form.stepUrl,
+      obj_url: form.objUrl,
+      mtl_url: form.mtlUrl,
       images: form.images,
       tags: form.tags,
       status: 'pending',
@@ -177,7 +184,6 @@ export default function SubmitPartPage() {
       return;
     }
 
-    // Fire-and-forget email notification — don't block redirect on it
     const { data: profile } = await supabase
       .from('creator_profiles')
       .select('name, handle')
@@ -221,7 +227,7 @@ export default function SubmitPartPage() {
             <Link href="/creator/dashboard" className="text-zinc-500 hover:text-white transition-colors">
               <ArrowLeft className="w-5 h-5" />
             </Link>
-            <h1 className="text-base font-black text-white">Submit a Part</h1>
+            <h1 className="text-base font-black text-white">Submit a Scan</h1>
             <div className="ml-auto overflow-x-auto">
               <StepIndicator current={step} />
             </div>
@@ -297,7 +303,68 @@ export default function SubmitPartPage() {
             </div>
           )}
 
-          {/* ── STEP 2: Pricing & Specs ── */}
+          {/* ── STEP 2: Scan Files ── */}
+          {step === 'scans' && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-xl font-black text-white mb-1">Scan Files</h2>
+                <p className="text-sm text-zinc-500">
+                  Upload your 3D scan or model files. At least one file is required.
+                </p>
+              </div>
+
+              <div className="grid sm:grid-cols-2 gap-4">
+                <FileUpload
+                  bucket="part-files"
+                  folder="stl"
+                  accept=".stl"
+                  label="STL File"
+                  hint=".stl · Max 50MB"
+                  value={form.stlUrl}
+                  onChange={(url) => update('stlUrl', url)}
+                />
+                <FileUpload
+                  bucket="part-files"
+                  folder="3mf"
+                  accept=".3mf"
+                  label="3MF File"
+                  hint=".3mf · Max 50MB"
+                  value={form.threemfUrl}
+                  onChange={(url) => update('threemfUrl', url)}
+                />
+              </div>
+
+              <div className="grid sm:grid-cols-2 gap-4">
+                <FileUpload
+                  bucket="part-files"
+                  folder="obj"
+                  accept=".obj"
+                  label="OBJ File"
+                  hint=".obj · Max 50MB"
+                  value={form.objUrl}
+                  onChange={(url) => update('objUrl', url)}
+                />
+                <FileUpload
+                  bucket="part-files"
+                  folder="mtl"
+                  accept=".mtl"
+                  label="MTL File"
+                  hint=".mtl · material library · Max 50MB"
+                  value={form.mtlUrl}
+                  onChange={(url) => update('mtlUrl', url)}
+                />
+              </div>
+
+              <div className="rounded-xl border border-[#2a2a2a] bg-[#1a1a1a] p-4">
+                <p className="text-xs text-zinc-500 leading-relaxed">
+                  <span className="text-white font-semibold">Tip:</span> Upload the formats that best represent your scan.
+                  3MF is preferred as it preserves print settings. OBJ + MTL pairs work well for textured models.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* ── STEP 3: Pricing & Specs ── */}
           {step === 'pricing' && (
             <div className="space-y-5">
               <h2 className="text-xl font-black text-white mb-6">Pricing & Specifications</h2>
@@ -364,7 +431,7 @@ export default function SubmitPartPage() {
             </div>
           )}
 
-          {/* ── STEP 3: Print Settings ── */}
+          {/* ── STEP 4: Print Settings ── */}
           {step === 'print' && (
             <div className="space-y-5">
               <h2 className="text-xl font-black text-white mb-2">Print Settings</h2>
@@ -412,7 +479,7 @@ export default function SubmitPartPage() {
             </div>
           )}
 
-          {/* ── STEP 4: Descriptions ── */}
+          {/* ── STEP 5: Descriptions ── */}
           {step === 'details' && (
             <div className="space-y-5">
               <h2 className="text-xl font-black text-white mb-6">Descriptions & Notes</h2>
@@ -437,55 +504,23 @@ export default function SubmitPartPage() {
             </div>
           )}
 
-          {/* ── STEP 5: Files & Images ── */}
-          {step === 'files' && (
+          {/* ── STEP 6: Images ── */}
+          {step === 'images' && (
             <div className="space-y-6">
-              <h2 className="text-xl font-black text-white mb-2">Upload Files & Images</h2>
-              <p className="text-sm text-zinc-500 mb-6">
-                At least one print file (STL or 3MF) is required. Images are required for approval.
-              </p>
-
-              <div className="grid sm:grid-cols-2 gap-4">
-                <FileUpload
-                  bucket="part-files"
-                  folder="stl"
-                  accept=".stl"
-                  label="STL File"
-                  hint=".stl · Max 50MB"
-                  value={form.stlUrl}
-                  onChange={(url) => update('stlUrl', url)}
-                />
-                <FileUpload
-                  bucket="part-files"
-                  folder="3mf"
-                  accept=".3mf"
-                  label="3MF File (recommended)"
-                  hint=".3mf with print settings · Max 50MB"
-                  value={form.threemfUrl}
-                  onChange={(url) => update('threemfUrl', url)}
-                />
+              <div>
+                <h2 className="text-xl font-black text-white mb-1">Photos</h2>
+                <p className="text-sm text-zinc-500">
+                  Images are required for approval. Include fitment shots, close-ups, and installed photos.
+                </p>
               </div>
-
-              <FileUpload
-                bucket="part-files"
-                folder="step"
-                accept=".step,.stp"
-                label="STEP File (optional — for modification)"
-                hint=".step / .stp · Max 50MB"
-                value={form.stepUrl}
-                onChange={(url) => update('stepUrl', url)}
+              <ImageUpload
+                value={form.images}
+                onChange={(urls) => update('images', urls)}
               />
-
-              <div className="pt-4 border-t border-[#2a2a2a]">
-                <ImageUpload
-                  value={form.images}
-                  onChange={(urls) => update('images', urls)}
-                />
-              </div>
             </div>
           )}
 
-          {/* ── STEP 6: Review ── */}
+          {/* ── STEP 7: Review ── */}
           {step === 'review' && (
             <div>
               <h2 className="text-xl font-black text-white mb-6">Review Your Submission</h2>
@@ -499,7 +534,15 @@ export default function SubmitPartPage() {
                   { label: 'Printed Price', value: form.printedPrice ? `$${form.printedPrice}` : 'Digital only' },
                   { label: 'Material', value: form.material },
                   { label: 'Difficulty', value: form.difficulty },
-                  { label: 'Files', value: [form.stlUrl && 'STL', form.threemfUrl && '3MF', form.stepUrl && 'STEP'].filter(Boolean).join(', ') || 'None uploaded' },
+                  {
+                    label: 'Scan Files',
+                    value: [
+                      form.stlUrl && 'STL',
+                      form.threemfUrl && '3MF',
+                      form.objUrl && 'OBJ',
+                      form.mtlUrl && 'MTL',
+                    ].filter(Boolean).join(', ') || 'None uploaded',
+                  },
                   { label: 'Images', value: `${form.images.length} uploaded` },
                 ].map(({ label, value }) => (
                   <div key={label} className="flex items-start gap-3 py-3 border-b border-[#1e1e1e]">
@@ -509,10 +552,10 @@ export default function SubmitPartPage() {
                 ))}
               </div>
 
-              {(!form.stlUrl && !form.threemfUrl) && (
+              {hasNoScanFile && (
                 <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 mb-5">
-                  <p className="text-sm text-amber-400 font-semibold mb-1">No print file uploaded</p>
-                  <p className="text-xs text-zinc-400">You need at least one STL or 3MF to submit. Go back to Files & Images to upload.</p>
+                  <p className="text-sm text-amber-400 font-semibold mb-1">No scan file uploaded</p>
+                  <p className="text-xs text-zinc-400">You need at least one scan file (STL, 3MF, OBJ, or MTL). Go back to Scan Files to upload.</p>
                 </div>
               )}
 
@@ -544,7 +587,7 @@ export default function SubmitPartPage() {
             {isLast ? (
               <button
                 onClick={handleSubmit}
-                disabled={submitting || (!form.stlUrl && !form.threemfUrl)}
+                disabled={submitting || hasNoScanFile}
                 className="flex items-center gap-2 btn-primary px-8 py-3 text-sm rounded-xl disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {submitting && <Loader2 className="w-4 h-4 animate-spin" />}

@@ -56,9 +56,11 @@ create table if not exists public.part_submissions (
   print_nozzle_temp text,
   print_bed_temp text,
 
-  -- Files (Supabase Storage public URLs)
+  -- Scan files (Supabase Storage public URLs)
   stl_url text,
   threemf_url text,
+  obj_url text,
+  mtl_url text,
   step_url text,
 
   -- Images (array of Supabase Storage public URLs)
