@@ -45,7 +45,7 @@ export default function Navbar() {
               <Zap className="w-5 h-5 text-[#0d0d0d]" fill="currentColor" />
             </div>
             <span className="text-xl font-black tracking-tight text-white">
-              Print<span className="text-[#39ff14]">Shift</span>
+              The Racing <span className="text-[#39ff14]">Files</span>
             </span>
           </Link>
 

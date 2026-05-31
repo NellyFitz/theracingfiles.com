@@ -49,7 +49,7 @@ const team = [
 ];
 
 const timeline = [
-  { year: '2023', event: 'PrintShift founded in a garage. First 12 parts listed.' },
+  { year: '2023', event: 'The Racing Files founded in a garage. First 12 parts listed.' },
   { year: 'Q1 2024', event: 'Verified Fitment program launched with 40 beta creators.' },
   { year: 'Q3 2024', event: '1,000+ parts listed. First $100K paid out to creators.' },
   { year: '2025', event: 'Printed fulfillment network launched. Mobile-first redesign.' },
@@ -66,14 +66,14 @@ export default function AboutPage() {
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 bg-[#39ff14]/10 border border-[#39ff14]/20 rounded-full px-4 py-1.5 mb-8">
               <Zap className="w-3.5 h-3.5 text-[#39ff14]" fill="currentColor" />
-              <span className="text-xs font-bold uppercase tracking-widest text-[#39ff14]">About PrintShift</span>
+              <span className="text-xs font-bold uppercase tracking-widest text-[#39ff14]">About The Racing Files</span>
             </div>
             <h1 className="text-5xl sm:text-6xl font-black text-white leading-tight mb-6">
               The aftermarket<br />
               <span className="text-[#39ff14]">finally caught up.</span>
             </h1>
             <p className="text-xl text-zinc-400 leading-relaxed max-w-2xl">
-              PrintShift was born because the parts we needed didn't exist — or cost $400 for a plastic clip.
+              The Racing Files was born because the parts we needed didn't exist — or cost $400 for a plastic clip.
               We decided the answer was a platform that lets designers share what they've built and gets it to builders
               anywhere in the world.
             </p>
@@ -99,7 +99,7 @@ export default function AboutPage() {
                 owner in Texas has been fighting for years — and ship the solution to them digitally in seconds.
               </p>
               <p className="text-zinc-400 leading-relaxed">
-                PrintShift is the infrastructure that makes that happen at scale, with verified quality, fair creator
+                The Racing Files is the infrastructure that makes that happen at scale, with verified quality, fair creator
                 compensation, and on-demand manufacturing for people who don't own printers.
               </p>
             </div>
@@ -147,7 +147,7 @@ export default function AboutPage() {
       {/* Team */}
       <section className="py-24 border-b border-[#1e1e1e] bg-[#0a0a0a]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <SectionHeader eyebrow="The Team" title="People Behind PrintShift" />
+          <SectionHeader eyebrow="The Team" title="People Behind The Racing Files" />
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {team.map((member) => (
               <div key={member.name} className="rounded-xl border border-[#2a2a2a] bg-[#141414] p-6 card-hover">
@@ -166,7 +166,7 @@ export default function AboutPage() {
       {/* Timeline */}
       <section className="py-24 border-b border-[#1e1e1e]">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <SectionHeader eyebrow="Story So Far" title="PrintShift Timeline" centered />
+          <SectionHeader eyebrow="Story So Far" title="The Racing Files Timeline" centered />
           <div className="relative pl-8 space-y-0">
             <div className="absolute left-0 top-2 bottom-2 w-px bg-[#2a2a2a]" />
             {timeline.map((item, i) => (

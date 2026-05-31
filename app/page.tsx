@@ -38,7 +38,7 @@ const trustFeatures = [
   { icon: BookOpen, title: 'Material Recommendations', desc: 'Know exactly what filament to use for safety and durability.' },
   { icon: Wrench, title: 'Install Guides', desc: 'Step-by-step PDF guides included with every file.' },
   { icon: Camera, title: 'Community Photos', desc: 'See real builds from real cars before you buy.' },
-  { icon: Users, title: 'Creator Verified', desc: 'Every creator is vetted by the PrintShift team.' },
+  { icon: Users, title: 'Creator Verified', desc: 'Every creator is vetted by the The Racing Files team.' },
 ];
 
 const stats = [
@@ -125,9 +125,9 @@ export default function HomePage() {
       <section className="py-24 border-t border-[#1e1e1e]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <SectionHeader
-            eyebrow="How PrintShift Works"
+            eyebrow="How The Racing Files Works"
             title="Three Ways to Get Your Part"
-            subtitle="Whether you have a 3D printer or not, PrintShift has you covered."
+            subtitle="Whether you have a 3D printer or not, The Racing Files has you covered."
             centered
           />
           <div className="grid md:grid-cols-3 gap-6">
@@ -210,9 +210,9 @@ export default function HomePage() {
       <section className="py-24 border-t border-[#1e1e1e]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <SectionHeader
-            eyebrow="Why PrintShift"
+            eyebrow="Why The Racing Files"
             title="Built for Builders Who Care"
-            subtitle="Every part on PrintShift meets our quality and fitment standards before it's listed."
+            subtitle="Every part on The Racing Files meets our quality and fitment standards before it's listed."
             centered
           />
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -273,10 +273,10 @@ export default function HomePage() {
                 <p className="text-xs font-bold uppercase tracking-widest text-[#39ff14] mb-4">For Creators</p>
                 <h2 className="text-4xl sm:text-5xl font-black text-white leading-tight mb-4">
                   Design parts?<br />
-                  <span className="text-[#39ff14]">Sell through PrintShift.</span>
+                  <span className="text-[#39ff14]">Sell through The Racing Files.</span>
                 </h2>
                 <p className="text-zinc-400 leading-relaxed mb-8">
-                  Upload your designs, set your price, and let PrintShift handle fulfillment, payments, and support.
+                  Upload your designs, set your price, and let The Racing Files handle fulfillment, payments, and support.
                   Earn royalties on every file download and printed order.
                 </p>
                 <div className="flex flex-wrap gap-4">

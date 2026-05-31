@@ -13,7 +13,7 @@ export default function Footer() {
                 <Zap className="w-5 h-5 text-[#0d0d0d]" fill="currentColor" />
               </div>
               <span className="text-xl font-black tracking-tight text-white">
-                Print<span className="text-[#39ff14]">Shift</span>
+                The Racing <span className="text-[#39ff14]">Files</span>
               </span>
             </Link>
             <p className="text-xs text-zinc-500 leading-relaxed max-w-[200px]">
@@ -92,7 +92,7 @@ export default function Footer() {
 
         <div className="border-t border-[#1e1e1e] pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-zinc-600">
-            © 2025 PrintShift. All rights reserved.
+            © 2025 The Racing Files. All rights reserved.
           </p>
           <p className="text-xs text-zinc-600 text-center">
             STL files are for personal use only. Resale of printed parts may be subject to creator licensing.

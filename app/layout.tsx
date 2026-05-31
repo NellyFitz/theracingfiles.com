@@ -15,12 +15,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'PrintShift — The Digital Parts Bin for Enthusiast Vehicles',
+  title: 'The Racing Files — The Digital Parts Bin for Enthusiast Vehicles',
   description:
     'Buy verified 3D printable files, order pre-printed parts, or request fully finished components for cars and bikes.',
   keywords: ['3D printing', 'car parts', 'motorcycle parts', 'STL', 'printable parts', 'aftermarket'],
   openGraph: {
-    title: 'PrintShift — The Digital Parts Bin for Enthusiast Vehicles',
+    title: 'The Racing Files — The Digital Parts Bin for Enthusiast Vehicles',
     description: 'Verified 3D printable parts for cars and motorcycles.',
     type: 'website',
   },

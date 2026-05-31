@@ -386,7 +386,7 @@ export default function SubmitPartPage() {
                       onChange={(e) => update('printedPrice', e.target.value)}
                       placeholder="119.00" className={`${inputClass} pl-8`} />
                   </div>
-                  <p className="text-[10px] text-zinc-600 mt-1">PrintShift fulfills. You earn 15% royalty.</p>
+                  <p className="text-[10px] text-zinc-600 mt-1">The Racing Files fulfills. You earn 15% royalty.</p>
                 </Field>
               </div>
 
@@ -568,7 +568,7 @@ export default function SubmitPartPage() {
               <div className="rounded-xl border border-[#2a2a2a] bg-[#1a1a1a] p-4 mb-6">
                 <p className="text-xs text-zinc-500 leading-relaxed">
                   By submitting, you confirm this is your original design, you have the right to sell it,
-                  and agree to PrintShift's creator terms. Our team will review and respond within 48 hours.
+                  and agree to The Racing Files's creator terms. Our team will review and respond within 48 hours.
                 </p>
               </div>
             </div>

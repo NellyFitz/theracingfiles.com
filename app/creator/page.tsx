@@ -18,7 +18,7 @@ const perks = [
   },
   {
     icon: Printer,
-    title: 'PrintShift Fulfills',
+    title: 'The Racing Files Fulfills',
     desc: 'We handle printing, shipping, and support for physical orders. You earn 15% royalty.',
     accent: '#00d4ff',
   },
@@ -74,7 +74,7 @@ const faqs = [
   },
   {
     q: 'How do printed order fulfillment royalties work?',
-    a: 'When a customer orders a printed part, PrintShift handles printing, shipping, and support. You earn 15% of the printed sale price automatically.',
+    a: 'When a customer orders a printed part, The Racing Files handles printing, shipping, and support. You earn 15% of the printed sale price automatically.',
   },
 ];
 
@@ -121,7 +121,7 @@ export default function CreatorPage() {
           </h1>
           <p className="text-xl text-zinc-400 max-w-2xl mx-auto mb-10">
             Upload your designs once. Earn royalties every time someone downloads a file or orders a printed part.
-            PrintShift handles everything else.
+            The Racing Files handles everything else.
           </p>
           <a href="#apply" className="btn-primary px-10 py-4 text-sm rounded-xl inline-flex items-center gap-2">
             Apply as Creator <ArrowRight className="w-4 h-4" />
@@ -152,7 +152,7 @@ export default function CreatorPage() {
       <section className="py-24 border-b border-[#1e1e1e]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <SectionHeader
-            eyebrow="Why Sell on PrintShift"
+            eyebrow="Why Sell on The Racing Files"
             title="Built for Designers Who Build Real"
             centered
           />

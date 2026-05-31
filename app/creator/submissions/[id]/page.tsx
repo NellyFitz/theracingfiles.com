@@ -64,7 +64,7 @@ export default async function SubmissionDetailPage({ params }: { params: Promise
           <div className="rounded-xl border border-[#39ff14]/20 bg-[#39ff14]/5 p-5 mb-8">
             <p className="text-sm font-bold text-[#39ff14] mb-1">Approved & Published</p>
             <p className="text-xs text-zinc-400">
-              Your part is live on PrintShift. Published {sub.published_at ? formatDate(sub.published_at) : ''}.
+              Your part is live on The Racing Files. Published {sub.published_at ? formatDate(sub.published_at) : ''}.
             </p>
           </div>
         )}

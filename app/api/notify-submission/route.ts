@@ -29,7 +29,7 @@ export async function POST(request: Request) {
   const adminUrl = `${process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'}/admin/submissions/${submissionId}`;
 
   const { error } = await resend.emails.send({
-    from: 'PrintShift <onboarding@resend.dev>',
+    from: 'The Racing Files <onboarding@resend.dev>',
     to: process.env.NEXT_PUBLIC_ADMIN_EMAIL!,
     subject: `New Part Submission: ${partName}`,
     html: `
@@ -55,7 +55,7 @@ export async function POST(request: Request) {
                   </td>
                   <td style="padding-left:10px;">
                     <span style="color:#fff;font-size:20px;font-weight:900;letter-spacing:-0.5px;">
-                      Print<span style="color:#39ff14;">Shift</span>
+                      The Racing <span style="color:#39ff14;">Files</span>
                     </span>
                   </td>
                 </tr>
@@ -161,7 +161,7 @@ export async function POST(request: Request) {
           <tr>
             <td style="padding-top:24px;text-align:center;">
               <p style="margin:0;color:#374151;font-size:11px;">
-                PrintShift Admin Notifications · <a href="${adminUrl}" style="color:#39ff14;text-decoration:none;">View in Dashboard</a>
+                The Racing Files Admin Notifications · <a href="${adminUrl}" style="color:#39ff14;text-decoration:none;">View in Dashboard</a>
               </p>
             </td>
           </tr>
