@@ -1,7 +1,6 @@
-import { redirect, notFound } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Download, ExternalLink, FileText, ImageIcon, User } from 'lucide-react';
-import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import SubmissionStatusBadge from '@/components/SubmissionStatusBadge';
 import DwsNav from '@/components/DwsNav';
@@ -21,13 +20,6 @@ function InfoRow({ label, value }: { label: string; value: string | number | boo
 
 export default async function AdminReviewPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-
-  // Verify admin
-  const authClient = await createClient();
-  const { data: { user } } = await authClient.auth.getUser();
-  if (!user || user.email !== process.env.NEXT_PUBLIC_ADMIN_EMAIL) {
-    redirect('/creator/dashboard');
-  }
 
   // Fetch with admin client (bypasses RLS)
   const adminClient = createAdminClient();

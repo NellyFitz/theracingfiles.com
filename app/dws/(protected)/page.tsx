@@ -1,7 +1,5 @@
-import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { Clock, Eye, CheckCircle, XCircle, ArrowRight, Printer } from 'lucide-react';
-import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import SubmissionStatusBadge from '@/components/SubmissionStatusBadge';
 import DwsNav from '@/components/DwsNav';
@@ -16,14 +14,6 @@ export default async function AdminDashboard({
 }: {
   searchParams: Promise<{ status?: string }>;
 }) {
-  // Auth check uses the regular client (session-aware)
-  const authClient = await createClient();
-  const { data: { user } } = await authClient.auth.getUser();
-
-  if (!user || user.email !== process.env.NEXT_PUBLIC_ADMIN_EMAIL) {
-    redirect('/creator/dashboard');
-  }
-
   const { status = 'pending' } = await searchParams;
 
   // All data queries use the admin client (bypasses RLS)

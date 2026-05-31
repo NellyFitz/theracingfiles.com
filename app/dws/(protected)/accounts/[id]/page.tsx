@@ -1,7 +1,6 @@
-import { redirect, notFound } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, FileBox } from 'lucide-react';
-import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import DwsNav from '@/components/DwsNav';
 import AccountActions from './AccountActions';
@@ -25,12 +24,6 @@ function formatDate(iso: string) {
 
 export default async function AdminAccountDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-
-  const authClient = await createClient();
-  const { data: { user } } = await authClient.auth.getUser();
-  if (!user || user.email !== process.env.NEXT_PUBLIC_ADMIN_EMAIL) {
-    redirect('/creator/dashboard');
-  }
 
   const adminClient = createAdminClient();
 

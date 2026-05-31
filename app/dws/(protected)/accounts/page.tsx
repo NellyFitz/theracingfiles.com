@@ -1,7 +1,5 @@
-import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { CheckCircle, XCircle, Clock, ArrowRight, User } from 'lucide-react';
-import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import DwsNav from '@/components/DwsNav';
 import type { CreatorProfile } from '@/lib/supabase/db-types';
@@ -15,12 +13,6 @@ export default async function AdminAccountsPage({
 }: {
   searchParams: Promise<{ filter?: string }>;
 }) {
-  const authClient = await createClient();
-  const { data: { user } } = await authClient.auth.getUser();
-  if (!user || user.email !== process.env.NEXT_PUBLIC_ADMIN_EMAIL) {
-    redirect('/creator/dashboard');
-  }
-
   const { filter = 'pending' } = await searchParams;
   const adminClient = createAdminClient();
 
