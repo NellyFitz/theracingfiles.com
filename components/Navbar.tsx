@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { Menu, X, Search, Zap, LayoutDashboard, LogOut } from 'lucide-react';
+import { Menu, X, Search, LayoutDashboard, LogOut } from 'lucide-react';
+import Image from 'next/image';
 import { createClient } from '@/lib/supabase/client';
 import type { User } from '@supabase/supabase-js';
 
@@ -50,9 +51,7 @@ export default function Navbar() {
 
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 group shrink-0">
-            <div className="w-7 h-7 bg-[#E8000D] flex items-center justify-center">
-              <Zap className="w-4 h-4 text-[#080808]" fill="currentColor" />
-            </div>
+            <Image src="/rf-logo.png" alt="The Racing Files" width={36} height={36} className="object-contain" />
             <span className="font-black tracking-tight text-white text-base uppercase" style={{ letterSpacing: '-0.01em' }}>
               The Racing <span className="text-[#E8000D]">Files</span>
             </span>

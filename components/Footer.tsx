@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { Zap, GitBranch, Send, Camera } from 'lucide-react';
+import Image from 'next/image';
+import { GitBranch, Send, Camera } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -12,9 +13,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
             <Link href="/" className="flex items-center gap-2.5 mb-5">
-              <div className="w-7 h-7 bg-[#E8000D] flex items-center justify-center">
-                <Zap className="w-4 h-4 text-[#080808]" fill="currentColor" />
-              </div>
+              <Image src="/rf-logo.png" alt="The Racing Files" width={36} height={36} className="object-contain" />
               <span className="font-black tracking-tight text-white text-base uppercase" style={{ letterSpacing: '-0.01em' }}>
                 The Racing <span className="text-[#E8000D]">Files</span>
               </span>
