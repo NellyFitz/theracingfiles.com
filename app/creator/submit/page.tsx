@@ -13,7 +13,7 @@ import ImageUpload from '@/components/ImageUpload';
 
 const STEPS = [
   { id: 'vehicle', label: 'Vehicle & Part', icon: Car },
-  { id: 'scans', label: 'Scan Files', icon: Box },
+  { id: 'scans', label: 'Upload Files', icon: Box },
   { id: 'pricing', label: 'Pricing & Specs', icon: Printer },
   { id: 'print', label: 'Print Settings', icon: Settings2 },
   { id: 'details', label: 'Descriptions', icon: FileText },
@@ -307,7 +307,7 @@ export default function SubmitPartPage() {
           {step === 'scans' && (
             <div className="space-y-6">
               <div>
-                <h2 className="text-xl font-black text-white mb-1">Scan Files</h2>
+                <h2 className="text-xl font-black text-white mb-1">Upload Files</h2>
                 <p className="text-sm text-zinc-500">
                   Upload your 3D scan or model files. At least one file is required.
                 </p>
