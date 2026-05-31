@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import bcrypt from 'bcryptjs';
 import { createAdminClient } from '@/lib/supabase/admin';
 
 export async function POST(req: Request) {
@@ -12,24 +11,18 @@ export async function POST(req: Request) {
 
   const adminClient = createAdminClient();
 
-  const { data: user, error } = await adminClient
+  const { data: user } = await adminClient
     .from('admin_users')
-    .select('password_hash')
+    .select('password')
     .eq('username', username)
     .single();
 
-  if (error || !user) {
-    return NextResponse.json({ error: 'Invalid username or password' }, { status: 401 });
-  }
-
-  const valid = await bcrypt.compare(password, user.password_hash);
-
-  if (!valid) {
+  if (!user || user.password !== password) {
     return NextResponse.json({ error: 'Invalid username or password' }, { status: 401 });
   }
 
   const cookieStore = await cookies();
-  cookieStore.set('dws_session', process.env.DWS_SESSION_TOKEN ?? 'dws-fallback-token', {
+  cookieStore.set('dws_session', 'dws-active', {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
