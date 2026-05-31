@@ -123,7 +123,7 @@ export default function BrowsePage() {
           <h1 className="text-4xl font-black text-white mb-6">Parts Marketplace</h1>
 
           {/* Search bar */}
-          <div className="relative max-w-2xl">
+          <div className="relative w-full">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
             <input
               type="text"
