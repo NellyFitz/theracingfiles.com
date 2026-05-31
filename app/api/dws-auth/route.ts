@@ -1,23 +1,35 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
+import bcrypt from 'bcryptjs';
 import { createAdminClient } from '@/lib/supabase/admin';
 
 export async function POST(req: Request) {
   const { username, password } = await req.json();
 
+  if (!username || !password) {
+    return NextResponse.json({ error: 'Missing credentials' }, { status: 400 });
+  }
+
   const adminClient = createAdminClient();
 
-  const { data: valid, error } = await adminClient.rpc('check_admin_credentials', {
-    p_username: username,
-    p_password: password,
-  });
+  const { data: user, error } = await adminClient
+    .from('admin_users')
+    .select('password_hash')
+    .eq('username', username)
+    .single();
 
-  if (error || !valid) {
+  if (error || !user) {
+    return NextResponse.json({ error: 'Invalid username or password' }, { status: 401 });
+  }
+
+  const valid = await bcrypt.compare(password, user.password_hash);
+
+  if (!valid) {
     return NextResponse.json({ error: 'Invalid username or password' }, { status: 401 });
   }
 
   const cookieStore = await cookies();
-  cookieStore.set('dws_session', process.env.DWS_SESSION_TOKEN!, {
+  cookieStore.set('dws_session', process.env.DWS_SESSION_TOKEN ?? 'dws-fallback-token', {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
