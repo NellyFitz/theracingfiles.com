@@ -35,7 +35,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         </div>
         {/* Badges overlay */}
         <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
-          {product.badges.slice(0, 2).map((b) => (
+          {product.badges.map((b) => (
             <Badge key={b.type} type={b.type} label={b.label} />
           ))}
         </div>

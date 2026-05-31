@@ -1,4 +1,4 @@
-export type BadgeType = 'verified' | 'community' | 'prototype';
+export type BadgeType = 'verified' | 'community' | 'prototype' | 'scan-available' | 'part-available';
 
 export type FileType = 'STL' | '3MF' | 'STEP';
 

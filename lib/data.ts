@@ -61,6 +61,8 @@ export const products: Product[] = [
     badges: [
       { type: 'verified', label: 'Verified Fitment' },
       { type: 'community', label: 'Community Tested' },
+      { type: 'scan-available', label: 'Scan Available' },
+      { type: 'part-available', label: 'Part Available' },
     ],
     imageUrl: '',
     creatorId: 'creator-1',
@@ -103,6 +105,8 @@ export const products: Product[] = [
     difficulty: 'Beginner',
     badges: [
       { type: 'community', label: 'Community Tested' },
+      { type: 'scan-available', label: 'Scan Available' },
+      { type: 'part-available', label: 'Part Available' },
     ],
     imageUrl: '',
     creatorId: 'creator-1',
@@ -146,6 +150,8 @@ export const products: Product[] = [
     badges: [
       { type: 'verified', label: 'Verified Fitment' },
       { type: 'community', label: 'Community Tested' },
+      { type: 'scan-available', label: 'Scan Available' },
+      { type: 'part-available', label: 'Part Available' },
     ],
     imageUrl: '',
     creatorId: 'creator-3',
@@ -188,6 +194,8 @@ export const products: Product[] = [
     difficulty: 'Beginner',
     badges: [
       { type: 'community', label: 'Community Tested' },
+      { type: 'scan-available', label: 'Scan Available' },
+      { type: 'part-available', label: 'Part Available' },
     ],
     imageUrl: '',
     creatorId: 'creator-2',
@@ -228,6 +236,8 @@ export const products: Product[] = [
     difficulty: 'Intermediate',
     badges: [
       { type: 'verified', label: 'Verified Fitment' },
+      { type: 'scan-available', label: 'Scan Available' },
+      { type: 'part-available', label: 'Part Available' },
     ],
     imageUrl: '',
     creatorId: 'creator-1',
@@ -268,6 +278,8 @@ export const products: Product[] = [
     difficulty: 'Beginner',
     badges: [
       { type: 'prototype', label: 'Prototype' },
+      { type: 'scan-available', label: 'Scan Available' },
+      { type: 'part-available', label: 'Part Available' },
     ],
     imageUrl: '',
     creatorId: 'creator-2',

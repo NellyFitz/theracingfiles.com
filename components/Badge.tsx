@@ -1,4 +1,4 @@
-import { CheckCircle, Users, FlaskConical } from 'lucide-react';
+import { CheckCircle, Users, FlaskConical, ScanLine, Package } from 'lucide-react';
 import type { BadgeType } from '@/lib/types';
 
 const config: Record<BadgeType, { label: string; className: string; Icon: React.ElementType }> = {
@@ -16,6 +16,16 @@ const config: Record<BadgeType, { label: string; className: string; Icon: React.
     label: 'Prototype',
     className: 'badge-prototype',
     Icon: FlaskConical,
+  },
+  'scan-available': {
+    label: 'Scan Available',
+    className: 'badge-scan',
+    Icon: ScanLine,
+  },
+  'part-available': {
+    label: 'Part Available',
+    className: 'badge-part',
+    Icon: Package,
   },
 };
 
