@@ -61,34 +61,34 @@ export default function HomePage() {
         <div className="absolute inset-0 grid-bg opacity-70" />
         <div className="absolute inset-0 speed-lines opacity-60" />
         <div className="absolute inset-0" style={{
-          background: 'radial-gradient(ellipse 70% 55% at 30% 55%, rgba(57,255,20,0.055) 0%, transparent 65%)'
+          background: 'radial-gradient(ellipse 70% 55% at 30% 55%, rgba(232,0,13,0.055) 0%, transparent 65%)'
         }} />
 
         {/* Vertical accent line */}
         <div className="absolute top-0 right-[20%] w-px h-full opacity-10"
-          style={{ background: 'linear-gradient(180deg, transparent, #39ff14 40%, transparent)' }} />
+          style={{ background: 'linear-gradient(180deg, transparent, #E8000D 40%, transparent)' }} />
 
         {/* Corner brackets */}
         <div className="absolute top-20 left-8 w-10 h-10 opacity-25 hidden lg:block">
-          <div className="absolute top-0 left-0 w-full h-px bg-[#39ff14]" />
-          <div className="absolute top-0 left-0 h-full w-px bg-[#39ff14]" />
+          <div className="absolute top-0 left-0 w-full h-px bg-[#E8000D]" />
+          <div className="absolute top-0 left-0 h-full w-px bg-[#E8000D]" />
         </div>
         <div className="absolute bottom-24 right-8 w-10 h-10 opacity-25 hidden lg:block">
-          <div className="absolute bottom-0 right-0 w-full h-px bg-[#39ff14]" />
-          <div className="absolute bottom-0 right-0 h-full w-px bg-[#39ff14]" />
+          <div className="absolute bottom-0 right-0 w-full h-px bg-[#E8000D]" />
+          <div className="absolute bottom-0 right-0 h-full w-px bg-[#E8000D]" />
         </div>
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-28">
           <div className="max-w-4xl">
             <div className="flex items-center gap-3 mb-8">
-              <div className="h-px w-8 bg-[#39ff14]" />
+              <div className="h-px w-8 bg-[#E8000D]" />
               <span className="eyebrow">Now in Beta — Join the Waitlist</span>
             </div>
 
             <h1 className="font-black text-white mb-6"
               style={{ fontSize: 'clamp(3rem, 9vw, 7.5rem)', letterSpacing: '-0.03em', lineHeight: '0.92' }}>
               THE DIGITAL<br />
-              <span className="text-[#39ff14]">PARTS BIN</span><br />
+              <span className="text-[#E8000D]">PARTS BIN</span><br />
               FOR ENTHUSIASTS.
             </h1>
 
@@ -110,7 +110,7 @@ export default function HomePage() {
             <div className="grid grid-cols-2 sm:grid-cols-4 border border-[#1e1e1e]">
               {stats.map((s, i) => (
                 <div key={s.label} className={`p-6 ${i < stats.length - 1 ? 'border-r border-[#1e1e1e]' : ''}`}>
-                  <p className="font-black text-[#39ff14]"
+                  <p className="font-black text-[#E8000D]"
                     style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', letterSpacing: '-0.03em', lineHeight: 1 }}>
                     {s.value}
                   </p>
@@ -132,7 +132,7 @@ export default function HomePage() {
           <div className="flex items-start justify-between mb-16 flex-wrap gap-6">
             <div>
               <div className="flex items-center gap-3 mb-4">
-                <div className="h-px w-8 bg-[#39ff14]" />
+                <div className="h-px w-8 bg-[#E8000D]" />
                 <span className="eyebrow">How It Works</span>
               </div>
               <h2 className="text-4xl sm:text-5xl font-black text-white"
@@ -154,9 +154,9 @@ export default function HomePage() {
                     style={{ fontSize: '5rem', lineHeight: 1 }}>
                     {item.step}
                   </div>
-                  <div className="w-8 h-0.5 bg-[#39ff14] mb-8" />
-                  <div className="w-10 h-10 border border-[#222] flex items-center justify-center mb-6 group-hover:border-[#39ff14]/40 transition-colors">
-                    <Icon className="w-5 h-5 text-[#39ff14]" />
+                  <div className="w-8 h-0.5 bg-[#E8000D] mb-8" />
+                  <div className="w-10 h-10 border border-[#222] flex items-center justify-center mb-6 group-hover:border-[#E8000D]/40 transition-colors">
+                    <Icon className="w-5 h-5 text-[#E8000D]" />
                   </div>
                   <h3 className="text-xs font-bold uppercase tracking-wider text-white mb-3">{item.title}</h3>
                   <p className="text-sm text-zinc-500 leading-relaxed">{item.description}</p>
@@ -173,14 +173,14 @@ export default function HomePage() {
           <div className="flex items-end justify-between mb-12 flex-wrap gap-4">
             <div>
               <div className="flex items-center gap-3 mb-4">
-                <div className="h-px w-8 bg-[#39ff14]" />
+                <div className="h-px w-8 bg-[#E8000D]" />
                 <span className="eyebrow">Browse by Vehicle</span>
               </div>
               <h2 className="text-4xl font-black text-white" style={{ letterSpacing: '-0.03em' }}>
                 FEATURED CATEGORIES
               </h2>
             </div>
-            <Link href="/browse" className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#39ff14] hover:text-white transition-colors">
+            <Link href="/browse" className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#E8000D] hover:text-white transition-colors">
               View All <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
@@ -194,17 +194,17 @@ export default function HomePage() {
                   <span className="text-[10px] font-mono text-zinc-700 bg-[#111] px-2 py-0.5">{cat.count}</span>
                 </div>
                 <div>
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-white group-hover:text-[#39ff14] transition-colors">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-white group-hover:text-[#E8000D] transition-colors">
                     {cat.name}
                   </h3>
                   <p className="text-[11px] text-zinc-600 mt-0.5 leading-tight">{cat.description}</p>
                 </div>
-                <div className="w-4 h-px bg-[#222] group-hover:w-full group-hover:bg-[#39ff14]/30 transition-all duration-300" />
+                <div className="w-4 h-px bg-[#222] group-hover:w-full group-hover:bg-[#E8000D]/30 transition-all duration-300" />
               </Link>
             ))}
             <Link href="/browse"
               className="bg-[#080808] hover:bg-[#0c0c0c] p-5 transition-colors flex flex-col items-center justify-center gap-2 text-center group border border-dashed border-[#1a1a1a]">
-              <ArrowRight className="w-5 h-5 text-zinc-700 group-hover:text-[#39ff14] transition-colors" />
+              <ArrowRight className="w-5 h-5 text-zinc-700 group-hover:text-[#E8000D] transition-colors" />
               <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-600 group-hover:text-zinc-300 transition-colors">
                 Browse All
               </p>
@@ -219,14 +219,14 @@ export default function HomePage() {
           <div className="flex items-end justify-between mb-12 flex-wrap gap-4">
             <div>
               <div className="flex items-center gap-3 mb-4">
-                <div className="h-px w-8 bg-[#39ff14]" />
+                <div className="h-px w-8 bg-[#E8000D]" />
                 <span className="eyebrow">Featured Parts</span>
               </div>
               <h2 className="text-4xl font-black text-white" style={{ letterSpacing: '-0.03em' }}>
                 TOP RATED THIS WEEK
               </h2>
             </div>
-            <Link href="/browse" className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#39ff14] hover:text-white transition-colors">
+            <Link href="/browse" className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#E8000D] hover:text-white transition-colors">
               Browse All <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
@@ -243,7 +243,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-16 max-w-2xl">
             <div className="flex items-center gap-3 mb-4">
-              <div className="h-px w-8 bg-[#39ff14]" />
+              <div className="h-px w-8 bg-[#E8000D]" />
               <span className="eyebrow">Why The Racing Files</span>
             </div>
             <h2 className="text-4xl sm:text-5xl font-black text-white" style={{ letterSpacing: '-0.03em' }}>
@@ -255,8 +255,8 @@ export default function HomePage() {
               const Icon = f.icon;
               return (
                 <div key={f.title} className="bg-[#080808] hover:bg-[#0c0c0c] p-7 transition-colors group race-stripe-top">
-                  <div className="w-8 h-8 border border-[#222] flex items-center justify-center mb-5 group-hover:border-[#39ff14]/40 transition-colors">
-                    <Icon className="w-4 h-4 text-[#39ff14]" />
+                  <div className="w-8 h-8 border border-[#222] flex items-center justify-center mb-5 group-hover:border-[#E8000D]/40 transition-colors">
+                    <Icon className="w-4 h-4 text-[#E8000D]" />
                   </div>
                   <h4 className="text-xs font-bold uppercase tracking-wider text-white mb-2">{f.title}</h4>
                   <p className="text-xs text-zinc-500 leading-relaxed">{f.desc}</p>
@@ -273,27 +273,27 @@ export default function HomePage() {
           <div className="relative overflow-hidden carbon-bg border border-[#1e1e1e] p-10 sm:p-16">
             <div className="absolute inset-0 speed-lines opacity-40" />
             <div className="absolute inset-0" style={{
-              background: 'radial-gradient(ellipse 50% 80% at 85% 50%, rgba(57,255,20,0.05) 0%, transparent 70%)'
+              background: 'radial-gradient(ellipse 50% 80% at 85% 50%, rgba(232,0,13,0.05) 0%, transparent 70%)'
             }} />
             <div className="absolute top-0 left-0 w-16 h-16 opacity-35">
-              <div className="absolute top-0 left-0 w-full h-px bg-[#39ff14]" />
-              <div className="absolute top-0 left-0 h-full w-px bg-[#39ff14]" />
+              <div className="absolute top-0 left-0 w-full h-px bg-[#E8000D]" />
+              <div className="absolute top-0 left-0 h-full w-px bg-[#E8000D]" />
             </div>
             <div className="absolute bottom-0 right-0 w-16 h-16 opacity-35">
-              <div className="absolute bottom-0 right-0 w-full h-px bg-[#39ff14]" />
-              <div className="absolute bottom-0 right-0 h-full w-px bg-[#39ff14]" />
+              <div className="absolute bottom-0 right-0 w-full h-px bg-[#E8000D]" />
+              <div className="absolute bottom-0 right-0 h-full w-px bg-[#E8000D]" />
             </div>
 
             <div className="relative grid lg:grid-cols-2 gap-12 items-center">
               <div>
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="h-px w-8 bg-[#39ff14]" />
+                  <div className="h-px w-8 bg-[#E8000D]" />
                   <span className="eyebrow">For Creators</span>
                 </div>
                 <h2 className="text-4xl sm:text-5xl font-black text-white leading-tight mb-4"
                   style={{ letterSpacing: '-0.03em' }}>
                   DESIGN PARTS?<br />
-                  <span className="text-[#39ff14]">SELL THROUGH US.</span>
+                  <span className="text-[#E8000D]">SELL THROUGH US.</span>
                 </h2>
                 <p className="text-zinc-400 leading-relaxed mb-8 text-sm max-w-md">
                   Upload your scans, set your price, and let The Racing Files handle fulfillment,
@@ -317,7 +317,7 @@ export default function HomePage() {
                   { value: '7 days', label: 'Average payout cycle' },
                 ].map((item) => (
                   <div key={item.label} className="bg-[#0a0a0a] p-7">
-                    <p className="font-black text-[#39ff14] mb-1"
+                    <p className="font-black text-[#E8000D] mb-1"
                       style={{ fontSize: '2.25rem', letterSpacing: '-0.03em', lineHeight: 1 }}>
                       {item.value}
                     </p>
@@ -334,7 +334,7 @@ export default function HomePage() {
       <section className="py-24 carbon-bg border-t border-[#111]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3 mb-12">
-            <div className="h-px w-8 bg-[#39ff14]" />
+            <div className="h-px w-8 bg-[#E8000D]" />
             <span className="eyebrow">From the Community</span>
           </div>
           <div className="grid sm:grid-cols-3 gap-px bg-[#181818]">
@@ -357,7 +357,7 @@ export default function HomePage() {
       </section>
 
       {/* ── BOTTOM CTA STRIP ── */}
-      <section className="bg-[#39ff14] py-6">
+      <section className="bg-[#E8000D] py-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between flex-wrap gap-4">
           <div className="flex items-center gap-4">
             <Zap className="w-5 h-5 text-[#080808]" fill="currentColor" />
@@ -366,7 +366,7 @@ export default function HomePage() {
             </p>
           </div>
           <Link href="/browse"
-            className="flex items-center gap-2 bg-[#080808] text-[#39ff14] font-bold text-xs uppercase tracking-widest px-6 py-3 hover:bg-[#111] transition-colors">
+            className="flex items-center gap-2 bg-[#080808] text-[#E8000D] font-bold text-xs uppercase tracking-widest px-6 py-3 hover:bg-[#111] transition-colors">
             Browse Parts <ArrowRight className="w-4 h-4" />
           </Link>
         </div>

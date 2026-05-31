@@ -4,7 +4,7 @@ import { Zap, GitBranch, Send, Camera } from 'lucide-react';
 export default function Footer() {
   return (
     <footer className="border-t border-[#111] bg-[#050505] mt-auto">
-      <div className="h-px bg-gradient-to-r from-[#39ff14] via-[#39ff14]/30 to-transparent" />
+      <div className="h-px bg-gradient-to-r from-[#E8000D] via-[#E8000D]/30 to-transparent" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-14">
@@ -12,11 +12,11 @@ export default function Footer() {
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
             <Link href="/" className="flex items-center gap-2.5 mb-5">
-              <div className="w-7 h-7 bg-[#39ff14] flex items-center justify-center">
+              <div className="w-7 h-7 bg-[#E8000D] flex items-center justify-center">
                 <Zap className="w-4 h-4 text-[#080808]" fill="currentColor" />
               </div>
               <span className="font-black tracking-tight text-white text-base uppercase" style={{ letterSpacing: '-0.01em' }}>
-                The Racing <span className="text-[#39ff14]">Files</span>
+                The Racing <span className="text-[#E8000D]">Files</span>
               </span>
             </Link>
             <p className="text-xs text-zinc-600 leading-relaxed max-w-[200px] mb-5">
@@ -25,7 +25,7 @@ export default function Footer() {
             <div className="flex gap-2">
               {[GitBranch, Send, Camera].map((Icon, i) => (
                 <a key={i} href="#"
-                  className="w-7 h-7 border border-[#1e1e1e] flex items-center justify-center text-zinc-600 hover:text-[#39ff14] hover:border-[#39ff14]/40 transition-colors">
+                  className="w-7 h-7 border border-[#1e1e1e] flex items-center justify-center text-zinc-600 hover:text-[#E8000D] hover:border-[#E8000D]/40 transition-colors">
                   <Icon className="w-3.5 h-3.5" />
                 </a>
               ))}

@@ -43,18 +43,18 @@ export default function Navbar() {
       scrolled ? 'bg-[#080808]/98 border-b border-[#1a1a1a]' : 'bg-[#080808]/80 border-b border-transparent'
     } backdrop-blur-md`}>
       {/* Racing accent line — top */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-[#39ff14] via-[#39ff14]/40 to-transparent" />
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-[#E8000D] via-[#E8000D]/40 to-transparent" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
 
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 group shrink-0">
-            <div className="w-7 h-7 bg-[#39ff14] flex items-center justify-center">
+            <div className="w-7 h-7 bg-[#E8000D] flex items-center justify-center">
               <Zap className="w-4 h-4 text-[#080808]" fill="currentColor" />
             </div>
             <span className="font-black tracking-tight text-white text-base uppercase" style={{ letterSpacing: '-0.01em' }}>
-              The Racing <span className="text-[#39ff14]">Files</span>
+              The Racing <span className="text-[#E8000D]">Files</span>
             </span>
           </Link>
 
@@ -62,7 +62,7 @@ export default function Navbar() {
           <div className="hidden md:flex items-center gap-7">
             {navLinks.map((link) => (
               <Link key={link.href} href={link.href}
-                className="text-xs font-bold uppercase tracking-widest text-zinc-500 hover:text-[#39ff14] transition-colors">
+                className="text-xs font-bold uppercase tracking-widest text-zinc-500 hover:text-[#E8000D] transition-colors">
                 {link.label}
               </Link>
             ))}
@@ -113,7 +113,7 @@ export default function Navbar() {
           <div className="px-4 py-5 flex flex-col gap-4">
             {navLinks.map((link) => (
               <Link key={link.href} href={link.href}
-                className="text-xs font-bold uppercase tracking-widest text-zinc-400 hover:text-[#39ff14] transition-colors"
+                className="text-xs font-bold uppercase tracking-widest text-zinc-400 hover:text-[#E8000D] transition-colors"
                 onClick={() => setMobileOpen(false)}>
                 {link.label}
               </Link>
