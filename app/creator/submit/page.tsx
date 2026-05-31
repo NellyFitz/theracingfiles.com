@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   ArrowLeft, ArrowRight, CheckCircle, Loader2,
-  Car, Printer, Settings2, FileText, Upload, Eye, Box,
+  Car, Printer, Settings2, FileText, Upload, Eye, Box, Search,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import FileUpload from '@/components/FileUpload';
@@ -31,6 +31,7 @@ const YEARS = Array.from({ length: 56 }, (_, i) => String(2025 - i));
 
 interface FormData {
   // Step 1
+  vin: string;
   name: string;
   category: string;
   vehicleType: string;
@@ -66,7 +67,7 @@ interface FormData {
 }
 
 const defaultForm: FormData = {
-  name: '', category: '', vehicleType: 'Car', make: '', model: '',
+  vin: '', name: '', category: '', vehicleType: 'Car', make: '', model: '',
   yearStart: '', yearEnd: '', fitment: '', tags: '',
   stlUrl: null, threemfUrl: null, objUrl: null, mtlUrl: null,
   filePrice: '', printedPrice: '', finishedAvailable: false,
@@ -125,6 +126,32 @@ export default function SubmitPartPage() {
   const [form, setForm] = useState<FormData>(defaultForm);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [vinLoading, setVinLoading] = useState(false);
+  const [vinError, setVinError] = useState('');
+
+  const decodeVin = async () => {
+    const vin = form.vin.trim().toUpperCase();
+    if (vin.length !== 17) { setVinError('VIN must be 17 characters'); return; }
+    setVinLoading(true);
+    setVinError('');
+    try {
+      const res = await fetch(`https://vpic.nhtsa.dot.gov/api/vehicles/decodevin/${vin}?format=json`);
+      const json = await res.json();
+      const get = (label: string) =>
+        json.Results?.find((r: { Variable: string; Value: string }) => r.Variable === label)?.Value ?? '';
+      const make = get('Make');
+      const model = get('Model');
+      const year = get('Model Year');
+      if (!make && !model) { setVinError('VIN not recognized — fill in details manually'); return; }
+      if (make) update('make', make.charAt(0) + make.slice(1).toLowerCase());
+      if (model) update('model', model);
+      if (year) { update('yearStart', year); update('yearEnd', year); }
+    } catch {
+      setVinError('Lookup failed — fill in details manually');
+    } finally {
+      setVinLoading(false);
+    }
+  };
 
   const update = <K extends keyof FormData>(key: K, val: FormData[K]) =>
     setForm((p) => ({ ...p, [key]: val }));
@@ -273,6 +300,36 @@ export default function SubmitPartPage() {
                   <input type="text" value={form.model} onChange={(e) => update('model', e.target.value)}
                     placeholder="Miata NA, R32 GTR..." className={inputClass} />
                 </Field>
+              </div>
+
+              {/* VIN Lookup — optional */}
+              <div className="rounded-xl border border-[#2a2a2a] bg-[#1a1a1a] p-4 space-y-3">
+                <p className="text-xs font-bold uppercase tracking-widest text-zinc-500">
+                  VIN Lookup <span className="text-zinc-700 normal-case font-normal tracking-normal">— optional, auto-fills Make, Model & Year</span>
+                </p>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    maxLength={17}
+                    value={form.vin}
+                    onChange={(e) => { update('vin', e.target.value.toUpperCase()); setVinError(''); }}
+                    placeholder="17-character VIN"
+                    className="flex-1 rounded-lg px-4 py-3 text-sm font-mono tracking-wider"
+                  />
+                  <button
+                    type="button"
+                    onClick={decodeVin}
+                    disabled={vinLoading || form.vin.length !== 17}
+                    className="flex items-center gap-2 px-4 py-3 rounded-lg bg-[#E8000D]/10 border border-[#E8000D]/30 text-[#E8000D] text-sm font-bold uppercase tracking-wide hover:bg-[#E8000D]/20 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    {vinLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+                    {vinLoading ? 'Looking up...' : 'Decode'}
+                  </button>
+                </div>
+                {vinError && <p className="text-xs text-red-400">{vinError}</p>}
+                {!vinError && form.make && form.vin.length === 17 && (
+                  <p className="text-xs text-green-400">Filled in: {form.make} {form.model} {form.yearStart}</p>
+                )}
               </div>
 
               <div className="grid sm:grid-cols-2 gap-5">
