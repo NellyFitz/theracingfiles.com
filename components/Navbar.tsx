@@ -8,7 +8,7 @@ import { createClient } from '@/lib/supabase/client';
 import type { User } from '@supabase/supabase-js';
 
 const navLinks = [
-  { href: '/browse', label: 'Parts Marketplace' },
+  { href: '/browse', label: 'Marketplace' },
   { href: '/creator', label: 'Sell Parts' },
   { href: '/about', label: 'About' },
   { href: '/request', label: 'Request a Part' },

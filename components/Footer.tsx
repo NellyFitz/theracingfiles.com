@@ -35,7 +35,7 @@ export default function Footer() {
           <div>
             <h4 className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-5">Marketplace</h4>
             <ul className="space-y-3">
-              {[['Parts Marketplace','/browse'],['Featured Drops','/browse'],['New Arrivals','/browse'],['Request a Part','/request']].map(([label, href]) => (
+              {[['Marketplace','/browse'],['Featured Drops','/browse'],['New Arrivals','/browse'],['Request a Part','/request']].map(([label, href]) => (
                 <li key={label}>
                   <Link href={href} className="text-xs text-zinc-600 hover:text-white transition-colors uppercase tracking-wide">{label}</Link>
                 </li>

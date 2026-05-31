@@ -120,7 +120,7 @@ export default function BrowsePage() {
       <div className="border-b border-[#1e1e1e] bg-[#0a0a0a]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
           <p className="text-xs font-bold uppercase tracking-widest text-[#39ff14] mb-2">Marketplace</p>
-          <h1 className="text-4xl font-black text-white mb-6">Parts Marketplace</h1>
+          <h1 className="text-4xl font-black text-white mb-6">Marketplace</h1>
 
           {/* Search bar */}
           <div className="relative w-full">

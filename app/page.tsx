@@ -99,7 +99,7 @@ export default function HomePage() {
 
             <div className="flex flex-wrap gap-3 mb-20">
               <Link href="/browse" className="btn-primary px-8 py-4 text-sm flex items-center gap-2 rounded-none">
-                Parts Marketplace <ArrowRight className="w-4 h-4" />
+                Marketplace <ArrowRight className="w-4 h-4" />
               </Link>
               <Link href="/request" className="btn-outline px-8 py-4 text-sm flex items-center gap-2 rounded-none">
                 Request a Part <ChevronRight className="w-4 h-4" />

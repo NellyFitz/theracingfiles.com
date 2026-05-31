@@ -66,7 +66,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
           <div className="flex items-center gap-2 text-xs text-zinc-500">
             <Link href="/" className="hover:text-white transition-colors">Home</Link>
             <ChevronRight className="w-3 h-3" />
-            <Link href="/browse" className="hover:text-white transition-colors">Parts Marketplace</Link>
+            <Link href="/browse" className="hover:text-white transition-colors">Marketplace</Link>
             <ChevronRight className="w-3 h-3" />
             <span className="text-zinc-300">{product.name}</span>
           </div>

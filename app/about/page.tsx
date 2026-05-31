@@ -192,7 +192,7 @@ export default function AboutPage() {
                 <h3 className="text-2xl font-black text-white mb-3">Browse the Parts Bin</h3>
                 <p className="text-sm text-zinc-400 mb-6">Over 2,400 verified parts across cars and motorcycles.</p>
                 <Link href="/browse" className="btn-primary px-6 py-3 text-sm rounded-lg inline-flex items-center gap-2">
-                  Parts Marketplace <ArrowRight className="w-4 h-4" />
+                  Marketplace <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>
             </div>

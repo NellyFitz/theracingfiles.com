@@ -11,7 +11,7 @@ export default function NotFound() {
       </p>
       <div className="flex gap-4">
         <Link href="/browse" className="btn-primary px-6 py-3 text-sm rounded-lg">
-          Parts Marketplace
+          Marketplace
         </Link>
         <Link href="/request" className="btn-outline px-6 py-3 text-sm rounded-lg flex items-center gap-2">
           <ArrowLeft className="w-4 h-4" /> Request a Part
