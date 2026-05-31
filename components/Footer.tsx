@@ -3,30 +3,30 @@ import { Zap, GitBranch, Send, Camera } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer className="border-t border-[#1e1e1e] bg-[#090909] mt-auto">
+    <footer className="border-t border-[#111] bg-[#050505] mt-auto">
+      <div className="h-px bg-gradient-to-r from-[#39ff14] via-[#39ff14]/30 to-transparent" />
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-14">
+
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
-            <Link href="/" className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 bg-[#39ff14] rounded flex items-center justify-center">
-                <Zap className="w-5 h-5 text-[#0d0d0d]" fill="currentColor" />
+            <Link href="/" className="flex items-center gap-2.5 mb-5">
+              <div className="w-7 h-7 bg-[#39ff14] flex items-center justify-center">
+                <Zap className="w-4 h-4 text-[#080808]" fill="currentColor" />
               </div>
-              <span className="text-xl font-black tracking-tight text-white">
+              <span className="font-black tracking-tight text-white text-base uppercase" style={{ letterSpacing: '-0.01em' }}>
                 The Racing <span className="text-[#39ff14]">Files</span>
               </span>
             </Link>
-            <p className="text-xs text-zinc-500 leading-relaxed max-w-[200px]">
+            <p className="text-xs text-zinc-600 leading-relaxed max-w-[200px] mb-5">
               The digital parts bin for enthusiast vehicles. Download, print, or order.
             </p>
-            <div className="flex gap-3 mt-4">
+            <div className="flex gap-2">
               {[GitBranch, Send, Camera].map((Icon, i) => (
-                <a
-                  key={i}
-                  href="#"
-                  className="w-8 h-8 rounded border border-[#2a2a2a] flex items-center justify-center text-zinc-500 hover:text-[#39ff14] hover:border-[#39ff14] transition-colors"
-                >
-                  <Icon className="w-4 h-4" />
+                <a key={i} href="#"
+                  className="w-7 h-7 border border-[#1e1e1e] flex items-center justify-center text-zinc-600 hover:text-[#39ff14] hover:border-[#39ff14]/40 transition-colors">
+                  <Icon className="w-3.5 h-3.5" />
                 </a>
               ))}
             </div>
@@ -34,18 +34,11 @@ export default function Footer() {
 
           {/* Marketplace */}
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-widest text-zinc-400 mb-4">Marketplace</h4>
-            <ul className="space-y-2.5">
-              {[
-                ['Parts Marketplace', '/browse'],
-                ['Featured Drops', '/browse'],
-                ['New Arrivals', '/browse'],
-                ['Request a Part', '/request'],
-              ].map(([label, href]) => (
+            <h4 className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-5">Marketplace</h4>
+            <ul className="space-y-3">
+              {[['Parts Marketplace','/browse'],['Featured Drops','/browse'],['New Arrivals','/browse'],['Request a Part','/request']].map(([label, href]) => (
                 <li key={label}>
-                  <Link href={href} className="text-sm text-zinc-500 hover:text-white transition-colors">
-                    {label}
-                  </Link>
+                  <Link href={href} className="text-xs text-zinc-600 hover:text-white transition-colors uppercase tracking-wide">{label}</Link>
                 </li>
               ))}
             </ul>
@@ -53,18 +46,11 @@ export default function Footer() {
 
           {/* Creators */}
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-widest text-zinc-400 mb-4">Creators</h4>
-            <ul className="space-y-2.5">
-              {[
-                ['Sell Your Designs', '/creator'],
-                ['Creator Program', '/creator'],
-                ['Fulfillment', '/creator'],
-                ['Creator Docs', '/creator'],
-              ].map(([label, href]) => (
+            <h4 className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-5">Creators</h4>
+            <ul className="space-y-3">
+              {[['Sell Your Designs','/creator'],['Creator Program','/creator'],['Fulfillment','/creator'],['Creator Docs','/creator']].map(([label, href]) => (
                 <li key={label}>
-                  <Link href={href} className="text-sm text-zinc-500 hover:text-white transition-colors">
-                    {label}
-                  </Link>
+                  <Link href={href} className="text-xs text-zinc-600 hover:text-white transition-colors uppercase tracking-wide">{label}</Link>
                 </li>
               ))}
             </ul>
@@ -72,30 +58,23 @@ export default function Footer() {
 
           {/* Company */}
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-widest text-zinc-400 mb-4">Company</h4>
-            <ul className="space-y-2.5">
-              {[
-                ['About', '/about'],
-                ['Blog', '#'],
-                ['Privacy', '#'],
-                ['Terms', '#'],
-              ].map(([label, href]) => (
+            <h4 className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-5">Company</h4>
+            <ul className="space-y-3">
+              {[['About','/about'],['Blog','#'],['Privacy','#'],['Terms','#']].map(([label, href]) => (
                 <li key={label}>
-                  <Link href={href} className="text-sm text-zinc-500 hover:text-white transition-colors">
-                    {label}
-                  </Link>
+                  <Link href={href} className="text-xs text-zinc-600 hover:text-white transition-colors uppercase tracking-wide">{label}</Link>
                 </li>
               ))}
             </ul>
           </div>
         </div>
 
-        <div className="border-t border-[#1e1e1e] pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-zinc-600">
+        <div className="border-t border-[#111] pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-[10px] text-zinc-700 uppercase tracking-widest">
             © 2025 The Racing Files. All rights reserved.
           </p>
-          <p className="text-xs text-zinc-600 text-center">
-            STL files are for personal use only. Resale of printed parts may be subject to creator licensing.
+          <p className="text-[10px] text-zinc-700 text-center uppercase tracking-wide">
+            STL files for personal use only. Printed part resale subject to creator licensing.
           </p>
         </div>
       </div>

@@ -1,13 +1,14 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0d0d0d;
-  --foreground: #f0f0f0;
-  --accent-green: #39ff14;
-  --accent-blue: #00d4ff;
+  --background: #080808;
+  --foreground: #f5f5f5;
   --accent: #39ff14;
-  --card-bg: #141414;
-  --border: #2a2a2a;
+  --accent-dim: rgba(57, 255, 20, 0.15);
+  --card-bg: #0e0e0e;
+  --card-bg-2: #131313;
+  --border: #1e1e1e;
+  --border-bright: #2a2a2a;
 }
 
 @theme inline {
@@ -18,13 +19,8 @@
   --color-border-subtle: var(--border);
 }
 
-* {
-  box-sizing: border-box;
-}
-
-html {
-  scroll-behavior: smooth;
-}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
 
 body {
   background: var(--background);
@@ -33,157 +29,226 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(24px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* ── Carbon fiber texture ── */
+.carbon-bg {
+  background-color: #0a0a0a;
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      transparent 0px,
+      transparent 3px,
+      rgba(255,255,255,0.018) 3px,
+      rgba(255,255,255,0.018) 4px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      transparent 0px,
+      transparent 3px,
+      rgba(255,255,255,0.018) 3px,
+      rgba(255,255,255,0.018) 4px
+    );
 }
 
-@keyframes pulse-glow {
-  0%, 100% {
-    box-shadow: 0 0 8px 0 rgba(57, 255, 20, 0.4);
-  }
-  50% {
-    box-shadow: 0 0 24px 4px rgba(57, 255, 20, 0.7);
-  }
-}
-
-@keyframes gridMove {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(60px); }
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-12px); }
-}
-
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-
-.animate-fade-in-up {
-  animation: fadeInUp 0.6s ease-out forwards;
-}
-
-.animate-float {
-  animation: float 4s ease-in-out infinite;
-}
-
-.animate-pulse-glow {
-  animation: pulse-glow 2s ease-in-out infinite;
-}
-
-.skeleton {
-  background: linear-gradient(90deg, #1a1a1a 25%, #252525 50%, #1a1a1a 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-}
-
+/* ── Technical grid ── */
 .grid-bg {
   background-image:
-    linear-gradient(rgba(57, 255, 20, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(57, 255, 20, 0.04) 1px, transparent 1px);
-  background-size: 60px 60px;
+    linear-gradient(rgba(57, 255, 20, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(57, 255, 20, 0.03) 1px, transparent 1px);
+  background-size: 48px 48px;
 }
 
+/* ── Speed lines background ── */
+.speed-lines {
+  background-image: repeating-linear-gradient(
+    -60deg,
+    transparent,
+    transparent 18px,
+    rgba(57,255,20,0.025) 18px,
+    rgba(57,255,20,0.025) 19px
+  );
+}
+
+/* ── Diagonal clip utilities ── */
+.clip-bottom-right {
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 48px), calc(100% - 48px) 100%, 0 100%);
+}
+
+.clip-top-left {
+  clip-path: polygon(48px 0, 100% 0, 100% 100%, 0 100%, 0 48px);
+}
+
+.clip-corner {
+  clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%);
+}
+
+/* ── Racing accent cards ── */
+.race-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--accent);
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+
+.race-card:hover {
+  border-color: rgba(57,255,20,0.5);
+  border-left-color: var(--accent);
+  background: var(--card-bg-2);
+  transform: translateX(3px);
+}
+
+/* ── Standard card hover ── */
 .card-hover {
-  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .card-hover:hover {
-  transform: translateY(-4px);
-  border-color: rgba(57, 255, 20, 0.4);
-  box-shadow: 0 8px 40px rgba(57, 255, 20, 0.1);
+  transform: translateY(-3px);
+  border-color: rgba(57, 255, 20, 0.35);
+  box-shadow: 0 12px 48px rgba(57, 255, 20, 0.08);
 }
 
+/* ── Racing stripe decorations ── */
+.race-stripe-top {
+  position: relative;
+}
+.race-stripe-top::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent) 0%, transparent 70%);
+}
+
+.race-stripe-left {
+  position: relative;
+  padding-left: 16px;
+}
+.race-stripe-left::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--accent);
+}
+
+/* ── Buttons ── */
 .btn-primary {
-  background: #39ff14;
-  color: #0d0d0d;
-  font-weight: 700;
-  letter-spacing: 0.05em;
+  background: var(--accent);
+  color: #080808;
+  font-weight: 800;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
 }
 
 .btn-primary:hover {
-  background: #4fff2a;
-  box-shadow: 0 0 24px rgba(57, 255, 20, 0.5);
+  background: #50ff2a;
+  box-shadow: 0 0 28px rgba(57, 255, 20, 0.55), 0 4px 16px rgba(0,0,0,0.4);
   transform: translateY(-1px);
 }
 
 .btn-outline {
-  border: 1.5px solid rgba(57, 255, 20, 0.5);
-  color: #39ff14;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  transition: all 0.2s ease;
+  border: 1.5px solid rgba(57, 255, 20, 0.45);
+  color: var(--accent);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: all 0.15s ease;
 }
 
 .btn-outline:hover {
-  background: rgba(57, 255, 20, 0.08);
-  border-color: #39ff14;
-  box-shadow: 0 0 16px rgba(57, 255, 20, 0.2);
+  background: rgba(57, 255, 20, 0.07);
+  border-color: var(--accent);
+  box-shadow: 0 0 18px rgba(57, 255, 20, 0.15);
 }
 
-.accent-green { color: #39ff14; }
-.accent-blue { color: #00d4ff; }
-
-.badge-verified {
-  background: rgba(57, 255, 20, 0.12);
-  border: 1px solid rgba(57, 255, 20, 0.3);
-  color: #39ff14;
+/* ── Spec number display ── */
+.spec-number {
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: var(--accent);
 }
 
-.badge-community {
-  background: rgba(0, 212, 255, 0.12);
-  border: 1px solid rgba(0, 212, 255, 0.3);
-  color: #00d4ff;
+/* ── Section eyebrow label ── */
+.eyebrow {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
 }
 
-.badge-prototype {
-  background: rgba(255, 165, 0, 0.12);
-  border: 1px solid rgba(255, 165, 0, 0.3);
-  color: #ffa500;
+/* ── Animations ── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-::-webkit-scrollbar {
-  width: 6px;
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-10px); }
 }
 
-::-webkit-scrollbar-track {
-  background: #0d0d0d;
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
 
-::-webkit-scrollbar-thumb {
-  background: #2a2a2a;
-  border-radius: 3px;
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 8px rgba(57,255,20,0.4); }
+  50%       { box-shadow: 0 0 28px rgba(57,255,20,0.8); }
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #39ff14;
+@keyframes scan-line {
+  0%   { transform: translateY(-100%); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { transform: translateY(100vh); opacity: 0; }
 }
 
+.animate-fade-in-up  { animation: fadeInUp 0.5s ease-out forwards; }
+.animate-float       { animation: float 4s ease-in-out infinite; }
+.animate-pulse-glow  { animation: pulse-glow 2s ease-in-out infinite; }
+
+.skeleton {
+  background: linear-gradient(90deg, #151515 25%, #1e1e1e 50%, #151515 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* ── Form inputs ── */
 input, textarea, select {
-  background: #141414;
-  border: 1.5px solid #2a2a2a;
-  color: #f0f0f0;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  background: #0e0e0e;
+  border: 1.5px solid #222;
+  color: var(--foreground);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 input:focus, textarea:focus, select:focus {
   outline: none;
   border-color: rgba(57, 255, 20, 0.5);
-  box-shadow: 0 0 0 3px rgba(57, 255, 20, 0.08);
+  box-shadow: 0 0 0 3px rgba(57, 255, 20, 0.06);
 }
 
-::selection {
-  background: rgba(57, 255, 20, 0.25);
-  color: #f0f0f0;
-}
+/* ── Scrollbar ── */
+::-webkit-scrollbar       { width: 5px; }
+::-webkit-scrollbar-track { background: #080808; }
+::-webkit-scrollbar-thumb { background: #222; border-radius: 0; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+/* ── Selection ── */
+::selection { background: rgba(57, 255, 20, 0.2); color: #fff; }
+
+/* ── Badge variants ── */
+.badge-verified  { background: rgba(57,255,20,0.1);  border: 1px solid rgba(57,255,20,0.25);  color: var(--accent); }
+.badge-community { background: rgba(0,212,255,0.1);  border: 1px solid rgba(0,212,255,0.25);  color: #00d4ff; }
+.badge-prototype { background: rgba(255,165,0,0.1);  border: 1px solid rgba(255,165,0,0.25);  color: #ffa500; }
+
+.accent-green { color: var(--accent); }
