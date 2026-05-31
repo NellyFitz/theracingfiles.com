@@ -1,9 +1,10 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { Clock, Eye, CheckCircle, XCircle, ArrowRight, Printer, Shield } from 'lucide-react';
+import { Clock, Eye, CheckCircle, XCircle, ArrowRight, Printer } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import SubmissionStatusBadge from '@/components/SubmissionStatusBadge';
+import AdminNav from '@/components/AdminNav';
 import type { PartSubmission, SubmissionStatus } from '@/lib/supabase/db-types';
 
 function formatDate(iso: string) {
@@ -62,14 +63,10 @@ export default async function AdminDashboard({
 
   return (
     <main className="min-h-screen">
-      {/* Header */}
+      <AdminNav />
       <div className="border-b border-[#1e1e1e] bg-[#0a0a0a]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex items-center gap-3 mb-1">
-            <Shield className="w-5 h-5 text-[#39ff14]" />
-            <p className="text-xs font-bold uppercase tracking-widest text-[#39ff14]">Admin Panel</p>
-          </div>
-          <h1 className="text-3xl font-black text-white">Review Queue</h1>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <h1 className="text-3xl font-black text-white">Scan Review Queue</h1>
         </div>
       </div>
 

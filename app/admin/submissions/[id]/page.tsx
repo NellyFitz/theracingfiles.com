@@ -4,6 +4,7 @@ import { ArrowLeft, Download, ExternalLink, FileText, ImageIcon, User } from 'lu
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import SubmissionStatusBadge from '@/components/SubmissionStatusBadge';
+import AdminNav from '@/components/AdminNav';
 import ReviewActions from './ReviewActions';
 import type { PartSubmission } from '@/lib/supabase/db-types';
 import { use } from 'react';
@@ -45,6 +46,7 @@ export default async function AdminReviewPage({ params }: { params: Promise<{ id
 
   return (
     <main className="min-h-screen">
+      <AdminNav />
       {/* Header */}
       <div className="border-b border-[#1e1e1e] bg-[#0a0a0a]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
@@ -168,6 +170,8 @@ export default async function AdminReviewPage({ params }: { params: Promise<{ id
                 {([
                   { label: 'STL', url: sub.stl_url },
                   { label: '3MF', url: sub.threemf_url },
+                  { label: 'OBJ', url: sub.obj_url },
+                  { label: 'MTL', url: sub.mtl_url },
                   { label: 'STEP', url: sub.step_url },
                 ] as { label: string; url: string | null }[]).map(({ label, url }) => (
                   <div key={label} className="flex items-center justify-between">
@@ -198,7 +202,7 @@ export default async function AdminReviewPage({ params }: { params: Promise<{ id
               submissionId={sub.id}
               currentStatus={sub.status}
               currentNotes={sub.admin_notes}
-              hasFiles={!!(sub.stl_url || sub.threemf_url)}
+              hasFiles={!!(sub.stl_url || sub.threemf_url || sub.obj_url || sub.mtl_url)}
             />
           </div>
         </div>

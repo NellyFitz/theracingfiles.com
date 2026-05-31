@@ -40,6 +40,8 @@ export interface PartSubmission {
   print_bed_temp: string;
   stl_url: string | null;
   threemf_url: string | null;
+  obj_url: string | null;
+  mtl_url: string | null;
   step_url: string | null;
   images: string[];
   tags: string;
