@@ -38,18 +38,24 @@ export async function proxy(request: NextRequest) {
 
   const isCreatorProtected = PROTECTED.some((p) => path.startsWith(p));
   const isAdminProtected = ADMIN_PROTECTED.some((p) => path.startsWith(p));
-  const isDws = DWS_PATHS.some((p) => path.startsWith(p)) && !path.startsWith('/dws/login');
+  const isDws = path.startsWith('/dws') && !path.startsWith('/dws/login');
+
+  // DWS cookie gate — enforced at proxy level before any page renders
+  if (isDws) {
+    const dwsSession = request.cookies.get('dws_session')?.value;
+    if (dwsSession !== 'dws-active') {
+      const url = request.nextUrl.clone();
+      url.pathname = '/dws/login';
+      return NextResponse.redirect(url);
+    }
+    return supabaseResponse;
+  }
 
   if (!user && (isCreatorProtected || isAdminProtected)) {
     const url = request.nextUrl.clone();
     url.pathname = '/creator/login';
     url.searchParams.set('next', path);
     return NextResponse.redirect(url);
-  }
-
-  // DWS: let the layout handle the cookie check — just don't intercept it
-  if (isDws) {
-    return supabaseResponse;
   }
 
   if (user && isAdminProtected) {
@@ -70,6 +76,7 @@ export const config = {
     '/creator/submit',
     '/creator/submissions/:path*',
     '/admin/:path*',
+    '/dws',
     '/dws/:path*',
   ],
 };
