@@ -57,7 +57,7 @@ export default function HomePage() {
     <main>
 
       {/* ── HERO ── */}
-      <section className="relative min-h-[96vh] flex items-center overflow-hidden carbon-bg">
+      <section className="relative h-[calc(100vh-4rem)] flex items-center overflow-hidden carbon-bg">
         <div className="absolute inset-0 grid-bg opacity-70" />
         <div className="absolute inset-0 speed-lines opacity-60" />
         <div className="absolute inset-0" style={{
@@ -78,7 +78,7 @@ export default function HomePage() {
           <div className="absolute bottom-0 right-0 h-full w-px bg-[#E8000D]" />
         </div>
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-28">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="max-w-4xl">
             <div className="flex items-center gap-3 mb-8">
               <div className="h-px w-8 bg-[#E8000D]" />
