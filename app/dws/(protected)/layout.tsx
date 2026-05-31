@@ -6,7 +6,7 @@ export default async function DwsProtectedLayout({ children }: { children: React
   const cookieStore = await cookies();
   const token = cookieStore.get('dws_session')?.value;
 
-  if (token !== process.env.DWS_SESSION_TOKEN) {
+  if (!process.env.DWS_SESSION_TOKEN || token !== process.env.DWS_SESSION_TOKEN) {
     redirect('/dws/login');
   }
 
