@@ -103,21 +103,13 @@ export default function AboutPage() {
                 compensation, and on-demand manufacturing for people who don't own printers.
               </p>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              {[
-                { label: 'Parts Available', value: '2,400+' },
-                { label: 'Active Creators', value: '180+' },
-                { label: 'Community Members', value: '14k+' },
-                { label: 'Paid to Creators', value: '$340K+' },
-              ].map((s) => (
-                <div
-                  key={s.label}
-                  className="rounded-xl border border-[#2a2a2a] bg-[#141414] p-6 text-center card-hover"
-                >
-                  <p className="text-3xl font-black text-[E8000D] mb-2">{s.value}</p>
-                  <p className="text-xs text-zinc-500 uppercase tracking-widest">{s.label}</p>
-                </div>
-              ))}
+            <div className="relative rounded-2xl overflow-hidden h-96 lg:h-full min-h-[420px]">
+              <img
+                src="/hero-car.jpg"
+                alt="Martini Porsche race car from above"
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/60 to-transparent" />
             </div>
           </div>
         </div>
