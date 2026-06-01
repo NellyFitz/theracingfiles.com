@@ -118,8 +118,12 @@ export default function HomePage() {
       </section>
 
       {/* ── HOW IT WORKS ── */}
-      <section className="py-28 bg-[#080808]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-28 relative overflow-hidden">
+        <div className="absolute inset-0">
+          <img src="/hero-bg.jpg" alt="" className="w-full h-full object-cover object-center" />
+          <div className="absolute inset-0 bg-[#080808]/82" />
+        </div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-start justify-between mb-16 flex-wrap gap-6">
             <div>
               <div className="flex items-center gap-3 mb-4">
