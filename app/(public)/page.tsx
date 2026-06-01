@@ -120,8 +120,8 @@ export default function HomePage() {
       {/* ── HOW IT WORKS ── */}
       <section className="py-28 relative overflow-hidden">
         <div className="absolute inset-0">
-          <img src="/hero-bg.jpg" alt="" className="w-full h-full object-cover object-center" />
-          <div className="absolute inset-0 bg-[#080808]/82" />
+          <img src="/texture-bg.jpg" alt="" className="w-full h-full object-cover object-center" />
+          <div className="absolute inset-0 bg-[#080808]/60" />
         </div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-start justify-between mb-16 flex-wrap gap-6">
