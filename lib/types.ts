@@ -105,6 +105,8 @@ export interface CreatorApplication {
 
 export interface FilterState {
   vehicleType: string;
+  yearMin: string;
+  yearMax: string;
   make: string;
   model: string;
   category: string;
