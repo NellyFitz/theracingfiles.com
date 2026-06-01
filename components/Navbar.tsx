@@ -2,9 +2,10 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { Menu, X, Search, LayoutDashboard, LogOut } from 'lucide-react';
+import { Menu, X, Search, LayoutDashboard, LogOut, ShoppingCart } from 'lucide-react';
 import Image from 'next/image';
 import { createClient } from '@/lib/supabase/client';
+import { useCart } from '@/lib/cart';
 import type { User } from '@supabase/supabase-js';
 
 const navLinks = [
@@ -18,6 +19,7 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [scrolled, setScrolled] = useState(false);
+  const { count: cartCount } = useCart();
 
   useEffect(() => {
     const supabase = createClient();
@@ -73,6 +75,20 @@ export default function Navbar() {
               <Search className="w-4 h-4" />
             </Link>
 
+            {/* Cart icon */}
+            <Link
+              href={user ? '/creator/dashboard' : '#'}
+              className="relative text-zinc-500 hover:text-white transition-colors"
+              title="Cart"
+            >
+              <ShoppingCart className="w-4 h-4" />
+              {cartCount > 0 && (
+                <span className="absolute -top-2 -right-2 w-4 h-4 rounded-full bg-[#E8000D] flex items-center justify-center text-[9px] font-black text-white">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
+
             {user ? (
               <div className="flex items-center gap-2">
                 <Link href="/creator/dashboard"
@@ -86,15 +102,10 @@ export default function Navbar() {
                 </button>
               </div>
             ) : (
-              <>
-                <Link href="/creator/login"
-                  className="text-xs font-bold uppercase tracking-widest text-zinc-500 hover:text-white transition-colors">
-                  Sign In
-                </Link>
-                <Link href="/request" className="btn-primary px-4 py-2 text-xs rounded-none">
-                  Request a Part
-                </Link>
-              </>
+              <Link href="/creator/login"
+                className="text-xs font-bold uppercase tracking-widest text-zinc-500 hover:text-white transition-colors">
+                Sign In
+              </Link>
             )}
           </div>
 
@@ -131,18 +142,11 @@ export default function Navbar() {
                   </button>
                 </>
               ) : (
-                <>
-                  <Link href="/creator/login"
-                    className="text-xs font-bold uppercase tracking-widest text-zinc-400 hover:text-white"
-                    onClick={() => setMobileOpen(false)}>
-                    Sign In
-                  </Link>
-                  <Link href="/request"
-                    className="btn-primary px-4 py-2.5 text-xs rounded-none text-center"
-                    onClick={() => setMobileOpen(false)}>
-                    Request a Part
-                  </Link>
-                </>
+                <Link href="/creator/login"
+                  className="text-xs font-bold uppercase tracking-widest text-zinc-400 hover:text-white"
+                  onClick={() => setMobileOpen(false)}>
+                  Sign In
+                </Link>
               )}
             </div>
           </div>

@@ -2,11 +2,12 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useCart } from '@/lib/cart';
 import { notFound } from 'next/navigation';
 import {
   Download, Printer, Wrench, Star, CheckCircle,
   ChevronRight, ArrowLeft, Settings2, BookOpen, Users,
-  FlaskConical, Layers, Thermometer, Package,
+  FlaskConical, Layers, Thermometer, Package, ShoppingCart,
 } from 'lucide-react';
 import { getProductBySlug, getCreatorById, products } from '@/lib/data';
 import Badge from '@/components/Badge';
@@ -55,6 +56,24 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
   const creator = getCreatorById(product.creatorId);
   const [activeTab, setActiveTab] = useState<Tab>('Description');
   const [selectedTier, setSelectedTier] = useState<'file' | 'printed' | 'finished'>('file');
+  const [added, setAdded] = useState(false);
+  const { addItem } = useCart();
+
+  const handleAddToCart = () => {
+    addItem({
+      productId: product.id,
+      productName: product.name,
+      slug: product.slug,
+      tier: selectedTier,
+      price: selectedTier === 'file'
+        ? product.filePrice
+        : selectedTier === 'printed'
+        ? product.printedPrice ?? null
+        : null,
+    });
+    setAdded(true);
+    setTimeout(() => setAdded(false), 2000);
+  };
 
   const related = products.filter((p) => p.id !== product.id && p.make === product.make).slice(0, 3);
 
@@ -241,11 +260,24 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
             </div>
 
             {/* CTA button */}
-            {/* TODO: Integrate Stripe for payment processing */}
-            <button className="w-full btn-primary py-4 text-sm rounded-xl mb-3 flex items-center justify-center gap-2">
-              {selectedTier === 'file' && <><Download className="w-4 h-4" /> Buy Digital File — ${product.filePrice}</>}
-              {selectedTier === 'printed' && <><Printer className="w-4 h-4" /> Order Printed — ${product.printedPrice}</>}
-              {selectedTier === 'finished' && <><Wrench className="w-4 h-4" /> Request Finished Part</>}
+            <button
+              onClick={handleAddToCart}
+              className={`w-full py-4 text-sm rounded-xl mb-3 flex items-center justify-center gap-2 transition-all ${
+                added
+                  ? 'bg-green-600 text-white'
+                  : 'btn-primary'
+              }`}
+            >
+              {added ? (
+                <><CheckCircle className="w-4 h-4" /> Added to Cart</>
+              ) : (
+                <>
+                  <ShoppingCart className="w-4 h-4" />
+                  {selectedTier === 'file' && <>Add to Cart — ${product.filePrice}</>}
+                  {selectedTier === 'printed' && <>Add to Cart — ${product.printedPrice}</>}
+                  {selectedTier === 'finished' && <>Add to Cart — Request Quote</>}
+                </>
+              )}
             </button>
             <p className="text-[10px] text-center text-zinc-600">
               {selectedTier === 'file' ? 'Instant download after purchase. No DRM.' : 'Secure checkout powered by Stripe.'}

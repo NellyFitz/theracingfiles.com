@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { Plus, FileText, CheckCircle, Clock, XCircle, ArrowRight, Printer, DollarSign } from 'lucide-react';
+import DashboardCart from '@/components/DashboardCart';
 import { createClient } from '@/lib/supabase/server';
 import SubmissionStatusBadge from '@/components/SubmissionStatusBadge';
 import type { PartSubmission } from '@/lib/supabase/db-types';
@@ -135,6 +136,9 @@ export default async function CreatorDashboard() {
 
           {/* Sidebar */}
           <div className="space-y-5">
+            {/* Cart */}
+            <DashboardCart />
+
             {/* Profile card */}
             <div className="rounded-xl border border-[#2a2a2a] bg-[#141414] p-5">
               <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-500 mb-4">Your Profile</h3>
