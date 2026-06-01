@@ -57,12 +57,16 @@ export default function HomePage() {
     <main>
 
       {/* ── HERO ── */}
-      <section className="relative h-[92vh] flex items-center overflow-hidden carbon-bg">
-        <div className="absolute inset-0 grid-bg opacity-70" />
-        <div className="absolute inset-0 speed-lines opacity-60" />
-        <div className="absolute inset-0" style={{
-          background: 'radial-gradient(ellipse 70% 55% at 30% 55%, rgba(232,0,13,0.055) 0%, transparent 65%)'
-        }} />
+      <section className="relative h-[92vh] flex items-center overflow-hidden">
+        {/* Photo background */}
+        <div className="absolute inset-0">
+          <img src="/hero-bg.jpg" alt="" className="w-full h-full object-cover object-center" />
+          <div className="absolute inset-0 bg-[#080808]/70" />
+          <div className="absolute inset-0" style={{
+            background: 'radial-gradient(ellipse 70% 55% at 30% 55%, rgba(232,0,13,0.08) 0%, transparent 65%)'
+          }} />
+        </div>
+        <div className="absolute inset-0 grid-bg opacity-30" />
 
         {/* Vertical accent line */}
         <div className="absolute top-0 right-[20%] w-px h-full opacity-10"
