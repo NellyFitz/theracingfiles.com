@@ -14,7 +14,7 @@ const perks = [
     icon: DollarSign,
     title: '70% Revenue Share',
     desc: 'Keep 70% of every digital file sale. No surprise fees or hidden charges.',
-    accent: '#39ff14',
+    accent: '#E8000D',
   },
   {
     icon: Printer,
@@ -38,7 +38,7 @@ const perks = [
     icon: Users,
     title: 'Community Feedback',
     desc: 'Get real fitment data and user photos directly from the builder community.',
-    accent: '#39ff14',
+    accent: '#E8000D',
   },
   {
     icon: Zap,
@@ -108,16 +108,16 @@ export default function CreatorPage() {
       <section className="relative border-b border-[#1e1e1e] overflow-hidden">
         <div className="absolute inset-0 grid-bg opacity-50" />
         <div className="absolute inset-0" style={{
-          background: 'radial-gradient(ellipse 70% 60% at 50% 30%, rgba(57,255,20,0.06) 0%, transparent 70%)'
+          background: 'radial-gradient(ellipse 70% 60% at 50% 30%, rgba(232,0,13,0.06) 0%, transparent 70%)'
         }} />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center">
-          <div className="inline-flex items-center gap-2 bg-[#39ff14]/10 border border-[#39ff14]/20 rounded-full px-4 py-1.5 mb-8">
-            <Upload className="w-3.5 h-3.5 text-[#39ff14]" />
-            <span className="text-xs font-bold uppercase tracking-widest text-[#39ff14]">Creator Program</span>
+          <div className="inline-flex items-center gap-2 bg-[#E8000D]/10 border border-[#E8000D]/20 rounded-full px-4 py-1.5 mb-8">
+            <Upload className="w-3.5 h-3.5 text-[#E8000D]" />
+            <span className="text-xs font-bold uppercase tracking-widest text-[#E8000D]">Creator Program</span>
           </div>
           <h1 className="text-5xl sm:text-6xl font-black text-white leading-tight mb-6">
             Design Parts.<br />
-            <span className="text-[#39ff14]">Get Paid.</span>
+            <span className="text-[#E8000D]">Get Paid.</span>
           </h1>
           <p className="text-xl text-zinc-400 max-w-2xl mx-auto mb-10">
             Upload your designs once. Earn royalties every time someone downloads a file or orders a printed part.
@@ -140,7 +140,7 @@ export default function CreatorPage() {
               { value: '70%', label: 'Revenue Share' },
             ].map((s) => (
               <div key={s.label} className="text-center">
-                <p className="text-2xl font-black text-[#39ff14]">{s.value}</p>
+                <p className="text-2xl font-black text-[#E8000D]">{s.value}</p>
                 <p className="text-xs text-zinc-500 uppercase tracking-widest">{s.label}</p>
               </div>
             ))}
@@ -206,7 +206,7 @@ export default function CreatorPage() {
               <div key={creator.id} className="rounded-xl border border-[#2a2a2a] bg-[#141414] p-6 card-hover">
                 <div className="flex items-start gap-4 mb-4">
                   <div className="w-12 h-12 rounded-xl bg-[#252525] border border-[#2a2a2a] flex items-center justify-center shrink-0">
-                    <span className="text-lg font-black text-[#39ff14]">{creator.name.charAt(0)}</span>
+                    <span className="text-lg font-black text-[#E8000D]">{creator.name.charAt(0)}</span>
                   </div>
                   <div>
                     <h3 className="text-sm font-bold text-white">{creator.name}</h3>
@@ -254,7 +254,7 @@ export default function CreatorPage() {
                 >
                   <span className="text-sm font-semibold text-white">{faq.q}</span>
                   {openFaq === i
-                    ? <ChevronUp className="w-4 h-4 text-[#39ff14] shrink-0" />
+                    ? <ChevronUp className="w-4 h-4 text-[#E8000D] shrink-0" />
                     : <ChevronDown className="w-4 h-4 text-zinc-500 shrink-0" />
                   }
                 </button>
@@ -275,8 +275,8 @@ export default function CreatorPage() {
           <SectionHeader eyebrow="Apply Now" title="Creator Application" centered />
 
           {submitted ? (
-            <div className="rounded-2xl border border-[#39ff14]/30 bg-[#39ff14]/5 p-12 text-center">
-              <CheckCircle className="w-12 h-12 text-[#39ff14] mx-auto mb-4" />
+            <div className="rounded-2xl border border-[#E8000D]/30 bg-[#E8000D]/5 p-12 text-center">
+              <CheckCircle className="w-12 h-12 text-[#E8000D] mx-auto mb-4" />
               <h3 className="text-xl font-black text-white mb-2">Application Received</h3>
               <p className="text-zinc-400 text-sm">
                 We'll review your application within 48 hours and reach out at {form.email}.
