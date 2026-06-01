@@ -120,118 +120,118 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── HOW IT WORKS ── */}
-      <section className="py-28 relative overflow-hidden">
+      {/* ── HOW IT WORKS + ABOUT — shared texture background ── */}
+      <div className="relative overflow-hidden">
         <div className="absolute inset-0">
           <img src="/texture-bg.jpg" alt="" className="w-full h-full object-cover object-center" />
           <div className="absolute inset-0 bg-[#080808]/60" />
         </div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-start justify-between mb-16 flex-wrap gap-6">
-            <div>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="h-px w-8 bg-[#E8000D]" />
-                <span className="eyebrow">How It Works</span>
-              </div>
-              <h2 className="text-4xl sm:text-5xl font-black text-white"
-                style={{ letterSpacing: '-0.03em' }}>
-                THREE WAYS<br />TO GET YOUR PART
-              </h2>
-            </div>
-            <p className="text-sm text-white max-w-xs leading-relaxed self-end">
-              Whether you run a 3D printer or not — The Racing Files has you covered.
-            </p>
-          </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {howItWorks.map((item) => {
-              const Icon = item.icon;
-              return (
-                <div key={item.step} className="relative bg-transparent p-8 group transition-colors">
-                  <div className="absolute top-6 right-6 font-black text-white/10 select-none"
-                    style={{ fontSize: '5rem', lineHeight: 1 }}>
-                    {item.step}
-                  </div>
-                  <div className="w-8 h-0.5 bg-[#E8000D] mb-8" />
-                  <div className="w-10 h-10 border border-[#222] flex items-center justify-center mb-6 group-hover:border-[#E8000D]/40 transition-colors">
-                    <Icon className="w-5 h-5 text-[#E8000D]" />
-                  </div>
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-white mb-3">{item.title}</h3>
-                  <p className="text-sm text-white leading-relaxed">{item.description}</p>
+        {/* HOW IT WORKS */}
+        <section className="py-28 relative">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-start justify-between mb-16 flex-wrap gap-6">
+              <div>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="h-px w-8 bg-[#E8000D]" />
+                  <span className="eyebrow">How It Works</span>
                 </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* ── ABOUT ── */}
-      <section className="py-28 relative overflow-hidden border-t border-[#111]">
-        <div className="absolute inset-0">
-          <img src="/texture-bg.jpg" alt="" className="w-full h-full object-cover object-center" />
-          <div className="absolute inset-0 bg-[#080808]/60" />
-        </div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-
-            {/* Left: text */}
-            <div>
-              <div className="flex items-center gap-3 mb-6">
-                <div className="h-px w-8 bg-[#E8000D]" />
-                <span className="eyebrow">About The Racing Files</span>
+                <h2 className="text-4xl sm:text-5xl font-black text-white"
+                  style={{ letterSpacing: '-0.03em' }}>
+                  THREE WAYS<br />TO GET YOUR PART
+                </h2>
               </div>
-              <h2 className="text-4xl sm:text-5xl font-black text-white leading-tight mb-6" style={{ letterSpacing: '-0.03em' }}>
-                Built by enthusiasts.<br />
-                <span className="text-[#E8000D]">For builders.</span>
-              </h2>
-              <p className="text-zinc-400 leading-relaxed mb-5">
-                The Racing Files was born because the parts we needed didn't exist — or cost $400 for a plastic clip.
-                We built the infrastructure that lets designers share what they've built and gets it to builders anywhere in the world.
+              <p className="text-sm text-white max-w-xs leading-relaxed self-end">
+                Whether you run a 3D printer or not — The Racing Files has you covered.
               </p>
-              <p className="text-zinc-400 leading-relaxed mb-8">
-                Verified fitment. Fair creator payouts. On-demand manufacturing. This is the aftermarket, rebuilt from the ground up.
-              </p>
-
-              <div className="grid grid-cols-2 gap-4 mb-10">
-                {[
-                  { value: '2,400+', label: 'Verified Parts' },
-                  { value: '180+', label: 'Active Creators' },
-                  { value: '$340K', label: 'Paid to Creators' },
-                  { value: '48h', label: 'Avg Review Time' },
-                ].map((s) => (
-                  <div key={s.label} className="rounded-xl border border-[#2a2a2a] bg-[#141414] p-4">
-                    <p className="text-2xl font-black text-[#E8000D]">{s.value}</p>
-                    <p className="text-xs text-zinc-500 mt-0.5">{s.label}</p>
-                  </div>
-                ))}
-              </div>
-
-              <Link
-                href="/about"
-                className="btn-primary px-8 py-3.5 text-sm rounded-xl inline-flex items-center gap-2"
-              >
-                Our Story <ArrowRight className="w-4 h-4" />
-              </Link>
             </div>
 
-            {/* Right: image */}
-            <div className="relative rounded-2xl overflow-hidden h-[480px]">
-              <img
-                src="/hero-car.jpg"
-                alt="Martini Porsche race car"
-                className="absolute inset-0 w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d0d]/70 via-transparent to-transparent" />
-              <div className="absolute bottom-6 left-6 right-6">
-                <div className="inline-flex items-center gap-2 bg-[#E8000D]/10 border border-[#E8000D]/20 rounded-full px-4 py-1.5">
-                  <Zap className="w-3 h-3 text-[#E8000D]" fill="currentColor" />
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-[#E8000D]">Fitment First. Always.</span>
+            <div className="grid md:grid-cols-3 gap-8">
+              {howItWorks.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <div key={item.step} className="relative bg-transparent p-8 group transition-colors">
+                    <div className="absolute top-6 right-6 font-black text-white/10 select-none"
+                      style={{ fontSize: '5rem', lineHeight: 1 }}>
+                      {item.step}
+                    </div>
+                    <div className="w-8 h-0.5 bg-[#E8000D] mb-8" />
+                    <div className="w-10 h-10 border border-[#222] flex items-center justify-center mb-6 group-hover:border-[#E8000D]/40 transition-colors">
+                      <Icon className="w-5 h-5 text-[#E8000D]" />
+                    </div>
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-white mb-3">{item.title}</h3>
+                    <p className="text-sm text-white leading-relaxed">{item.description}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* ABOUT */}
+        <section className="py-28 relative">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid lg:grid-cols-2 gap-16 items-center">
+
+              {/* Left: text */}
+              <div>
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="h-px w-8 bg-[#E8000D]" />
+                  <span className="eyebrow">About The Racing Files</span>
+                </div>
+                <h2 className="text-4xl sm:text-5xl font-black text-white leading-tight mb-6" style={{ letterSpacing: '-0.03em' }}>
+                  Built by enthusiasts.<br />
+                  <span className="text-[#E8000D]">For builders.</span>
+                </h2>
+                <p className="text-zinc-400 leading-relaxed mb-5">
+                  The Racing Files was born because the parts we needed didn't exist — or cost $400 for a plastic clip.
+                  We built the infrastructure that lets designers share what they've built and gets it to builders anywhere in the world.
+                </p>
+                <p className="text-zinc-400 leading-relaxed mb-8">
+                  Verified fitment. Fair creator payouts. On-demand manufacturing. This is the aftermarket, rebuilt from the ground up.
+                </p>
+
+                <div className="grid grid-cols-2 gap-4 mb-10">
+                  {[
+                    { value: '2,400+', label: 'Verified Parts' },
+                    { value: '180+', label: 'Active Creators' },
+                    { value: '$340K', label: 'Paid to Creators' },
+                    { value: '48h', label: 'Avg Review Time' },
+                  ].map((s) => (
+                    <div key={s.label} className="rounded-xl border border-[#2a2a2a] bg-[#141414] p-4">
+                      <p className="text-2xl font-black text-[#E8000D]">{s.value}</p>
+                      <p className="text-xs text-zinc-500 mt-0.5">{s.label}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <Link
+                  href="/about"
+                  className="btn-primary px-8 py-3.5 text-sm rounded-xl inline-flex items-center gap-2"
+                >
+                  Our Story <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+
+              {/* Right: image */}
+              <div className="relative rounded-2xl overflow-hidden h-[480px]">
+                <img
+                  src="/hero-car.jpg"
+                  alt="Martini Porsche race car"
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d0d]/70 via-transparent to-transparent" />
+                <div className="absolute bottom-6 left-6 right-6">
+                  <div className="inline-flex items-center gap-2 bg-[#E8000D]/10 border border-[#E8000D]/20 rounded-full px-4 py-1.5">
+                    <Zap className="w-3 h-3 text-[#E8000D]" fill="currentColor" />
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-[#E8000D]">Fitment First. Always.</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </div>
 
       {/* ── FEATURED PARTS ── */}
       <section className="py-28 bg-[#080808] border-t border-[#111]">
