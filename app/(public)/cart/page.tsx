@@ -23,6 +23,7 @@ export default function CartPage() {
   const [guestLastName, setGuestLastName] = useState('');
   const [guestEmail, setGuestEmail] = useState('');
   const [guestAddress, setGuestAddress] = useState('');
+  const [guestAddress2, setGuestAddress2] = useState('');
   const [guestCity, setGuestCity] = useState('');
   const [guestState, setGuestState] = useState('');
   const [guestZip, setGuestZip] = useState('');
@@ -38,7 +39,7 @@ export default function CartPage() {
 
   const resetGuest = () => {
     setGuestFirstName(''); setGuestLastName(''); setGuestEmail('');
-    setGuestAddress(''); setGuestCity(''); setGuestState(''); setGuestZip('');
+    setGuestAddress(''); setGuestAddress2(''); setGuestCity(''); setGuestState(''); setGuestZip('');
     setGuestReady(false);
   };
 
@@ -215,6 +216,13 @@ export default function CartPage() {
                             value={guestAddress}
                             onChange={(e) => { setGuestAddress(e.target.value); setGuestReady(false); }}
                             placeholder="123 Main St"
+                            className="w-full rounded-lg px-3 py-2.5 text-sm mb-2"
+                          />
+                          <input
+                            type="text"
+                            value={guestAddress2}
+                            onChange={(e) => setGuestAddress2(e.target.value)}
+                            placeholder="Apt, Suite, Unit (optional)"
                             className="w-full rounded-lg px-3 py-2.5 text-sm"
                           />
                         </div>
