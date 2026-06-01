@@ -234,8 +234,12 @@ export default function HomePage() {
       </div>
 
       {/* ── FEATURED PARTS ── */}
-      <section className="py-28 bg-[#080808] border-t border-[#111]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-28 relative overflow-hidden border-t border-[#111]">
+        <div className="absolute inset-0">
+          <img src="/workshop-bg.jpg" alt="" className="w-full h-full object-cover object-center" />
+          <div className="absolute inset-0 bg-[#080808]/75" />
+        </div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-end justify-between mb-12 flex-wrap gap-4">
             <div>
               <div className="flex items-center gap-3 mb-4">
