@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { Zap, Eye, EyeOff, Loader2, CheckCircle } from 'lucide-react';
+import { Eye, EyeOff, Loader2, CheckCircle } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 
 const EXPERIENCE_OPTIONS = [
@@ -99,8 +100,8 @@ export default function SignupPage() {
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
         <div className="w-full max-w-md text-center">
-          <div className="w-16 h-16 rounded-2xl bg-[#39ff14]/10 border border-[#39ff14]/20 flex items-center justify-center mx-auto mb-6">
-            <CheckCircle className="w-8 h-8 text-[#39ff14]" />
+          <div className="w-16 h-16 rounded-2xl bg-[#E8000D]/10 border border-[#E8000D]/20 flex items-center justify-center mx-auto mb-6">
+            <CheckCircle className="w-8 h-8 text-[#E8000D]" />
           </div>
           <h2 className="text-2xl font-black text-white mb-3">Check your email</h2>
           <p className="text-zinc-400 text-sm mb-6">
@@ -123,11 +124,9 @@ export default function SignupPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 mb-6">
-            <div className="w-8 h-8 bg-[#39ff14] rounded flex items-center justify-center">
-              <Zap className="w-5 h-5 text-[#0d0d0d]" fill="currentColor" />
-            </div>
+            <Image src="/rf-logo.png" alt="The Racing Files" width={36} height={36} className="object-contain" />
             <span className="text-xl font-black tracking-tight text-white">
-              Print<span className="text-[#39ff14]">Shift</span>
+              The Racing <span className="text-[#E8000D]">Files</span>
             </span>
           </Link>
           <h1 className="text-3xl font-black text-white mb-2">
@@ -146,9 +145,9 @@ export default function SignupPage() {
                 key={s}
                 className={`h-1.5 rounded-full transition-all ${
                   step === s
-                    ? 'w-8 bg-[#39ff14]'
+                    ? 'w-8 bg-[#E8000D]'
                     : step === 'profile' && i === 0
-                    ? 'w-4 bg-[#39ff14]/40'
+                    ? 'w-4 bg-[#E8000D]/40'
                     : 'w-4 bg-[#2a2a2a]'
                 }`}
               />
@@ -212,7 +211,7 @@ export default function SignupPage() {
 
               <p className="text-center text-xs text-zinc-500">
                 Already have an account?{' '}
-                <Link href="/creator/login" className="text-[#39ff14] hover:text-white transition-colors font-semibold">
+                <Link href="/creator/login" className="text-[#E8000D] hover:text-white transition-colors font-semibold">
                   Sign in
                 </Link>
               </p>
