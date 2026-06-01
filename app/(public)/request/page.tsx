@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import {
   Upload, CheckCircle, Download, Printer, Wrench,
-  ChevronRight, Zap,
+  ChevronRight, Zap, X, ImageIcon,
 } from 'lucide-react';
 import type { RequestFormData, FulfillmentType } from '@/lib/types';
 
@@ -16,7 +16,7 @@ const MAKES = [
 const YEARS = Array.from({ length: 56 }, (_, i) => String(2025 - i));
 
 const fulfillmentOptions: { type: FulfillmentType; label: string; desc: string; icon: React.ElementType; accent: string }[] = [
-  { type: 'digital', label: 'File Only (STL/3MF)', desc: "I have a printer — just send me the file.", icon: Download, accent: '#39ff14' },
+  { type: 'digital', label: 'File Only (STL/3MF)', desc: "I have a printer — just send me the file.", icon: Download, accent: 'E8000D' },
   { type: 'printed', label: 'Pre-Printed', desc: "Print it for me and ship it ready to install.", icon: Printer, accent: '#00d4ff' },
   { type: 'finished', label: 'Fully Finished', desc: "Sanded, primed, painted, or wrapped. Bolt-on ready.", icon: Wrench, accent: '#ffa500' },
 ];
@@ -35,6 +35,30 @@ const defaultForm: RequestFormData = {
 export default function RequestPage() {
   const [form, setForm] = useState<RequestFormData>(defaultForm);
   const [submitted, setSubmitted] = useState(false);
+  const [images, setImages] = useState<{ file: File; preview: string }[]>([]);
+  const [dragging, setDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const addFiles = useCallback((files: FileList | null) => {
+    if (!files) return;
+    const allowed = Array.from(files)
+      .filter((f) => f.type.startsWith('image/'))
+      .slice(0, 3 - images.length);
+    allowed.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImages((prev) => prev.length < 3
+          ? [...prev, { file, preview: e.target?.result as string }]
+          : prev
+        );
+      };
+      reader.readAsDataURL(file);
+    });
+  }, [images.length]);
+
+  const removeImage = (index: number) => {
+    setImages((prev) => prev.filter((_, i) => i !== index));
+  };
 
   const update = <K extends keyof RequestFormData>(key: K, value: RequestFormData[K]) =>
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -54,13 +78,13 @@ export default function RequestPage() {
         <div className="absolute inset-0 grid-bg opacity-40" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 bg-[#39ff14]/10 border border-[#39ff14]/20 rounded-full px-4 py-1.5 mb-6">
-              <Zap className="w-3.5 h-3.5 text-[#39ff14]" fill="currentColor" />
-              <span className="text-xs font-bold uppercase tracking-widest text-[#39ff14]">Custom Requests</span>
+            <div className="inline-flex items-center gap-2 bg-[#E8000D]/10 border border-[#E8000D]/20 rounded-full px-4 py-1.5 mb-6">
+              <Zap className="w-3.5 h-3.5 text-[#E8000D]" fill="currentColor" />
+              <span className="text-xs font-bold uppercase tracking-widest text-[#E8000D]">Custom Requests</span>
             </div>
             <h1 className="text-4xl sm:text-5xl font-black text-white leading-tight mb-4">
               Can't find your part?<br />
-              <span className="text-[#39ff14]">Request it.</span>
+              <span className="text-[#E8000D]">Request it.</span>
             </h1>
             <p className="text-zinc-400 leading-relaxed">
               Submit a request and we'll either match you with an existing part, route it to our creator network,
@@ -81,8 +105,8 @@ export default function RequestPage() {
               { step: '4', text: 'You get a notification with options & pricing' },
             ].map((s) => (
               <div key={s.step} className="flex items-center gap-3">
-                <div className="w-6 h-6 rounded-full bg-[#39ff14]/10 border border-[#39ff14]/20 flex items-center justify-center shrink-0">
-                  <span className="text-[10px] font-black text-[#39ff14]">{s.step}</span>
+                <div className="w-6 h-6 rounded-full bg-[#E8000D]/10 border border-[#E8000D]/20 flex items-center justify-center shrink-0">
+                  <span className="text-[10px] font-black text-[#E8000D]">{s.step}</span>
                 </div>
                 <span className="text-xs text-zinc-400">{s.text}</span>
                 {parseInt(s.step) < 4 && <ChevronRight className="w-4 h-4 text-zinc-700" />}
@@ -97,8 +121,8 @@ export default function RequestPage() {
           {/* Form */}
           <div className="lg:col-span-2">
             {submitted ? (
-              <div className="rounded-2xl border border-[#39ff14]/30 bg-[#39ff14]/5 p-16 text-center">
-                <CheckCircle className="w-16 h-16 text-[#39ff14] mx-auto mb-6" />
+              <div className="rounded-2xl border border-[#E8000D]/30 bg-[#E8000D]/5 p-16 text-center">
+                <CheckCircle className="w-16 h-16 text-[#E8000D] mx-auto mb-6" />
                 <h2 className="text-2xl font-black text-white mb-3">Request Submitted</h2>
                 <p className="text-zinc-400 text-sm mb-2">
                   We'll search the library and reach out to {form.email || 'you'} within 24 hours.
@@ -257,14 +281,65 @@ export default function RequestPage() {
                     />
                   </div>
 
-                  {/* Photo upload placeholder */}
-                  {/* TODO: Implement Cloudinary upload widget */}
-                  <div className="mt-4 rounded-xl border border-dashed border-[#2a2a2a] p-5 text-center cursor-pointer hover:border-[#39ff14]/30 transition-colors group">
-                    <Upload className="w-6 h-6 text-zinc-600 group-hover:text-[#39ff14] transition-colors mx-auto mb-2" />
-                    <p className="text-xs text-zinc-500 group-hover:text-zinc-300 transition-colors">
-                      Upload reference photos (optional) — drag & drop or click
-                    </p>
-                    <p className="text-[10px] text-zinc-700 mt-1">JPG, PNG, PDF up to 10MB</p>
+                  {/* Image upload */}
+                  <div className="mt-4">
+                    <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-2">
+                      Reference Photos <span className="text-zinc-700 normal-case font-normal tracking-normal">— optional, up to 3</span>
+                    </label>
+
+                    {/* Previews */}
+                    {images.length > 0 && (
+                      <div className="flex gap-3 mb-3">
+                        {images.map((img, i) => (
+                          <div key={i} className="relative w-24 h-24 rounded-lg overflow-hidden border border-[#2a2a2a] shrink-0">
+                            <img src={img.preview} alt="" className="w-full h-full object-cover" />
+                            <button
+                              type="button"
+                              onClick={() => removeImage(i)}
+                              className="absolute top-1 right-1 w-5 h-5 rounded-full bg-[#0d0d0d]/80 flex items-center justify-center hover:bg-[#E8000D] transition-colors"
+                            >
+                              <X className="w-3 h-3 text-white" />
+                            </button>
+                          </div>
+                        ))}
+                        {images.length < 3 && (
+                          <button
+                            type="button"
+                            onClick={() => fileInputRef.current?.click()}
+                            className="w-24 h-24 rounded-lg border border-dashed border-[#2a2a2a] hover:border-[#E8000D]/40 flex flex-col items-center justify-center gap-1 transition-colors shrink-0"
+                          >
+                            <ImageIcon className="w-5 h-5 text-zinc-600" />
+                            <span className="text-[9px] text-zinc-600">Add more</span>
+                          </button>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Dropzone */}
+                    {images.length === 0 && (
+                      <div
+                        onClick={() => fileInputRef.current?.click()}
+                        onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+                        onDragLeave={() => setDragging(false)}
+                        onDrop={(e) => { e.preventDefault(); setDragging(false); addFiles(e.dataTransfer.files); }}
+                        className={`rounded-xl border border-dashed p-6 text-center cursor-pointer transition-colors ${
+                          dragging ? 'border-[#E8000D]/60 bg-[#E8000D]/5' : 'border-[#2a2a2a] hover:border-[#E8000D]/30'
+                        }`}
+                      >
+                        <Upload className="w-6 h-6 text-zinc-600 mx-auto mb-2" />
+                        <p className="text-xs text-zinc-400">Drag & drop or <span className="text-[#E8000D]">click to upload</span></p>
+                        <p className="text-[10px] text-zinc-600 mt-1">JPG or PNG · Up to 3 images</p>
+                      </div>
+                    )}
+
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      multiple
+                      className="hidden"
+                      onChange={(e) => addFiles(e.target.files)}
+                    />
                   </div>
                 </div>
 
@@ -285,8 +360,8 @@ export default function RequestPage() {
               <h3 className="text-sm font-bold text-white mb-4">What happens next?</h3>
               <ul className="space-y-4">
                 {[
-                  { icon: CheckCircle, text: 'We check if the part already exists in our library', color: '#39ff14' },
-                  { icon: Download, text: 'If it exists, you get a link to download or order immediately', color: '#39ff14' },
+                  { icon: CheckCircle, text: 'We check if the part already exists in our library', color: 'E8000D' },
+                  { icon: Download, text: 'If it exists, you get a link to download or order immediately', color: 'E8000D' },
                   { icon: Printer, text: "If not, we route it to our creator network for quoting", color: '#00d4ff' },
                   { icon: Wrench, text: 'Complex parts may be quoted for custom design work', color: '#ffa500' },
                 ].map(({ icon: Icon, text, color }, i) => (
@@ -308,7 +383,7 @@ export default function RequestPage() {
                 ].map((r) => (
                   <div key={r.label} className="flex items-center justify-between">
                     <span className="text-xs text-zinc-500">{r.label}</span>
-                    <span className="text-xs font-bold text-[#39ff14]">{r.time}</span>
+                    <span className="text-xs font-bold text-[#E8000D]">{r.time}</span>
                   </div>
                 ))}
               </div>
@@ -325,7 +400,7 @@ export default function RequestPage() {
                   'Tacoma bed organizers',
                 ].map((item) => (
                   <li key={item} className="text-xs text-zinc-500 flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#39ff14] shrink-0" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#E8000D] shrink-0" />
                     {item}
                   </li>
                 ))}
