@@ -4,7 +4,7 @@ import {
   CheckCircle, Settings2, BookOpen, Camera, Users,
   Star, Zap, ChevronRight,
 } from 'lucide-react';
-import { getFeaturedProducts, categories } from '@/lib/data';
+import { getFeaturedProducts } from '@/lib/data';
 import ProductCard from '@/components/ProductCard';
 
 const howItWorks = [
@@ -165,48 +165,66 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── CATEGORIES ── */}
+      {/* ── ABOUT ── */}
       <section className="py-28 carbon-bg border-t border-[#111]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-end justify-between mb-12 flex-wrap gap-4">
-            <div>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="h-px w-8 bg-[#E8000D]" />
-                <span className="eyebrow">Browse by Vehicle</span>
-              </div>
-              <h2 className="text-4xl font-black text-white" style={{ letterSpacing: '-0.03em' }}>
-                FEATURED CATEGORIES
-              </h2>
-            </div>
-            <Link href="/browse" className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#E8000D] hover:text-white transition-colors">
-              View All <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-px bg-[#181818]">
-            {categories.map((cat) => (
-              <Link key={cat.id} href={`/browse?category=${cat.id}`}
-                className="group bg-[#080808] hover:bg-[#0c0c0c] p-5 transition-colors flex flex-col gap-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-2xl">{cat.icon}</span>
-                  <span className="text-[10px] font-mono text-zinc-700 bg-[#111] px-2 py-0.5">{cat.count}</span>
-                </div>
-                <div>
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-white group-hover:text-[#E8000D] transition-colors">
-                    {cat.name}
-                  </h3>
-                  <p className="text-[11px] text-zinc-600 mt-0.5 leading-tight">{cat.description}</p>
-                </div>
-                <div className="w-4 h-px bg-[#222] group-hover:w-full group-hover:bg-[#E8000D]/30 transition-all duration-300" />
-              </Link>
-            ))}
-            <Link href="/browse"
-              className="bg-[#080808] hover:bg-[#0c0c0c] p-5 transition-colors flex flex-col items-center justify-center gap-2 text-center group border border-dashed border-[#1a1a1a]">
-              <ArrowRight className="w-5 h-5 text-zinc-700 group-hover:text-[#E8000D] transition-colors" />
-              <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-600 group-hover:text-zinc-300 transition-colors">
-                Browse All
+            {/* Left: text */}
+            <div>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="h-px w-8 bg-[#E8000D]" />
+                <span className="eyebrow">About The Racing Files</span>
+              </div>
+              <h2 className="text-4xl sm:text-5xl font-black text-white leading-tight mb-6" style={{ letterSpacing: '-0.03em' }}>
+                Built by enthusiasts.<br />
+                <span className="text-[#E8000D]">For builders.</span>
+              </h2>
+              <p className="text-zinc-400 leading-relaxed mb-5">
+                The Racing Files was born because the parts we needed didn't exist — or cost $400 for a plastic clip.
+                We built the infrastructure that lets designers share what they've built and gets it to builders anywhere in the world.
               </p>
-            </Link>
+              <p className="text-zinc-400 leading-relaxed mb-8">
+                Verified fitment. Fair creator payouts. On-demand manufacturing. This is the aftermarket, rebuilt from the ground up.
+              </p>
+
+              <div className="grid grid-cols-2 gap-4 mb-10">
+                {[
+                  { value: '2,400+', label: 'Verified Parts' },
+                  { value: '180+', label: 'Active Creators' },
+                  { value: '$340K', label: 'Paid to Creators' },
+                  { value: '48h', label: 'Avg Review Time' },
+                ].map((s) => (
+                  <div key={s.label} className="rounded-xl border border-[#2a2a2a] bg-[#141414] p-4">
+                    <p className="text-2xl font-black text-[#E8000D]">{s.value}</p>
+                    <p className="text-xs text-zinc-500 mt-0.5">{s.label}</p>
+                  </div>
+                ))}
+              </div>
+
+              <Link
+                href="/about"
+                className="btn-primary px-8 py-3.5 text-sm rounded-xl inline-flex items-center gap-2"
+              >
+                Our Story <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+
+            {/* Right: image */}
+            <div className="relative rounded-2xl overflow-hidden h-[480px]">
+              <img
+                src="/hero-car.jpg"
+                alt="Martini Porsche race car"
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d0d]/70 via-transparent to-transparent" />
+              <div className="absolute bottom-6 left-6 right-6">
+                <div className="inline-flex items-center gap-2 bg-[#E8000D]/10 border border-[#E8000D]/20 rounded-full px-4 py-1.5">
+                  <Zap className="w-3 h-3 text-[#E8000D]" fill="currentColor" />
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-[#E8000D]">Fitment First. Always.</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
