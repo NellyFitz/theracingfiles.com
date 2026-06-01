@@ -7,12 +7,19 @@ import { useRouter } from 'next/navigation';
 import { Eye, EyeOff, Loader2, CheckCircle } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 
-const EXPERIENCE_OPTIONS = [
-  'Hobbyist (1–2 years)',
-  'Experienced (3–5 years)',
-  'Professional (5+ years)',
-  'Industry Background (Engineering / Manufacturing)',
+const US_STATES = [
+  'AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA',
+  'HI','ID','IL','IN','IA','KS','KY','LA','ME','MD',
+  'MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ',
+  'NM','NY','NC','ND','OH','OK','OR','PA','RI','SC',
+  'SD','TN','TX','UT','VT','VA','WA','WV','WI','WY',
 ];
+
+function generateHandle(first: string, last: string): string {
+  const base = `${first}${last}`.toLowerCase().replace(/[^a-z0-9]/g, '');
+  const suffix = Math.floor(1000 + Math.random() * 9000);
+  return `${base}${suffix}`;
+}
 
 export default function SignupPage() {
   const router = useRouter();
@@ -22,15 +29,18 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // Step 1
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const [handle, setHandle] = useState('');
-  const [bio, setBio] = useState('');
-  const [software, setSoftware] = useState('');
-  const [experience, setExperience] = useState('');
-  const [specialties, setSpecialties] = useState('');
-  const [website, setWebsite] = useState('');
+
+  // Step 2
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [address1, setAddress1] = useState('');
+  const [address2, setAddress2] = useState('');
+  const [city, setCity] = useState('');
+  const [state, setState] = useState('');
+  const [zip, setZip] = useState('');
 
   const handleAccountStep = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,28 +78,47 @@ export default function SignupPage() {
       return;
     }
 
+    const handle = generateHandle(firstName, lastName);
+
     const { error: profileError } = await supabase.from('creator_profiles').insert({
       id: user.id,
-      name,
-      handle: handle.toLowerCase().replace(/[^a-z0-9_]/g, ''),
-      bio: bio || null,
-      software: software || null,
-      experience_level: experience || null,
-      vehicle_specialties: specialties || null,
-      website: website || null,
+      name: `${firstName} ${lastName}`.trim(),
+      handle,
+      address_line1: address1,
+      address_line2: address2 || null,
+      city,
+      state,
+      zip,
       verified: false,
       approved: false,
     });
 
     if (profileError) {
-      // If handle is taken
       if (profileError.code === '23505') {
-        setError('That handle is already taken. Choose a different one.');
+        // Rare handle collision — retry with a fresh handle
+        const retryHandle = generateHandle(firstName, lastName);
+        const { error: retryError } = await supabase.from('creator_profiles').insert({
+          id: user.id,
+          name: `${firstName} ${lastName}`.trim(),
+          handle: retryHandle,
+          address_line1: address1,
+          address_line2: address2 || null,
+          city,
+          state,
+          zip,
+          verified: false,
+          approved: false,
+        });
+        if (retryError) {
+          setError(retryError.message);
+          setLoading(false);
+          return;
+        }
       } else {
         setError(profileError.message);
+        setLoading(false);
+        return;
       }
-      setLoading(false);
-      return;
     }
 
     setStep('done');
@@ -106,7 +135,7 @@ export default function SignupPage() {
           <h2 className="text-2xl font-black text-white mb-3">Check your email</h2>
           <p className="text-zinc-400 text-sm mb-6">
             We sent a confirmation link to <span className="text-white font-semibold">{email}</span>.
-            Confirm it to activate your creator account.
+            Confirm it to activate your account.
           </p>
           <button
             onClick={() => router.push('/creator/dashboard')}
@@ -130,12 +159,12 @@ export default function SignupPage() {
             </span>
           </Link>
           <h1 className="text-3xl font-black text-white mb-2">
-            {step === 'account' ? 'Create Your Account' : 'Build Your Profile'}
+            {step === 'account' ? 'Create Your Account' : 'Profile Info'}
           </h1>
           <p className="text-sm text-zinc-500">
             {step === 'account'
               ? 'Step 1 of 2 — Account credentials'
-              : 'Step 2 of 2 — Creator profile'}
+              : 'Step 2 of 2 — Your details'}
           </p>
 
           {/* Step indicator */}
@@ -218,91 +247,103 @@ export default function SignupPage() {
             </form>
           ) : (
             <form onSubmit={handleProfileStep} className="space-y-5">
+
+              {/* Name */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-widest text-zinc-500 mb-2">Full Name *</label>
+                  <label className="block text-xs font-bold uppercase tracking-widest text-zinc-500 mb-2">First Name *</label>
                   <input
                     type="text"
                     required
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="Jake Moreno"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    placeholder="Jake"
                     className="w-full rounded-lg px-4 py-3 text-sm"
+                    autoComplete="given-name"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-widest text-zinc-500 mb-2">Handle *</label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 text-sm">@</span>
-                    <input
-                      type="text"
-                      required
-                      value={handle}
-                      onChange={(e) => setHandle(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
-                      placeholder="jakefab"
-                      className="w-full rounded-lg pl-7 pr-4 py-3 text-sm"
-                    />
-                  </div>
+                  <label className="block text-xs font-bold uppercase tracking-widest text-zinc-500 mb-2">Last Name *</label>
+                  <input
+                    type="text"
+                    required
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    placeholder="Moreno"
+                    className="w-full rounded-lg px-4 py-3 text-sm"
+                    autoComplete="family-name"
+                  />
+                </div>
+              </div>
+
+              {/* Address */}
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-widest text-zinc-500 mb-2">Mailing Address *</label>
+                <input
+                  type="text"
+                  required
+                  value={address1}
+                  onChange={(e) => setAddress1(e.target.value)}
+                  placeholder="123 Main St"
+                  className="w-full rounded-lg px-4 py-3 text-sm"
+                  autoComplete="address-line1"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-widest text-zinc-500 mb-2">Address Line 2</label>
+                <input
+                  type="text"
+                  value={address2}
+                  onChange={(e) => setAddress2(e.target.value)}
+                  placeholder="Apt, Suite, Unit (optional)"
+                  className="w-full rounded-lg px-4 py-3 text-sm"
+                  autoComplete="address-line2"
+                />
+              </div>
+
+              {/* City / State / ZIP */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-widest text-zinc-500 mb-2">City *</label>
+                  <input
+                    type="text"
+                    required
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    placeholder="Los Angeles"
+                    className="w-full rounded-lg px-4 py-3 text-sm"
+                    autoComplete="address-level2"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-widest text-zinc-500 mb-2">ZIP Code *</label>
+                  <input
+                    type="text"
+                    required
+                    value={zip}
+                    onChange={(e) => setZip(e.target.value)}
+                    placeholder="90001"
+                    className="w-full rounded-lg px-4 py-3 text-sm"
+                    autoComplete="postal-code"
+                    inputMode="numeric"
+                    maxLength={10}
+                  />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-widest text-zinc-500 mb-2">Bio</label>
-                <textarea
-                  rows={3}
-                  value={bio}
-                  onChange={(e) => setBio(e.target.value)}
-                  placeholder="Tell buyers what you design and what vehicles you specialize in..."
-                  className="w-full rounded-lg px-4 py-3 text-sm resize-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-widest text-zinc-500 mb-2">Design Software *</label>
-                <input
-                  type="text"
-                  required
-                  value={software}
-                  onChange={(e) => setSoftware(e.target.value)}
-                  placeholder="Fusion 360, SolidWorks, FreeCAD..."
-                  className="w-full rounded-lg px-4 py-3 text-sm"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-widest text-zinc-500 mb-2">Experience Level *</label>
+                <label className="block text-xs font-bold uppercase tracking-widest text-zinc-500 mb-2">State *</label>
                 <select
                   required
-                  value={experience}
-                  onChange={(e) => setExperience(e.target.value)}
+                  value={state}
+                  onChange={(e) => setState(e.target.value)}
                   className="w-full rounded-lg px-4 py-3 text-sm appearance-none"
+                  autoComplete="address-level1"
                 >
-                  <option value="">Select...</option>
-                  {EXPERIENCE_OPTIONS.map((o) => <option key={o}>{o}</option>)}
+                  <option value="">Select state…</option>
+                  {US_STATES.map((s) => <option key={s} value={s}>{s}</option>)}
                 </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-widest text-zinc-500 mb-2">Vehicle Specialties *</label>
-                <input
-                  type="text"
-                  required
-                  value={specialties}
-                  onChange={(e) => setSpecialties(e.target.value)}
-                  placeholder="NA Miata, R32 GTR, Tacoma..."
-                  className="w-full rounded-lg px-4 py-3 text-sm"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-widest text-zinc-500 mb-2">Portfolio URL (optional)</label>
-                <input
-                  type="url"
-                  value={website}
-                  onChange={(e) => setWebsite(e.target.value)}
-                  placeholder="https://printables.com/..."
-                  className="w-full rounded-lg px-4 py-3 text-sm"
-                />
               </div>
 
               {error && (
@@ -317,7 +358,7 @@ export default function SignupPage() {
                 className="w-full btn-primary py-4 text-sm rounded-xl flex items-center justify-center gap-2 disabled:opacity-60"
               >
                 {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-                Create Creator Profile
+                Create Account
               </button>
             </form>
           )}
