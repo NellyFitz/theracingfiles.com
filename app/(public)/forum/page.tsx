@@ -143,7 +143,7 @@ export default function ForumPage() {
       <section className="relative border-b border-[#1e1e1e] overflow-hidden">
         <div className="absolute inset-0 grid-bg opacity-40" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="max-w-3xl">
+          <div className="max-w-5xl">
             <div className="inline-flex items-center gap-2 bg-[#E8000D]/10 border border-[#E8000D]/20 rounded-full px-4 py-1.5 mb-6">
               <Zap className="w-3.5 h-3.5 text-[#E8000D]" fill="currentColor" />
               <span className="text-xs font-bold uppercase tracking-widest text-[#E8000D]">Community Forum</span>
@@ -157,7 +157,7 @@ export default function ForumPage() {
             </p>
 
             {/* Search */}
-            <div className="relative max-w-xl">
+            <div className="relative max-w-3xl">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
               <input
                 type="text"
