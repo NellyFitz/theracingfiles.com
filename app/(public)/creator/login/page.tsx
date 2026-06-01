@@ -91,7 +91,7 @@ function LoginForm() {
       <p className="text-center text-xs text-zinc-500">
         No account?{' '}
         <Link href="/creator/signup" className="text-[#E8000D] hover:text-white transition-colors font-semibold">
-          Apply as a Creator
+          Create one free
         </Link>
       </p>
     </form>
@@ -109,8 +109,8 @@ export default function LoginPage() {
               The Racing<span className="text-[#E8000D]"> Files</span>
             </span>
           </Link>
-          <h1 className="text-3xl font-black text-white mb-2">Creator Login</h1>
-          <p className="text-sm text-zinc-500">Sign in to your creator dashboard.</p>
+          <h1 className="text-3xl font-black text-white mb-2">Sign In</h1>
+          <p className="text-sm text-zinc-500">Welcome back — sign in to your account.</p>
         </div>
 
         <div className="rounded-2xl border border-[#2a2a2a] bg-[#141414] p-8">
