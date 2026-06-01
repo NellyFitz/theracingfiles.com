@@ -125,7 +125,7 @@ export default function SignupPage() {
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 mb-6">
             <Image src="/rf-logo.png" alt="The Racing Files" width={36} height={36} className="object-contain" />
-            <span className="text-xl font-black tracking-tight text-white">
+            <span className="text-xl font-black uppercase tracking-tight text-white">
               The Racing <span className="text-[#E8000D]">Files</span>
             </span>
           </Link>
