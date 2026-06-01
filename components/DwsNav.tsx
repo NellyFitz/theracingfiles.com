@@ -2,11 +2,12 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Shield, FileBox, Users } from 'lucide-react';
+import { Shield, FileBox, Users, Database } from 'lucide-react';
 
 const links = [
   { href: '/dws', label: 'Scans', icon: FileBox },
   { href: '/dws/accounts', label: 'Accounts', icon: Users },
+  { href: '/dws/assign', label: 'Assign Data', icon: Database },
 ];
 
 export default function DwsNav() {

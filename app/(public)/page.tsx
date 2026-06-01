@@ -138,17 +138,17 @@ export default function HomePage() {
                 THREE WAYS<br />TO GET YOUR PART
               </h2>
             </div>
-            <p className="text-sm text-zinc-500 max-w-xs leading-relaxed self-end">
+            <p className="text-sm text-white max-w-xs leading-relaxed self-end">
               Whether you run a 3D printer or not — The Racing Files has you covered.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-px bg-[#181818]">
+          <div className="grid md:grid-cols-3 gap-8">
             {howItWorks.map((item) => {
               const Icon = item.icon;
               return (
-                <div key={item.step} className="relative bg-[#080808] p-8 group hover:bg-[#0c0c0c] transition-colors">
-                  <div className="absolute top-6 right-6 font-black text-[#111] select-none"
+                <div key={item.step} className="relative bg-transparent p-8 group transition-colors">
+                  <div className="absolute top-6 right-6 font-black text-white/10 select-none"
                     style={{ fontSize: '5rem', lineHeight: 1 }}>
                     {item.step}
                   </div>
@@ -157,7 +157,7 @@ export default function HomePage() {
                     <Icon className="w-5 h-5 text-[#E8000D]" />
                   </div>
                   <h3 className="text-xs font-bold uppercase tracking-wider text-white mb-3">{item.title}</h3>
-                  <p className="text-sm text-zinc-500 leading-relaxed">{item.description}</p>
+                  <p className="text-sm text-white leading-relaxed">{item.description}</p>
                 </div>
               );
             })}
