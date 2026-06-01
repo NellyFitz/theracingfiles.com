@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import type { ReactNode } from 'react';
+import DwsAutoLogout from '@/components/DwsAutoLogout';
 
 export default async function DwsProtectedLayout({ children }: { children: ReactNode }) {
   const cookieStore = await cookies();
@@ -10,5 +11,10 @@ export default async function DwsProtectedLayout({ children }: { children: React
     redirect('/dws/login');
   }
 
-  return <>{children}</>;
+  return (
+    <>
+      <DwsAutoLogout />
+      {children}
+    </>
+  );
 }
