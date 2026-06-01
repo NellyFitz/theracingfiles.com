@@ -1,109 +1,56 @@
-import { MessagesSquare, ChevronRight, Pin, Flame, Users, MessageSquare, Plus, Pencil, Trash2 } from 'lucide-react';
+import { MessagesSquare, ChevronRight, Users, MessageSquare, Plus, Pencil, Trash2 } from 'lucide-react';
 import DwsNav from '@/components/DwsNav';
+import { createAdminClient } from '@/lib/supabase/admin';
 
-interface SubCategory {
-  id: string;
-  label: string;
-  threads: number;
-  posts: number;
-}
+export default async function AdminForumPage() {
+  const admin = createAdminClient();
 
-interface ForumCategory {
-  id: string;
-  make: string;
-  icon: string;
-  totalThreads: number;
-  totalMembers: number;
-  subcategories: SubCategory[];
-}
+  const [catsRes, secsRes, threadsRes, msgsRes] = await Promise.all([
+    admin.from('forum_categories').select('*').order('sort_order'),
+    admin.from('forum_sections').select('*').order('sort_order'),
+    admin.from('forum_threads').select('id, category_id, section_id'),
+    admin.from('forum_messages').select('id, thread_id'),
+  ]);
 
-const forumCategories: ForumCategory[] = [
-  {
-    id: 'miata',
-    make: 'Mazda Miata',
-    icon: '🏎️',
-    totalThreads: 5,
-    totalMembers: 3840,
-    subcategories: [
-      { id: 'miata-na', label: 'NA (1989–1997)', threads: 2, posts: 65 },
-      { id: 'miata-nb', label: 'NB (1998–2005)', threads: 1, posts: 17 },
-      { id: 'miata-nc', label: 'NC (2006–2015)', threads: 0, posts: 0 },
-      { id: 'miata-nd', label: 'ND (2016–present)', threads: 1, posts: 8 },
-      { id: 'miata-gen', label: 'General / All Miatas', threads: 1, posts: 31 },
-    ],
-  },
-  {
-    id: 'skyline',
-    make: 'Nissan Skyline',
-    icon: '🔥',
-    totalThreads: 4,
-    totalMembers: 2190,
-    subcategories: [
-      { id: 'sky-r32', label: 'R32 (1989–1994)', threads: 2, posts: 77 },
-      { id: 'sky-r33', label: 'R33 (1993–1998)', threads: 1, posts: 6 },
-      { id: 'sky-r34', label: 'R34 (1998–2002)', threads: 1, posts: 11 },
-    ],
-  },
-  {
-    id: 'supra',
-    make: 'Toyota Supra',
-    icon: '⚡',
-    totalThreads: 3,
-    totalMembers: 1760,
-    subcategories: [
-      { id: 'supra-a60', label: 'A60 (1981–1986)', threads: 0, posts: 0 },
-      { id: 'supra-a70', label: 'A70 (1986–1992)', threads: 0, posts: 0 },
-      { id: 'supra-a80', label: 'A80 (1993–2002)', threads: 2, posts: 51 },
-      { id: 'supra-a90', label: 'A90 (2019–present)', threads: 1, posts: 9 },
-    ],
-  },
-  {
-    id: 's2000',
-    make: 'Honda S2000',
-    icon: '🏁',
-    totalThreads: 3,
-    totalMembers: 1320,
-    subcategories: [
-      { id: 's2k-ap1', label: 'AP1 (1999–2003)', threads: 2, posts: 51 },
-      { id: 's2k-ap2', label: 'AP2 (2004–2009)', threads: 1, posts: 7 },
-      { id: 's2k-gen', label: 'General / Both', threads: 0, posts: 0 },
-    ],
-  },
-  {
-    id: 'ducati',
-    make: 'Ducati',
-    icon: '🏍️',
-    totalThreads: 3,
-    totalMembers: 980,
-    subcategories: [
-      { id: 'duc-monster', label: 'Monster', threads: 1, posts: 33 },
-      { id: 'duc-panigale', label: 'Panigale', threads: 1, posts: 18 },
-      { id: 'duc-916', label: '916 / 996 / 998', threads: 1, posts: 12 },
-      { id: 'duc-hyper', label: 'Hypermotard', threads: 0, posts: 0 },
-      { id: 'duc-scrambler', label: 'Scrambler', threads: 0, posts: 0 },
-    ],
-  },
-  {
-    id: 'subaru',
-    make: 'Subaru',
-    icon: '🌲',
-    totalThreads: 4,
-    totalMembers: 2450,
-    subcategories: [
-      { id: 'sub-wrx-gc', label: 'WRX GC (1992–2001)', threads: 0, posts: 0 },
-      { id: 'sub-wrx-gd', label: 'WRX GD (2002–2007)', threads: 1, posts: 44 },
-      { id: 'sub-wrx-va', label: 'WRX/STI VA (2015–2021)', threads: 1, posts: 16 },
-      { id: 'sub-brz', label: 'BRZ', threads: 1, posts: 21 },
-      { id: 'sub-gen', label: 'General / EJ Engine', threads: 1, posts: 9 },
-    ],
-  },
-];
+  const categories = catsRes.data ?? [];
+  const sections = secsRes.data ?? [];
+  const threads = threadsRes.data ?? [];
+  const messages = msgsRes.data ?? [];
 
-const totalThreads = forumCategories.reduce((s, f) => s + f.totalThreads, 0);
-const totalMembers = forumCategories.reduce((s, f) => s + f.totalMembers, 0);
-const totalSubcats = forumCategories.reduce((s, f) => s + f.subcategories.length, 0);
+  // Pre-compute counts
+  const threadsBySectionId: Record<string, string[]> = {};
+  for (const t of threads) {
+    if (t.section_id) {
+      (threadsBySectionId[t.section_id] ??= []).push(t.id);
+    }
+  }
+  const messagesByThreadId: Record<string, number> = {};
+  for (const m of messages) {
+    messagesByThreadId[m.thread_id] = (messagesByThreadId[m.thread_id] ?? 0) + 1;
+  }
 
-export default function AdminForumPage() {
+  const forumData = categories.map((cat) => {
+    const catSections = sections.filter((s) => s.category_id === cat.id);
+    const catThreads = threads.filter((t) => t.category_id === cat.id);
+    const subcategories = catSections.map((sec) => {
+      const secThreadIds = threadsBySectionId[sec.id] ?? [];
+      const posts = secThreadIds.reduce((sum, tid) => sum + (messagesByThreadId[tid] ?? 0), 0);
+      return { id: sec.id, label: sec.label, threads: secThreadIds.length, posts };
+    });
+    return {
+      id: cat.id,
+      make: cat.make,
+      icon: cat.icon,
+      totalThreads: catThreads.length,
+      totalMembers: cat.member_count,
+      subcategories,
+    };
+  });
+
+  const totalThreads = threads.length;
+  const totalMembers = categories.reduce((s, c) => s + c.member_count, 0);
+  const totalSubcats = sections.length;
+
   return (
     <>
       <DwsNav />
@@ -129,7 +76,7 @@ export default function AdminForumPage() {
           {/* Stats */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
             {[
-              { label: 'Forum Categories', value: forumCategories.length, icon: MessagesSquare },
+              { label: 'Forum Categories', value: categories.length, icon: MessagesSquare },
               { label: 'Subcategories', value: totalSubcats, icon: ChevronRight },
               { label: 'Total Threads', value: totalThreads, icon: MessageSquare },
               { label: 'Total Members', value: totalMembers.toLocaleString(), icon: Users },
@@ -144,7 +91,7 @@ export default function AdminForumPage() {
 
           {/* Forum categories */}
           <div className="space-y-5">
-            {forumCategories.map((forum) => (
+            {forumData.map((forum) => (
               <div key={forum.id} className="rounded-xl border border-[#2a2a2a] bg-[#141414] overflow-hidden">
 
                 {/* Category header */}
@@ -181,7 +128,6 @@ export default function AdminForumPage() {
 
                 {/* Subcategories table */}
                 <div className="divide-y divide-[#1e1e1e]">
-                  {/* Table head */}
                   <div className="grid grid-cols-12 px-6 py-2 text-[10px] font-bold uppercase tracking-widest text-zinc-600">
                     <span className="col-span-6">Subcategory</span>
                     <span className="col-span-2 text-center">Threads</span>
@@ -194,7 +140,6 @@ export default function AdminForumPage() {
                       key={sub.id}
                       className="grid grid-cols-12 items-center px-6 py-3.5 hover:bg-[#181818] transition-colors"
                     >
-                      {/* Label */}
                       <div className="col-span-6 flex items-center gap-2">
                         <div className="w-1.5 h-1.5 rounded-full bg-[#E8000D]/40 shrink-0" />
                         <span className="text-sm text-zinc-300">{sub.label}</span>
@@ -204,22 +149,16 @@ export default function AdminForumPage() {
                           </span>
                         )}
                       </div>
-
-                      {/* Threads */}
                       <div className="col-span-2 text-center">
                         <span className={`text-sm font-bold ${sub.threads > 0 ? 'text-white' : 'text-zinc-700'}`}>
                           {sub.threads}
                         </span>
                       </div>
-
-                      {/* Posts */}
                       <div className="col-span-2 text-center">
                         <span className={`text-sm font-bold ${sub.posts > 0 ? 'text-white' : 'text-zinc-700'}`}>
                           {sub.posts}
                         </span>
                       </div>
-
-                      {/* Actions */}
                       <div className="col-span-2 flex items-center justify-end gap-2">
                         <button className="text-zinc-600 hover:text-white transition-colors" title="Edit subcategory">
                           <Pencil className="w-3.5 h-3.5" />
