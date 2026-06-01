@@ -19,9 +19,28 @@ export default function CartPage() {
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [guestMode, setGuestMode] = useState(false);
-  const [guestName, setGuestName] = useState('');
+  const [guestFirstName, setGuestFirstName] = useState('');
+  const [guestLastName, setGuestLastName] = useState('');
   const [guestEmail, setGuestEmail] = useState('');
+  const [guestAddress, setGuestAddress] = useState('');
+  const [guestCity, setGuestCity] = useState('');
+  const [guestState, setGuestState] = useState('');
+  const [guestZip, setGuestZip] = useState('');
   const [guestReady, setGuestReady] = useState(false);
+
+  const guestValid =
+    guestFirstName.trim() !== '' &&
+    guestLastName.trim() !== '' &&
+    guestEmail.includes('@') &&
+    guestAddress.trim() !== '' &&
+    guestCity.trim() !== '' &&
+    guestZip.trim() !== '';
+
+  const resetGuest = () => {
+    setGuestFirstName(''); setGuestLastName(''); setGuestEmail('');
+    setGuestAddress(''); setGuestCity(''); setGuestState(''); setGuestZip('');
+    setGuestReady(false);
+  };
 
   useEffect(() => {
     const supabase = createClient();
@@ -152,22 +171,33 @@ export default function CartPage() {
                         <p className="text-sm font-bold text-white">Guest Checkout</p>
                       </div>
                       <div className="space-y-3">
-                        <div>
-                          <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1.5">
-                            Full Name *
-                          </label>
-                          <input
-                            type="text"
-                            value={guestName}
-                            onChange={(e) => { setGuestName(e.target.value); setGuestReady(false); }}
-                            placeholder="Alex Reyes"
-                            className="w-full rounded-lg px-3 py-2.5 text-sm"
-                          />
+                        {/* Name row */}
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1.5">First Name *</label>
+                            <input
+                              type="text"
+                              value={guestFirstName}
+                              onChange={(e) => { setGuestFirstName(e.target.value); setGuestReady(false); }}
+                              placeholder="Alex"
+                              className="w-full rounded-lg px-3 py-2.5 text-sm"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1.5">Last Name *</label>
+                            <input
+                              type="text"
+                              value={guestLastName}
+                              onChange={(e) => { setGuestLastName(e.target.value); setGuestReady(false); }}
+                              placeholder="Reyes"
+                              className="w-full rounded-lg px-3 py-2.5 text-sm"
+                            />
+                          </div>
                         </div>
+
+                        {/* Email */}
                         <div>
-                          <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1.5">
-                            Email *
-                          </label>
+                          <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1.5">Email *</label>
                           <input
                             type="email"
                             value={guestEmail}
@@ -176,25 +206,74 @@ export default function CartPage() {
                             className="w-full rounded-lg px-3 py-2.5 text-sm"
                           />
                         </div>
-                        {!guestReady && (
+
+                        {/* Street address */}
+                        <div>
+                          <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1.5">Street Address *</label>
+                          <input
+                            type="text"
+                            value={guestAddress}
+                            onChange={(e) => { setGuestAddress(e.target.value); setGuestReady(false); }}
+                            placeholder="123 Main St"
+                            className="w-full rounded-lg px-3 py-2.5 text-sm"
+                          />
+                        </div>
+
+                        {/* City / State / ZIP */}
+                        <div className="grid grid-cols-5 gap-2">
+                          <div className="col-span-2">
+                            <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1.5">City *</label>
+                            <input
+                              type="text"
+                              value={guestCity}
+                              onChange={(e) => { setGuestCity(e.target.value); setGuestReady(false); }}
+                              placeholder="Austin"
+                              className="w-full rounded-lg px-3 py-2.5 text-sm"
+                            />
+                          </div>
+                          <div className="col-span-1">
+                            <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1.5">State</label>
+                            <input
+                              type="text"
+                              value={guestState}
+                              onChange={(e) => setGuestState(e.target.value)}
+                              placeholder="TX"
+                              maxLength={2}
+                              className="w-full rounded-lg px-3 py-2.5 text-sm"
+                            />
+                          </div>
+                          <div className="col-span-2">
+                            <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1.5">ZIP *</label>
+                            <input
+                              type="text"
+                              value={guestZip}
+                              onChange={(e) => { setGuestZip(e.target.value); setGuestReady(false); }}
+                              placeholder="78701"
+                              className="w-full rounded-lg px-3 py-2.5 text-sm"
+                            />
+                          </div>
+                        </div>
+
+                        {!guestReady ? (
                           <button
-                            onClick={() => {
-                              if (guestName.trim() && guestEmail.includes('@')) setGuestReady(true);
-                            }}
-                            className="w-full bg-[#E8000D] hover:bg-[#c0000b] text-white text-xs font-bold py-2.5 rounded-lg transition-colors"
+                            onClick={() => { if (guestValid) setGuestReady(true); }}
+                            disabled={!guestValid}
+                            className="w-full bg-[#E8000D] hover:bg-[#c0000b] disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-bold py-2.5 rounded-lg transition-colors"
                           >
                             Continue as Guest
                           </button>
-                        )}
-                        {guestReady && (
-                          <div className="flex items-center gap-2 text-xs text-green-400 bg-green-400/10 border border-green-400/20 rounded-lg px-3 py-2">
-                            <UserCheck className="w-3.5 h-3.5 shrink-0" />
-                            Ready to checkout as {guestName}
+                        ) : (
+                          <div className="flex items-center justify-between gap-2 text-xs text-green-400 bg-green-400/10 border border-green-400/20 rounded-lg px-3 py-2">
+                            <div className="flex items-center gap-2">
+                              <UserCheck className="w-3.5 h-3.5 shrink-0" />
+                              {guestFirstName} {guestLastName} — {guestEmail}
+                            </div>
+                            <button onClick={() => setGuestReady(false)} className="text-zinc-500 hover:text-white transition-colors shrink-0">Edit</button>
                           </div>
                         )}
                       </div>
                       <button
-                        onClick={() => { setGuestMode(false); setGuestReady(false); }}
+                        onClick={() => { setGuestMode(false); resetGuest(); }}
                         className="mt-3 text-[10px] text-zinc-600 hover:text-zinc-400 transition-colors"
                       >
                         ← Back to sign in options
@@ -252,13 +331,13 @@ export default function CartPage() {
                 </div>
 
                 <button
-                  disabled={authLoading || (!user && !guestReady)}
+                  disabled={authLoading || (!user && !(guestMode && guestReady))}
                   className="w-full btn-primary py-3.5 text-sm rounded-xl flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   Proceed to Checkout <ArrowRight className="w-4 h-4" />
                 </button>
 
-                {!user && !guestReady && !authLoading && (
+                {!user && !(guestMode && guestReady) && !authLoading && (
                   <p className="text-[10px] text-zinc-600 text-center mt-3">
                     Sign in or continue as guest to checkout.
                   </p>
