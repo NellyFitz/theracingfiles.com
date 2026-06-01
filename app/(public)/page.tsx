@@ -96,31 +96,18 @@ export default function HomePage() {
               FOR ENTHUSIASTS.
             </h1>
 
-            <p className="text-base text-zinc-400 leading-relaxed mb-10 max-w-lg">
+            <p className="text-base text-white leading-relaxed mb-10 max-w-lg">
               Verified 3D printable files, pre-printed parts, and fully finished components
               for cars, bikes, and trucks. Built by enthusiasts. For enthusiasts.
             </p>
 
-            <div className="flex flex-wrap gap-3 mb-8">
+            <div className="flex flex-wrap gap-3">
               <Link href="/browse" className="btn-primary px-8 py-4 text-sm flex items-center gap-2 rounded-none">
                 Marketplace <ArrowRight className="w-4 h-4" />
               </Link>
               <Link href="/request" className="btn-outline px-8 py-4 text-sm flex items-center gap-2 rounded-none">
                 Request a Part <ChevronRight className="w-4 h-4" />
               </Link>
-            </div>
-
-            {/* Stats — spec sheet */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 border border-[#1e1e1e]">
-              {stats.map((s, i) => (
-                <div key={s.label} className={`p-6 ${i < stats.length - 1 ? 'border-r border-[#1e1e1e]' : ''}`}>
-                  <p className="font-black text-[#E8000D]"
-                    style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', letterSpacing: '-0.03em', lineHeight: 1 }}>
-                    {s.value}
-                  </p>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-600 mt-1">{s.label}</p>
-                </div>
-              ))}
             </div>
           </div>
         </div>
