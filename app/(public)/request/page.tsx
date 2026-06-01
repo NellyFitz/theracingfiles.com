@@ -63,12 +63,33 @@ export default function RequestPage() {
   const update = <K extends keyof RequestFormData>(key: K, value: RequestFormData[K]) =>
     setForm((prev) => ({ ...prev, [key]: value }));
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Submit to Supabase part_requests table
-    // TODO: Notify creator network via email/webhook
-    // TODO: Trigger matching algorithm against existing library
-    setSubmitted(true);
+    setSubmitting(true);
+    setSubmitError('');
+
+    const data = new FormData();
+    data.append('name', form.name);
+    data.append('email', form.email);
+    data.append('vehicleYear', form.vehicleYear);
+    data.append('make', form.make);
+    data.append('model', form.model);
+    data.append('partNeeded', form.partNeeded);
+    data.append('fulfillmentType', form.fulfillmentType);
+    data.append('notes', form.notes);
+    images.forEach((img) => data.append('images', img.file));
+
+    const res = await fetch('/api/part-request', { method: 'POST', body: data });
+    if (res.ok) {
+      setSubmitted(true);
+    } else {
+      const json = await res.json().catch(() => ({}));
+      setSubmitError(json.error || 'Something went wrong. Please try again.');
+    }
+    setSubmitting(false);
   };
 
   return (
@@ -343,9 +364,16 @@ export default function RequestPage() {
                   </div>
                 </div>
 
-                <button type="submit" className="w-full btn-primary py-4 text-sm rounded-xl flex items-center justify-center gap-2">
-                  Submit Part Request
-                  <ChevronRight className="w-4 h-4" />
+                {submitError && (
+                  <p className="text-xs text-[#E8000D] text-center">{submitError}</p>
+                )}
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="w-full btn-primary py-4 text-sm rounded-xl flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {submitting ? 'Submitting…' : 'Submit Part Request'}
+                  {!submitting && <ChevronRight className="w-4 h-4" />}
                 </button>
                 <p className="text-[10px] text-center text-zinc-600">
                   Free to submit. No commitment. We'll reach out with options and pricing.
