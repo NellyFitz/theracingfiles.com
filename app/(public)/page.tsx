@@ -112,9 +112,12 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Diagonal bottom */}
-        <div className="absolute bottom-0 left-0 right-0 h-16 bg-[#080808]"
-          style={{ clipPath: 'polygon(0 100%, 100% 0, 100% 100%)' }} />
+        {/* Diagonal transition — texture bleeds in from bottom */}
+        <div className="absolute bottom-0 left-0 right-0 h-24 overflow-hidden pointer-events-none"
+          style={{ clipPath: 'polygon(0 100%, 100% 0, 100% 100%)' }}>
+          <img src="/texture-bg.jpg" alt="" className="w-full h-full object-cover object-bottom" />
+          <div className="absolute inset-0 bg-[#080808]/60" />
+        </div>
       </section>
 
       {/* ── HOW IT WORKS ── */}
