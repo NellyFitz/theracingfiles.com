@@ -88,12 +88,15 @@ function LoginForm() {
         {loading ? 'Signing in...' : 'Sign In'}
       </button>
 
-      <p className="text-center text-xs text-zinc-500">
-        No account?{' '}
-        <Link href="/creator/signup" className="text-[#E8000D] hover:text-white transition-colors font-semibold">
-          Create one free
+      <div className="pt-2 border-t border-[#2a2a2a]">
+        <p className="text-center text-xs text-zinc-500 mb-3">Don't have an account?</p>
+        <Link
+          href="/creator/signup"
+          className="w-full border border-[#2a2a2a] hover:border-[#E8000D]/40 text-zinc-300 hover:text-white text-sm font-bold py-3 rounded-xl flex items-center justify-center transition-colors"
+        >
+          Create an Account
         </Link>
-      </p>
+      </div>
     </form>
   );
 }
