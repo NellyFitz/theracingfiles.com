@@ -77,7 +77,7 @@ export default function Navbar() {
 
             {/* Cart icon */}
             <Link
-              href={user ? '/creator/dashboard' : '#'}
+              href="/cart"
               className="relative text-zinc-500 hover:text-white transition-colors"
               title="Cart"
             >
