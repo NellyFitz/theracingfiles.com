@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import {
   ShoppingCart, X, Download, Printer, Wrench,
-  ArrowRight, LogIn, User, Trash2, ArrowLeft, Package,
+  ArrowRight, LogIn, User, Trash2, ArrowLeft, Package, UserCheck,
 } from 'lucide-react';
 import { useCart } from '@/lib/cart';
 import { createClient } from '@/lib/supabase/client';
@@ -18,6 +18,10 @@ export default function CartPage() {
   const { items, removeItem, clearCart } = useCart();
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
+  const [guestMode, setGuestMode] = useState(false);
+  const [guestName, setGuestName] = useState('');
+  const [guestEmail, setGuestEmail] = useState('');
+  const [guestReady, setGuestReady] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();
@@ -130,6 +134,7 @@ export default function CartPage() {
               {!authLoading && (
                 <div className="rounded-xl border border-[#2a2a2a] bg-[#141414] p-5">
                   {user ? (
+                    /* Logged in */
                     <div className="flex items-center gap-3">
                       <div className="w-9 h-9 rounded-full bg-[#E8000D]/10 border border-[#E8000D]/20 flex items-center justify-center shrink-0">
                         <User className="w-4 h-4 text-[#E8000D]" />
@@ -139,18 +144,79 @@ export default function CartPage() {
                         <p className="text-sm font-bold text-white truncate">{user.email}</p>
                       </div>
                     </div>
-                  ) : (
+                  ) : guestMode ? (
+                    /* Guest checkout form */
                     <div>
-                      <p className="text-sm font-bold text-white mb-1">Sign in to checkout</p>
-                      <p className="text-xs text-zinc-500 mb-4">
-                        Save your cart and access your order history.
-                      </p>
+                      <div className="flex items-center gap-2 mb-4">
+                        <UserCheck className="w-4 h-4 text-[#E8000D]" />
+                        <p className="text-sm font-bold text-white">Guest Checkout</p>
+                      </div>
+                      <div className="space-y-3">
+                        <div>
+                          <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1.5">
+                            Full Name *
+                          </label>
+                          <input
+                            type="text"
+                            value={guestName}
+                            onChange={(e) => { setGuestName(e.target.value); setGuestReady(false); }}
+                            placeholder="Alex Reyes"
+                            className="w-full rounded-lg px-3 py-2.5 text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1.5">
+                            Email *
+                          </label>
+                          <input
+                            type="email"
+                            value={guestEmail}
+                            onChange={(e) => { setGuestEmail(e.target.value); setGuestReady(false); }}
+                            placeholder="you@email.com"
+                            className="w-full rounded-lg px-3 py-2.5 text-sm"
+                          />
+                        </div>
+                        {!guestReady && (
+                          <button
+                            onClick={() => {
+                              if (guestName.trim() && guestEmail.includes('@')) setGuestReady(true);
+                            }}
+                            className="w-full bg-[#E8000D] hover:bg-[#c0000b] text-white text-xs font-bold py-2.5 rounded-lg transition-colors"
+                          >
+                            Continue as Guest
+                          </button>
+                        )}
+                        {guestReady && (
+                          <div className="flex items-center gap-2 text-xs text-green-400 bg-green-400/10 border border-green-400/20 rounded-lg px-3 py-2">
+                            <UserCheck className="w-3.5 h-3.5 shrink-0" />
+                            Ready to checkout as {guestName}
+                          </div>
+                        )}
+                      </div>
+                      <button
+                        onClick={() => { setGuestMode(false); setGuestReady(false); }}
+                        className="mt-3 text-[10px] text-zinc-600 hover:text-zinc-400 transition-colors"
+                      >
+                        ← Back to sign in options
+                      </button>
+                    </div>
+                  ) : (
+                    /* Not logged in — choose */
+                    <div>
+                      <p className="text-sm font-bold text-white mb-1">How would you like to checkout?</p>
+                      <p className="text-xs text-zinc-500 mb-4">Sign in to save your order history, or continue as a guest.</p>
                       <Link
                         href={`/creator/login?next=/cart`}
-                        className="w-full btn-primary py-2.5 text-xs rounded-lg flex items-center justify-center gap-2"
+                        className="w-full btn-primary py-2.5 text-xs rounded-lg flex items-center justify-center gap-2 mb-2"
                       >
                         <LogIn className="w-3.5 h-3.5" /> Sign In
                       </Link>
+                      <button
+                        onClick={() => setGuestMode(true)}
+                        className="w-full border border-[#2a2a2a] hover:border-[#E8000D]/40 text-zinc-400 hover:text-white text-xs font-bold py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2"
+                      >
+                        <UserCheck className="w-3.5 h-3.5" /> Continue as Guest
+                      </button>
                       <p className="text-[10px] text-zinc-600 text-center mt-3">
                         No account?{' '}
                         <Link href="/creator/signup" className="text-[#E8000D] hover:underline">
@@ -186,19 +252,15 @@ export default function CartPage() {
                 </div>
 
                 <button
-                  disabled={!user && !authLoading}
+                  disabled={authLoading || (!user && !guestReady)}
                   className="w-full btn-primary py-3.5 text-sm rounded-xl flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
                 >
-                  {user ? (
-                    <>Proceed to Checkout <ArrowRight className="w-4 h-4" /></>
-                  ) : (
-                    <>Sign In to Checkout <LogIn className="w-4 h-4" /></>
-                  )}
+                  Proceed to Checkout <ArrowRight className="w-4 h-4" />
                 </button>
 
-                {!user && !authLoading && (
+                {!user && !guestReady && !authLoading && (
                   <p className="text-[10px] text-zinc-600 text-center mt-3">
-                    You must be signed in to complete a purchase.
+                    Sign in or continue as guest to checkout.
                   </p>
                 )}
               </div>
