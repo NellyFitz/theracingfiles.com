@@ -342,22 +342,22 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
             </div>
 
             {/* Creator card */}
-            {creator && (
+            {(product as any).creator_profiles && (
               <Link
                 href="/creator"
                 className="mt-4 flex items-center gap-3 rounded-xl border border-[#2a2a2a] bg-[#141414] p-4 hover:border-[#39ff14]/30 transition-colors group"
               >
                 <div className="w-10 h-10 rounded-full bg-[#252525] border border-[#2a2a2a] flex items-center justify-center shrink-0">
                   <span className="text-sm font-bold text-[#39ff14]">
-                    {creator.name.charAt(0)}
+                    {(product as any).creator_profiles.name.charAt(0)}
                   </span>
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-xs text-zinc-500">Designer</p>
                   <p className="text-sm font-bold text-white group-hover:text-[#39ff14] transition-colors truncate">
-                    {creator.name}
+                    {(product as any).creator_profiles.name}
                   </p>
-                  <p className="text-[10px] text-zinc-600">@{creator.handle} · ⭐ {creator.rating}</p>
+                  <p className="text-[10px] text-zinc-600">@{(product as any).creator_profiles.handle}</p>
                 </div>
                 <ChevronRight className="w-4 h-4 text-zinc-600 group-hover:text-[#39ff14] transition-colors shrink-0" />
               </Link>
