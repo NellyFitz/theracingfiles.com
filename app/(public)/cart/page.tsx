@@ -5,6 +5,7 @@ import Link from 'next/link';
 import {
   ShoppingCart, X, Download, Printer, Wrench,
   ArrowRight, LogIn, User, Trash2, ArrowLeft, Package, UserCheck,
+  CheckCircle2, CreditCard, FileDown, ChevronRight, Lock,
 } from 'lucide-react';
 import { useCart } from '@/lib/cart';
 import { createClient } from '@/lib/supabase/client';
@@ -13,6 +14,254 @@ import type { User as SupabaseUser } from '@supabase/supabase-js';
 const tierIcon = { file: Download, printed: Printer, finished: Wrench };
 const tierLabel = { file: 'Digital File', printed: 'Pre-Printed', finished: 'Fully Finished' };
 const tierColor = { file: '#E8000D', printed: '#00d4ff', finished: '#ffa500' };
+
+type CheckoutStep = 'terms' | 'payment' | 'download';
+
+function CheckoutModal({ items, subtotal, onClose }: {
+  items: ReturnType<typeof useCart>['items'];
+  subtotal: number;
+  onClose: () => void;
+}) {
+  const [step, setStep] = useState<CheckoutStep>('terms');
+  const [agreed, setAgreed] = useState(false);
+
+  const steps: CheckoutStep[] = ['terms', 'payment', 'download'];
+  const stepIndex = steps.indexOf(step);
+
+  const stepMeta: Record<CheckoutStep, { label: string; icon: React.ReactNode }> = {
+    terms: { label: 'Terms', icon: <CheckCircle2 className="w-4 h-4" /> },
+    payment: { label: 'Payment', icon: <CreditCard className="w-4 h-4" /> },
+    download: { label: 'Download', icon: <FileDown className="w-4 h-4" /> },
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose} />
+
+      {/* Modal */}
+      <div className="relative w-full max-w-lg bg-[#141414] border border-[#2a2a2a] rounded-2xl overflow-hidden shadow-2xl">
+
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#1e1e1e]">
+          <h2 className="text-base font-black text-white">Checkout</h2>
+          <button onClick={onClose} className="text-zinc-600 hover:text-white transition-colors">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Step indicators */}
+        <div className="flex items-center px-6 py-4 border-b border-[#1e1e1e] gap-2">
+          {steps.map((s, i) => {
+            const isDone = i < stepIndex;
+            const isActive = i === stepIndex;
+            return (
+              <div key={s} className="flex items-center gap-2">
+                <div className={`flex items-center gap-1.5 text-xs font-bold transition-colors ${
+                  isDone ? 'text-green-400' : isActive ? 'text-white' : 'text-zinc-600'
+                }`}>
+                  <div className={`w-6 h-6 rounded-full flex items-center justify-center border text-[10px] font-black transition-colors ${
+                    isDone
+                      ? 'bg-green-400/10 border-green-400/40 text-green-400'
+                      : isActive
+                      ? 'bg-[#E8000D]/10 border-[#E8000D]/40 text-[#E8000D]'
+                      : 'bg-[#1a1a1a] border-[#2a2a2a] text-zinc-600'
+                  }`}>
+                    {isDone ? '✓' : i + 1}
+                  </div>
+                  {stepMeta[s].label}
+                </div>
+                {i < steps.length - 1 && (
+                  <ChevronRight className={`w-3.5 h-3.5 shrink-0 ${i < stepIndex ? 'text-green-400' : 'text-zinc-700'}`} />
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Step content */}
+        <div className="px-6 py-6">
+
+          {/* ── STEP 1: Terms ── */}
+          {step === 'terms' && (
+            <div>
+              <h3 className="text-sm font-black text-white mb-1">Terms of Service</h3>
+              <p className="text-xs text-zinc-500 mb-4">Please read and agree before continuing.</p>
+
+              <div className="rounded-xl border border-[#2a2a2a] bg-[#0d0d0d] p-4 h-48 overflow-y-auto text-[11px] text-zinc-400 leading-relaxed mb-4 space-y-3">
+                <p><span className="text-white font-semibold">License Grant.</span> Upon payment, PrintShift grants you a non-exclusive, non-transferable license to print the purchased files for personal or commercial use. You may not redistribute, resell, or sublicense the files themselves.</p>
+                <p><span className="text-white font-semibold">Fitment Disclaimer.</span> All files are provided "as-is." PrintShift and its creators make no guarantees regarding fitment, structural integrity, or suitability for any specific application. Always verify parts before installation.</p>
+                <p><span className="text-white font-semibold">No Refunds.</span> All digital file sales are final. Once a file is downloaded it cannot be returned. If you have a technical issue with a file, contact support within 7 days.</p>
+                <p><span className="text-white font-semibold">Print Quality.</span> Print quality is the sole responsibility of the end user. PrintShift is not liable for failures caused by improper print settings, material selection, or printer calibration.</p>
+                <p><span className="text-white font-semibold">Safety.</span> Do not use 3D-printed parts in safety-critical applications including but not limited to braking systems, steering components, or roll cages without engineering validation.</p>
+                <p><span className="text-white font-semibold">Privacy.</span> We collect your email to deliver your files and send order receipts. We do not sell your data to third parties.</p>
+              </div>
+
+              <label className="flex items-start gap-3 cursor-pointer group mb-6">
+                <div
+                  onClick={() => setAgreed(!agreed)}
+                  className={`mt-0.5 w-5 h-5 rounded flex items-center justify-center shrink-0 border transition-colors ${
+                    agreed
+                      ? 'bg-[#E8000D] border-[#E8000D]'
+                      : 'bg-[#1a1a1a] border-[#333] group-hover:border-[#E8000D]/50'
+                  }`}
+                >
+                  {agreed && <span className="text-white text-[10px] font-black">✓</span>}
+                </div>
+                <p className="text-xs text-zinc-400 leading-relaxed">
+                  I have read and agree to the{' '}
+                  <span className="text-[#E8000D]">Terms of Service</span> and{' '}
+                  <span className="text-[#E8000D]">License Agreement</span>. I understand all digital sales are final.
+                </p>
+              </label>
+
+              <button
+                disabled={!agreed}
+                onClick={() => setStep('payment')}
+                className="w-full btn-primary py-3 text-sm rounded-xl flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                Continue to Payment <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+
+          {/* ── STEP 2: Payment (placeholder) ── */}
+          {step === 'payment' && (
+            <div>
+              <h3 className="text-sm font-black text-white mb-1">Payment</h3>
+              <p className="text-xs text-zinc-500 mb-6">Complete your purchase securely.</p>
+
+              {/* Order total recap */}
+              <div className="rounded-xl border border-[#2a2a2a] bg-[#0d0d0d] p-4 mb-5">
+                <div className="flex items-center justify-between">
+                  <p className="text-xs text-zinc-500">Order Total</p>
+                  <p className="text-xl font-black text-white">${subtotal.toFixed(2)}</p>
+                </div>
+                <div className="mt-2 space-y-1">
+                  {items.map((item) => (
+                    <div key={`${item.productId}-${item.tier}`} className="flex items-center justify-between">
+                      <p className="text-[11px] text-zinc-600 truncate max-w-[70%]">{item.productName} ({tierLabel[item.tier]})</p>
+                      <p className="text-[11px] text-zinc-400 shrink-0">{item.price != null ? `$${item.price}` : 'Quote'}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Payment placeholder */}
+              <div className="rounded-xl border border-dashed border-[#2a2a2a] bg-[#0d0d0d] p-6 flex flex-col items-center justify-center text-center gap-3 mb-5">
+                <div className="w-12 h-12 rounded-xl bg-[#1a1a1a] border border-[#2a2a2a] flex items-center justify-center">
+                  <CreditCard className="w-6 h-6 text-zinc-600" />
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-white mb-1">Stripe Payment — Coming Soon</p>
+                  <p className="text-[11px] text-zinc-500 leading-relaxed">
+                    Secure card processing via Stripe will be integrated here.<br />
+                    Card fields, Apple Pay, and Google Pay will appear in this section.
+                  </p>
+                </div>
+                <div className="flex items-center gap-1.5 text-[10px] text-zinc-600">
+                  <Lock className="w-3 h-3" /> Powered by Stripe — PCI compliant
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setStep('terms')}
+                  className="flex-1 border border-[#2a2a2a] hover:border-[#444] text-zinc-400 hover:text-white text-xs font-bold py-3 rounded-xl transition-colors"
+                >
+                  ← Back
+                </button>
+                <button
+                  onClick={() => setStep('download')}
+                  className="flex-1 btn-primary py-3 text-sm rounded-xl flex items-center justify-center gap-2"
+                >
+                  Simulate Pay <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+              <p className="text-[10px] text-zinc-700 text-center mt-3">Payment is simulated — no real charge occurs</p>
+            </div>
+          )}
+
+          {/* ── STEP 3: Download ── */}
+          {step === 'download' && (
+            <div>
+              <div className="flex items-center gap-3 mb-5">
+                <div className="w-10 h-10 rounded-xl bg-green-400/10 border border-green-400/20 flex items-center justify-center shrink-0">
+                  <CheckCircle2 className="w-5 h-5 text-green-400" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-black text-white">Payment Confirmed!</h3>
+                  <p className="text-xs text-zinc-500">Your files are ready to download.</p>
+                </div>
+              </div>
+
+              <div className="space-y-2 mb-6">
+                {items.filter((item) => item.tier === 'file').map((item) => (
+                  <div
+                    key={`${item.productId}-${item.tier}`}
+                    className="rounded-xl border border-[#2a2a2a] bg-[#0d0d0d] p-4 flex items-center gap-3"
+                  >
+                    <div className="w-9 h-9 rounded-lg bg-[#E8000D]/10 border border-[#E8000D]/20 flex items-center justify-center shrink-0">
+                      <Download className="w-4 h-4 text-[#E8000D]" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-bold text-white truncate">{item.productName}</p>
+                      <p className="text-[10px] text-zinc-500">Digital File</p>
+                    </div>
+                    <button
+                      className="shrink-0 bg-[#E8000D]/10 hover:bg-[#E8000D]/20 border border-[#E8000D]/30 text-[#E8000D] text-[11px] font-bold px-3 py-1.5 rounded-lg transition-colors"
+                    >
+                      Download
+                    </button>
+                  </div>
+                ))}
+
+                {items.filter((item) => item.tier !== 'file').map((item) => {
+                  const Icon = tierIcon[item.tier];
+                  const color = tierColor[item.tier];
+                  return (
+                    <div
+                      key={`${item.productId}-${item.tier}`}
+                      className="rounded-xl border border-[#2a2a2a] bg-[#0d0d0d] p-4 flex items-center gap-3"
+                    >
+                      <div
+                        className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
+                        style={{ background: `${color}12`, border: `1px solid ${color}30` }}
+                      >
+                        <Icon className="w-4 h-4" style={{ color }} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-bold text-white truncate">{item.productName}</p>
+                        <p className="text-[10px] text-zinc-500">{tierLabel[item.tier]} — order confirmation sent</p>
+                      </div>
+                    </div>
+                  );
+                })}
+
+                {items.filter((item) => item.tier === 'file').length === 0 && (
+                  <div className="rounded-xl border border-[#2a2a2a] bg-[#0d0d0d] p-4 text-center text-xs text-zinc-500">
+                    No digital files in this order — confirmation email sent.
+                  </div>
+                )}
+              </div>
+
+              <p className="text-[11px] text-zinc-500 text-center mb-5">
+                A receipt has been sent to your email. Files are also saved in your account under <span className="text-white">My Orders</span>.
+              </p>
+
+              <button
+                onClick={onClose}
+                className="w-full border border-[#2a2a2a] hover:border-[#444] text-zinc-400 hover:text-white text-xs font-bold py-3 rounded-xl transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function CartPage() {
   const { items, removeItem, clearCart } = useCart();
@@ -28,6 +277,7 @@ export default function CartPage() {
   const [guestState, setGuestState] = useState('');
   const [guestZip, setGuestZip] = useState('');
   const [guestReady, setGuestReady] = useState(false);
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
 
   const guestValid =
     guestFirstName.trim() !== '' &&
@@ -60,6 +310,14 @@ export default function CartPage() {
 
   return (
     <main className="min-h-screen">
+      {checkoutOpen && (
+        <CheckoutModal
+          items={items}
+          subtotal={subtotal}
+          onClose={() => setCheckoutOpen(false)}
+        />
+      )}
+
       {/* Header */}
       <section className="border-b border-[#1e1e1e] bg-[#0a0a0a]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -339,6 +597,7 @@ export default function CartPage() {
                 </div>
 
                 <button
+                  onClick={() => setCheckoutOpen(true)}
                   disabled={authLoading || (!user && !(guestMode && guestReady))}
                   className="w-full btn-primary py-3.5 text-sm rounded-xl flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
                 >
