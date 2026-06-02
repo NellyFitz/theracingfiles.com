@@ -173,6 +173,13 @@ export default function SubmitPartPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { setError('Session expired. Please sign in again.'); setSubmitting(false); return; }
 
+    const parsedFilePrice = parseFloat(form.filePrice);
+    if (!form.filePrice || isNaN(parsedFilePrice) || parsedFilePrice <= 0) {
+      setError('Please go back to Pricing and set a digital file price.');
+      setSubmitting(false);
+      return;
+    }
+
     const { data: inserted, error: insertError } = await supabase.from('part_submissions').insert({
       creator_id: user.id,
       name: form.name,
@@ -183,7 +190,7 @@ export default function SubmitPartPage() {
       year_start: parseInt(form.yearStart),
       year_end: parseInt(form.yearEnd),
       fitment: form.fitment,
-      file_price: parseFloat(form.filePrice),
+      file_price: parsedFilePrice,
       printed_price: form.printedPrice ? parseFloat(form.printedPrice) : null,
       finished_available: form.finishedAvailable,
       material: form.material,
