@@ -1,17 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useCart } from '@/lib/cart';
-import { notFound } from 'next/navigation';
 import {
   Download, Printer, Wrench, Star, CheckCircle,
   ChevronRight, ArrowLeft, Settings2, BookOpen, Users,
-  FlaskConical, Layers, Thermometer, Package, ShoppingCart,
+  FlaskConical, Layers, Thermometer, Package, ShoppingCart, Loader2,
 } from 'lucide-react';
-import { getProductBySlug, getCreatorById, products } from '@/lib/data';
+import { createClient } from '@/lib/supabase/client';
+import { subToProduct } from '@/lib/productHelpers';
 import Badge from '@/components/Badge';
 import ProductCard from '@/components/ProductCard';
+import type { Product } from '@/lib/types';
 import { use } from 'react';
 
 const TABS = ['Description', 'Fitment', 'Print Settings', 'Install Guide', 'Reviews'] as const;
@@ -49,17 +50,41 @@ const mockReviews = [
 
 export default function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
-  const product = getProductBySlug(slug);
-
-  if (!product) notFound();
-
-  const creator = getCreatorById(product.creatorId);
+  const [product, setProduct] = useState<Product | null>(null);
+  const [related, setRelated] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<Tab>('Description');
   const [selectedTier, setSelectedTier] = useState<'file' | 'printed' | 'finished'>('file');
   const [added, setAdded] = useState(false);
   const { addItem } = useCart();
 
+  useEffect(() => {
+    const supabase = createClient();
+    supabase
+      .from('part_submissions')
+      .select('*, creator_profiles(name, handle)')
+      .eq('id', slug)
+      .eq('status', 'approved')
+      .single()
+      .then(({ data }) => {
+        if (!data) { setLoading(false); return; }
+        const mapped = subToProduct(data);
+        setProduct(mapped);
+        // Fetch related (same make)
+        supabase
+          .from('part_submissions')
+          .select('*, creator_profiles(name, handle)')
+          .eq('status', 'approved')
+          .eq('make', data.make)
+          .neq('id', data.id)
+          .limit(3)
+          .then(({ data: rel }) => setRelated((rel ?? []).map(subToProduct)));
+        setLoading(false);
+      });
+  }, [slug]);
+
   const handleAddToCart = () => {
+    if (!product) return;
     addItem({
       productId: product.id,
       productName: product.name,
@@ -75,7 +100,22 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
     setTimeout(() => setAdded(false), 2000);
   };
 
-  const related = products.filter((p) => p.id !== product.id && p.make === product.make).slice(0, 3);
+  if (loading) {
+    return (
+      <main className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-6 h-6 text-[#E8000D] animate-spin" />
+      </main>
+    );
+  }
+
+  if (!product) {
+    return (
+      <main className="min-h-screen flex flex-col items-center justify-center gap-4">
+        <p className="text-white font-bold text-lg">Part not found</p>
+        <Link href="/browse" className="text-sm text-[#E8000D] hover:text-white transition-colors">← Back to Marketplace</Link>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen">

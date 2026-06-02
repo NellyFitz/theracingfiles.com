@@ -1,11 +1,13 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Search, SlidersHorizontal, X, ChevronDown, ChevronUp } from 'lucide-react';
-import { products, filterProducts } from '@/lib/data';
+import { filterProducts } from '@/lib/data';
+import { createClient } from '@/lib/supabase/client';
+import { subToProduct } from '@/lib/productHelpers';
 import ProductCard from '@/components/ProductCard';
 import SkeletonCard from '@/components/SkeletonCard';
-import type { FilterState } from '@/lib/types';
+import type { FilterState, Product } from '@/lib/types';
 
 /* ── Data ─────────────────────────────────────────────────────────── */
 
@@ -159,6 +161,20 @@ function EmptyState({ onReset }: { onReset: () => void }) {
 export default function BrowsePage() {
   const [filters, setFilters] = useState<FilterState>(defaultFilters);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [dbProducts, setDbProducts] = useState<Product[]>([]);
+  const [loadingProducts, setLoadingProducts] = useState(true);
+
+  useEffect(() => {
+    createClient()
+      .from('part_submissions')
+      .select('*, creator_profiles(name, handle)')
+      .eq('status', 'approved')
+      .order('published_at', { ascending: false })
+      .then(({ data }) => {
+        setDbProducts((data ?? []).map(subToProduct));
+        setLoadingProducts(false);
+      });
+  }, []);
 
   const update = <K extends keyof FilterState>(key: K, value: FilterState[K]) =>
     setFilters((prev) => ({ ...prev, [key]: value }));
@@ -193,7 +209,7 @@ export default function BrowsePage() {
   ].filter(Boolean).length;
 
   const results = useMemo(
-    () => filterProducts(products, {
+    () => filterProducts(dbProducts, {
       search: filters.search,
       vehicleType: filters.vehicleType,
       make: filters.make,
@@ -201,7 +217,7 @@ export default function BrowsePage() {
       verifiedOnly: filters.verifiedOnly,
       printedAvailable: filters.printedAvailable,
     }),
-    [filters]
+    [filters, dbProducts]
   );
 
   const sidebar = (
@@ -383,7 +399,9 @@ export default function BrowsePage() {
             </div>
 
             <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-5">
-              {results.length > 0
+              {loadingProducts
+                ? Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
+                : results.length > 0
                 ? results.map((p) => <ProductCard key={p.id} product={p} />)
                 : <EmptyState onReset={reset} />
               }

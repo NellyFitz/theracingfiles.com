@@ -41,3 +41,8 @@ create policy "public upload to request-images"
 create policy "public read request-images"
   on storage.objects for select
   using (bucket_id = 'request-images');
+
+-- Allow public (anon) to read approved submissions on the marketplace
+CREATE POLICY "public read approved submissions"
+  ON part_submissions FOR SELECT
+  USING (status = 'approved');

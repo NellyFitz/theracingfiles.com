@@ -250,14 +250,6 @@ function ReviewModal({ sub, onClose, onUpdated }: {
 
         {/* Footer actions */}
         <div className="px-6 py-4 border-t border-[#1e1e1e] bg-[#0d0d0d] flex items-center gap-3 shrink-0">
-          {sub.status === 'pending' && (
-            <button onClick={() => update('under_review')} disabled={loading}
-              className="flex items-center gap-1.5 px-4 py-2.5 text-xs font-bold rounded-lg border border-blue-500/30 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 transition-colors disabled:opacity-50">
-              {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Eye className="w-3.5 h-3.5" />}
-              Mark Under Review
-            </button>
-          )}
-
           <button
             onClick={() => update('approved')}
             disabled={loading || !hasFiles}

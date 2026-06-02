@@ -23,16 +23,21 @@ export default function ProductCard({ product }: ProductCardProps) {
       href={`/products/${product.slug}`}
       className="group block rounded-xl border border-[#2a2a2a] bg-[#141414] overflow-hidden card-hover"
     >
-      {/* Image placeholder */}
+      {/* Image */}
       <div className="relative h-48 bg-[#1a1a1a] grid-bg overflow-hidden">
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-center">
-            <div className="w-16 h-16 mx-auto mb-2 rounded-xl bg-[#252525] border border-[#333] flex items-center justify-center">
-              <Printer className="w-8 h-8 text-[#39ff14] opacity-60" />
+        {product.imageUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="text-center">
+              <div className="w-16 h-16 mx-auto mb-2 rounded-xl bg-[#252525] border border-[#333] flex items-center justify-center">
+                <Printer className="w-8 h-8 text-[#39ff14] opacity-60" />
+              </div>
+              <p className="text-[10px] text-zinc-600 uppercase tracking-widest">{product.make} · {product.model}</p>
             </div>
-            <p className="text-[10px] text-zinc-600 uppercase tracking-widest">{product.make} · {product.model}</p>
           </div>
-        </div>
+        )}
         {/* Badges overlay */}
         <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
           {product.badges.map((b) => (
