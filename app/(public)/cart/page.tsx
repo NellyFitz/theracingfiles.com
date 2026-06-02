@@ -5,7 +5,7 @@ import Link from 'next/link';
 import {
   ShoppingCart, X, Download, Printer, Wrench,
   ArrowRight, LogIn, User, Trash2, ArrowLeft, Package, UserCheck,
-  CheckCircle2, CreditCard, FileDown, ChevronRight, Lock,
+  CheckCircle2, CreditCard, FileDown, ChevronRight, Lock, Loader2,
 } from 'lucide-react';
 import { useCart } from '@/lib/cart';
 import { createClient } from '@/lib/supabase/client';
@@ -17,27 +17,108 @@ const tierColor = { file: '#E8000D', printed: '#00d4ff', finished: '#ffa500' };
 
 type CheckoutStep = 'terms' | 'payment' | 'download';
 
-function CheckoutModal({ items, subtotal, onClose }: {
+interface PurchasedFile {
+  productId: string;
+  productName: string;
+  stl_url: string | null;
+  threemf_url: string | null;
+  step_url: string | null;
+}
+
+function DownloadLink({ url, label }: { url: string; label: string }) {
+  return (
+    <a
+      href={url}
+      download
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-flex items-center gap-1.5 bg-[#E8000D]/10 hover:bg-[#E8000D]/20 border border-[#E8000D]/30 text-[#E8000D] text-[11px] font-bold px-3 py-1.5 rounded-lg transition-colors"
+    >
+      <Download className="w-3 h-3" /> {label}
+    </a>
+  );
+}
+
+function CheckoutModal({
+  items,
+  subtotal,
+  user,
+  guestEmail,
+  onClose,
+  onComplete,
+}: {
   items: ReturnType<typeof useCart>['items'];
   subtotal: number;
+  user: SupabaseUser | null;
+  guestEmail: string;
   onClose: () => void;
+  onComplete: () => void;
 }) {
   const [step, setStep] = useState<CheckoutStep>('terms');
   const [agreed, setAgreed] = useState(false);
+  const [processing, setProcessing] = useState(false);
+  const [processError, setProcessError] = useState('');
+  const [purchasedFiles, setPurchasedFiles] = useState<PurchasedFile[]>([]);
 
   const steps: CheckoutStep[] = ['terms', 'payment', 'download'];
   const stepIndex = steps.indexOf(step);
 
-  const stepMeta: Record<CheckoutStep, { label: string; icon: React.ReactNode }> = {
-    terms: { label: 'Terms', icon: <CheckCircle2 className="w-4 h-4" /> },
-    payment: { label: 'Payment', icon: <CreditCard className="w-4 h-4" /> },
-    download: { label: 'Download', icon: <FileDown className="w-4 h-4" /> },
-  };
+  const fileItems = items.filter((i) => i.tier === 'file');
+
+  async function handlePay() {
+    setProcessing(true);
+    setProcessError('');
+    try {
+      const supabase = createClient();
+
+      // Fetch file URLs for all file-tier items
+      const files: PurchasedFile[] = [];
+      for (const item of fileItems) {
+        const { data } = await supabase
+          .from('part_submissions')
+          .select('id, stl_url, threemf_url, step_url')
+          .eq('id', item.productId)
+          .single();
+        files.push({
+          productId: item.productId,
+          productName: item.productName,
+          stl_url: data?.stl_url ?? null,
+          threemf_url: data?.threemf_url ?? null,
+          step_url: data?.step_url ?? null,
+        });
+      }
+
+      // Save purchase records for logged-in users
+      if (user) {
+        const rows = items.map((item) => {
+          const f = files.find((f) => f.productId === item.productId);
+          return {
+            user_id: user.id,
+            submission_id: item.productId,
+            product_name: item.productName,
+            tier: item.tier,
+            price_paid: item.price ?? 0,
+            stl_url: f?.stl_url ?? null,
+            threemf_url: f?.threemf_url ?? null,
+            step_url: f?.step_url ?? null,
+          };
+        });
+        await supabase.from('user_purchases').insert(rows);
+      }
+
+      setPurchasedFiles(files);
+      setStep('download');
+    } catch (err) {
+      setProcessError('Something went wrong. Please try again.');
+    } finally {
+      setProcessing(false);
+    }
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={step !== 'download' ? onClose : undefined} />
 
       {/* Modal */}
       <div className="relative w-full max-w-lg bg-[#141414] border border-[#2a2a2a] rounded-2xl overflow-hidden shadow-2xl">
@@ -45,9 +126,11 @@ function CheckoutModal({ items, subtotal, onClose }: {
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-[#1e1e1e]">
           <h2 className="text-base font-black text-white">Checkout</h2>
-          <button onClick={onClose} className="text-zinc-600 hover:text-white transition-colors">
-            <X className="w-5 h-5" />
-          </button>
+          {step !== 'download' && (
+            <button onClick={onClose} className="text-zinc-600 hover:text-white transition-colors">
+              <X className="w-5 h-5" />
+            </button>
+          )}
         </div>
 
         {/* Step indicators */}
@@ -69,7 +152,7 @@ function CheckoutModal({ items, subtotal, onClose }: {
                   }`}>
                     {isDone ? '✓' : i + 1}
                   </div>
-                  {stepMeta[s].label}
+                  {s === 'terms' ? 'Terms' : s === 'payment' ? 'Payment' : 'Download'}
                 </div>
                 {i < steps.length - 1 && (
                   <ChevronRight className={`w-3.5 h-3.5 shrink-0 ${i < stepIndex ? 'text-green-400' : 'text-zinc-700'}`} />
@@ -164,18 +247,28 @@ function CheckoutModal({ items, subtotal, onClose }: {
                 </div>
               </div>
 
+              {processError && (
+                <p className="text-xs text-[#E8000D] text-center mb-4">{processError}</p>
+              )}
+
               <div className="flex gap-3">
                 <button
                   onClick={() => setStep('terms')}
-                  className="flex-1 border border-[#2a2a2a] hover:border-[#444] text-zinc-400 hover:text-white text-xs font-bold py-3 rounded-xl transition-colors"
+                  disabled={processing}
+                  className="flex-1 border border-[#2a2a2a] hover:border-[#444] text-zinc-400 hover:text-white text-xs font-bold py-3 rounded-xl transition-colors disabled:opacity-40"
                 >
                   ← Back
                 </button>
                 <button
-                  onClick={() => setStep('download')}
-                  className="flex-1 btn-primary py-3 text-sm rounded-xl flex items-center justify-center gap-2"
+                  onClick={handlePay}
+                  disabled={processing}
+                  className="flex-1 btn-primary py-3 text-sm rounded-xl flex items-center justify-center gap-2 disabled:opacity-60"
                 >
-                  Simulate Pay <ArrowRight className="w-4 h-4" />
+                  {processing ? (
+                    <><Loader2 className="w-4 h-4 animate-spin" /> Processing…</>
+                  ) : (
+                    <>Simulate Pay <ArrowRight className="w-4 h-4" /></>
+                  )}
                 </button>
               </div>
               <p className="text-[10px] text-zinc-700 text-center mt-3">Payment is simulated — no real charge occurs</p>
@@ -190,70 +283,75 @@ function CheckoutModal({ items, subtotal, onClose }: {
                   <CheckCircle2 className="w-5 h-5 text-green-400" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-black text-white">Payment Confirmed!</h3>
-                  <p className="text-xs text-zinc-500">Your files are ready to download.</p>
+                  <h3 className="text-sm font-black text-white">Order Complete!</h3>
+                  <p className="text-xs text-zinc-500">
+                    {user ? 'Files saved to your library.' : 'Download your files below.'}
+                  </p>
                 </div>
               </div>
 
-              <div className="space-y-2 mb-6">
-                {items.filter((item) => item.tier === 'file').map((item) => (
-                  <div
-                    key={`${item.productId}-${item.tier}`}
-                    className="rounded-xl border border-[#2a2a2a] bg-[#0d0d0d] p-4 flex items-center gap-3"
-                  >
-                    <div className="w-9 h-9 rounded-lg bg-[#E8000D]/10 border border-[#E8000D]/20 flex items-center justify-center shrink-0">
-                      <Download className="w-4 h-4 text-[#E8000D]" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs font-bold text-white truncate">{item.productName}</p>
-                      <p className="text-[10px] text-zinc-500">Digital File</p>
-                    </div>
-                    <button
-                      className="shrink-0 bg-[#E8000D]/10 hover:bg-[#E8000D]/20 border border-[#E8000D]/30 text-[#E8000D] text-[11px] font-bold px-3 py-1.5 rounded-lg transition-colors"
-                    >
-                      Download
-                    </button>
-                  </div>
-                ))}
+              {/* File-tier items with download links */}
+              {purchasedFiles.length > 0 && (
+                <div className="space-y-3 mb-4">
+                  {purchasedFiles.map((f) => {
+                    const hasFiles = f.stl_url || f.threemf_url || f.step_url;
+                    return (
+                      <div key={f.productId} className="rounded-xl border border-[#2a2a2a] bg-[#0d0d0d] p-4">
+                        <div className="flex items-center gap-3 mb-3">
+                          <div className="w-8 h-8 rounded-lg bg-[#E8000D]/10 border border-[#E8000D]/20 flex items-center justify-center shrink-0">
+                            <FileDown className="w-4 h-4 text-[#E8000D]" />
+                          </div>
+                          <p className="text-xs font-bold text-white truncate">{f.productName}</p>
+                        </div>
+                        {hasFiles ? (
+                          <div className="flex flex-wrap gap-2">
+                            {f.stl_url && <DownloadLink url={f.stl_url} label="STL" />}
+                            {f.threemf_url && <DownloadLink url={f.threemf_url} label="3MF" />}
+                            {f.step_url && <DownloadLink url={f.step_url} label="STEP" />}
+                          </div>
+                        ) : (
+                          <p className="text-[11px] text-zinc-600">No files attached to this part yet.</p>
+                        )}
+                        {user && (
+                          <p className="text-[10px] text-zinc-600 mt-2">Also saved to your library → My Orders</p>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
 
-                {items.filter((item) => item.tier !== 'file').map((item) => {
-                  const Icon = tierIcon[item.tier];
-                  const color = tierColor[item.tier];
-                  return (
+              {/* Non-file-tier items (printed / finished) */}
+              {items.filter((i) => i.tier !== 'file').map((item) => {
+                const Icon = tierIcon[item.tier];
+                const color = tierColor[item.tier];
+                return (
+                  <div key={`${item.productId}-${item.tier}`} className="rounded-xl border border-[#2a2a2a] bg-[#0d0d0d] p-4 flex items-center gap-3 mb-3">
                     <div
-                      key={`${item.productId}-${item.tier}`}
-                      className="rounded-xl border border-[#2a2a2a] bg-[#0d0d0d] p-4 flex items-center gap-3"
+                      className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+                      style={{ background: `${color}12`, border: `1px solid ${color}30` }}
                     >
-                      <div
-                        className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
-                        style={{ background: `${color}12`, border: `1px solid ${color}30` }}
-                      >
-                        <Icon className="w-4 h-4" style={{ color }} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs font-bold text-white truncate">{item.productName}</p>
-                        <p className="text-[10px] text-zinc-500">{tierLabel[item.tier]} — order confirmation sent</p>
-                      </div>
+                      <Icon className="w-4 h-4" style={{ color }} />
                     </div>
-                  );
-                })}
-
-                {items.filter((item) => item.tier === 'file').length === 0 && (
-                  <div className="rounded-xl border border-[#2a2a2a] bg-[#0d0d0d] p-4 text-center text-xs text-zinc-500">
-                    No digital files in this order — confirmation email sent.
+                    <div>
+                      <p className="text-xs font-bold text-white">{item.productName}</p>
+                      <p className="text-[10px] text-zinc-500">{tierLabel[item.tier]} — order confirmation sent to your email</p>
+                    </div>
                   </div>
-                )}
-              </div>
+                );
+              })}
 
               <p className="text-[11px] text-zinc-500 text-center mb-5">
-                A receipt has been sent to your email. Files are also saved in your account under <span className="text-white">My Orders</span>.
+                {user
+                  ? 'Files are saved under your account. You can re-download any time.'
+                  : 'Save your files now — guest downloads expire after 24 hours.'}
               </p>
 
               <button
-                onClick={onClose}
+                onClick={() => { onComplete(); onClose(); }}
                 className="w-full border border-[#2a2a2a] hover:border-[#444] text-zinc-400 hover:text-white text-xs font-bold py-3 rounded-xl transition-colors"
               >
-                Close
+                Done
               </button>
             </div>
           )}
@@ -314,7 +412,10 @@ export default function CartPage() {
         <CheckoutModal
           items={items}
           subtotal={subtotal}
+          user={user}
+          guestEmail={guestEmail}
           onClose={() => setCheckoutOpen(false)}
+          onComplete={() => clearCart()}
         />
       )}
 
