@@ -110,7 +110,7 @@ export default function Navbar() {
                 <Link href={role === 'creator' ? '/creator/dashboard' : '/account'}
                   className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-zinc-400 hover:text-white transition-colors border border-[#222] px-3 py-1.5">
                   <LayoutDashboard className="w-3.5 h-3.5" />
-                  {role === 'creator' ? 'Dashboard' : 'Account'}
+                  Dashboard
                 </Link>
                 <button onClick={handleSignOut}
                   className="text-zinc-600 hover:text-red-400 transition-colors" title="Sign out">
@@ -150,7 +150,7 @@ export default function Navbar() {
                   <Link href={role === 'creator' ? '/creator/dashboard' : '/account'}
                     className="text-xs font-bold uppercase tracking-widest text-zinc-400 hover:text-white flex items-center gap-2"
                     onClick={() => setMobileOpen(false)}>
-                    <LayoutDashboard className="w-3.5 h-3.5" /> {role === 'creator' ? 'Dashboard' : 'Account'}
+                    <LayoutDashboard className="w-3.5 h-3.5" /> Dashboard
                   </Link>
                   <button onClick={handleSignOut}
                     className="text-xs font-bold uppercase tracking-widest text-zinc-600 hover:text-red-400 text-left flex items-center gap-2">
