@@ -102,7 +102,6 @@ export default function AccountPage() {
     : user?.email ?? '';
 
   const fileDownloads = purchases.filter((p) => p.tier === 'file');
-  const totalSpent = purchases.reduce((s, p) => s + p.price_paid, 0);
 
   const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
     { id: 'overview', label: 'Overview', icon: <Star className="w-3.5 h-3.5" /> },
@@ -142,11 +141,6 @@ export default function AccountPage() {
             <div>
               <p className="text-xl font-black text-white">{fileDownloads.length}</p>
               <p className="text-[10px] text-zinc-600 uppercase tracking-widest">Downloads</p>
-            </div>
-            <div className="w-px bg-[#1e1e1e]" />
-            <div>
-              <p className="text-xl font-black text-white">${totalSpent.toFixed(2)}</p>
-              <p className="text-[10px] text-zinc-600 uppercase tracking-widest">Total Spent</p>
             </div>
           </div>
         </div>
@@ -203,13 +197,6 @@ export default function AccountPage() {
                 <p className="text-xs text-zinc-500 mt-0.5">Total Orders</p>
               </div>
 
-              <div className="rounded-xl border border-[#2a2a2a] bg-[#141414] p-5">
-                <div className="w-10 h-10 rounded-xl bg-amber-400/10 border border-amber-400/20 flex items-center justify-center mb-3">
-                  <Package className="w-5 h-5 text-amber-400" />
-                </div>
-                <p className="text-2xl font-black text-white">${totalSpent.toFixed(2)}</p>
-                <p className="text-xs text-zinc-500 mt-0.5">Total Spent</p>
-              </div>
             </div>
 
             {/* Recent purchases */}
