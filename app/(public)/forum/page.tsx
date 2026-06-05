@@ -113,7 +113,7 @@ export default function ForumPage() {
             </p>
 
             {/* Search */}
-            <div className="relative max-w-3xl">
+            <div className="relative max-w-5xl">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
               <input
                 type="text"
