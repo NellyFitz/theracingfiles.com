@@ -62,6 +62,7 @@ export default function AccountPage() {
   const [tab, setTab] = useState<Tab>('overview');
 
   // Profile edit state
+  const [editMode, setEditMode] = useState(false);
   const [editFirstName, setEditFirstName] = useState('');
   const [editLastName, setEditLastName] = useState('');
   const [editAddress, setEditAddress] = useState('');
@@ -332,134 +333,169 @@ export default function AccountPage() {
         {/* ── Profile ── */}
         {tab === 'profile' && (
           <div className="max-w-lg space-y-5">
-            <h2 className="text-xs font-black uppercase tracking-widest text-zinc-500 mb-4">My Profile</h2>
-
-            <form
-              onSubmit={async (e) => {
-                e.preventDefault();
-                setSaving(true);
-                setsaveError('');
-                setSaveSuccess(false);
-                const supabase = createClient();
-
-                // Update email if changed
-                if (editEmail !== user?.email) {
-                  const { error } = await supabase.auth.updateUser({ email: editEmail });
-                  if (error) { setsaveError(error.message); setSaving(false); return; }
-                }
-
-                // Upsert profile row
-                const { error } = await supabase.from('profiles').upsert({
-                  id: user!.id,
-                  first_name: editFirstName,
-                  last_name: editLastName,
-                  address_line1: editAddress,
-                  city: editCity,
-                  state: editState,
-                  zip: editZip,
-                  role: profile?.role ?? 'member',
-                });
-                if (error) { setsaveError(error.message); setSaving(false); return; }
-
-                setProfile((p) => p ? { ...p, first_name: editFirstName, last_name: editLastName, address_line1: editAddress, city: editCity, state: editState, zip: editZip } : p);
-                setSaveSuccess(true);
-                setSaving(false);
-                setTimeout(() => setSaveSuccess(false), 3000);
-              }}
-              className="rounded-xl border border-[#2a2a2a] bg-[#141414] p-6 space-y-4"
-            >
-              {/* Name row */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1.5">First Name</label>
-                  <input
-                    type="text"
-                    value={editFirstName}
-                    onChange={(e) => setEditFirstName(e.target.value)}
-                    placeholder="Alex"
-                    className="w-full rounded-lg px-3 py-2.5 text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1.5">Last Name</label>
-                  <input
-                    type="text"
-                    value={editLastName}
-                    onChange={(e) => setEditLastName(e.target.value)}
-                    placeholder="Reyes"
-                    className="w-full rounded-lg px-3 py-2.5 text-sm"
-                  />
-                </div>
-              </div>
-
-              {/* Email */}
-              <div>
-                <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1.5">
-                  <Mail className="w-3 h-3 inline mr-1" />Email
-                </label>
-                <input
-                  type="email"
-                  value={editEmail}
-                  onChange={(e) => setEditEmail(e.target.value)}
-                  className="w-full rounded-lg px-3 py-2.5 text-sm"
-                />
-                {editEmail !== user?.email && (
-                  <p className="text-[10px] text-amber-400 mt-1">A confirmation link will be sent to your new email.</p>
-                )}
-              </div>
-
-              {/* Address */}
-              <div>
-                <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1.5">
-                  <MapPin className="w-3 h-3 inline mr-1" />Street Address
-                </label>
-                <input
-                  type="text"
-                  value={editAddress}
-                  onChange={(e) => setEditAddress(e.target.value)}
-                  placeholder="123 Main St"
-                  className="w-full rounded-lg px-3 py-2.5 text-sm"
-                />
-              </div>
-
-              {/* City / State / ZIP */}
-              <div className="grid grid-cols-5 gap-2">
-                <div className="col-span-2">
-                  <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1.5">City</label>
-                  <input type="text" value={editCity} onChange={(e) => setEditCity(e.target.value)} placeholder="Austin" className="w-full rounded-lg px-3 py-2.5 text-sm" />
-                </div>
-                <div className="col-span-1">
-                  <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1.5">State</label>
-                  <input type="text" value={editState} onChange={(e) => setEditState(e.target.value)} placeholder="TX" maxLength={2} className="w-full rounded-lg px-3 py-2.5 text-sm" />
-                </div>
-                <div className="col-span-2">
-                  <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1.5">ZIP</label>
-                  <input type="text" value={editZip} onChange={(e) => setEditZip(e.target.value)} placeholder="78701" className="w-full rounded-lg px-3 py-2.5 text-sm" />
-                </div>
-              </div>
-
-              {/* Account type (read-only) */}
-              <div className="flex items-center gap-2 pt-1">
-                <Star className="w-3.5 h-3.5 text-zinc-600" />
-                <p className="text-[11px] text-zinc-600">Account type: <span className="text-zinc-400 capitalize">{profile?.role ?? 'Member'}</span></p>
-              </div>
-
-              {saveError && (
-                <p className="text-xs text-[#E8000D]">{saveError}</p>
+            <div className="flex items-center justify-between">
+              <h2 className="text-xs font-black uppercase tracking-widest text-zinc-500">My Profile</h2>
+              {!editMode && (
+                <button
+                  onClick={() => {
+                    setEditFirstName(profile?.first_name ?? '');
+                    setEditLastName(profile?.last_name ?? '');
+                    setEditAddress(profile?.address_line1 ?? '');
+                    setEditCity(profile?.city ?? '');
+                    setEditState(profile?.state ?? '');
+                    setEditZip(profile?.zip ?? '');
+                    setEditEmail(user?.email ?? '');
+                    setsaveError('');
+                    setEditMode(true);
+                  }}
+                  className="text-xs font-bold text-zinc-400 hover:text-white border border-[#2a2a2a] hover:border-zinc-600 px-3 py-1.5 rounded-lg transition-colors"
+                >
+                  Edit
+                </button>
               )}
+            </div>
 
-              <button
-                type="submit"
-                disabled={saving}
-                className="w-full btn-primary py-3 text-sm rounded-xl flex items-center justify-center gap-2 disabled:opacity-60"
+            {/* ── Read-only display ── */}
+            {!editMode && (
+              <div className="rounded-xl border border-[#2a2a2a] bg-[#141414] divide-y divide-[#1e1e1e]">
+                <div className="p-4 flex items-center gap-3">
+                  <Mail className="w-4 h-4 text-zinc-600 shrink-0" />
+                  <div>
+                    <p className="text-[10px] text-zinc-600 uppercase tracking-widest">Email</p>
+                    <p className="text-sm text-white">{user?.email}</p>
+                  </div>
+                </div>
+                <div className="p-4 flex items-center gap-3">
+                  <User className="w-4 h-4 text-zinc-600 shrink-0" />
+                  <div>
+                    <p className="text-[10px] text-zinc-600 uppercase tracking-widest">Name</p>
+                    <p className="text-sm text-white">
+                      {profile?.first_name
+                        ? `${profile.first_name} ${profile.last_name ?? ''}`.trim()
+                        : <span className="text-zinc-600">Not set</span>}
+                    </p>
+                  </div>
+                </div>
+                {(profile?.address_line1 || profile?.city) && (
+                  <div className="p-4 flex items-center gap-3">
+                    <MapPin className="w-4 h-4 text-zinc-600 shrink-0" />
+                    <div>
+                      <p className="text-[10px] text-zinc-600 uppercase tracking-widest">Address</p>
+                      <p className="text-sm text-white">
+                        {[profile.address_line1, profile.city, profile.state, profile.zip].filter(Boolean).join(', ')}
+                      </p>
+                    </div>
+                  </div>
+                )}
+                <div className="p-4 flex items-center gap-3">
+                  <Star className="w-4 h-4 text-zinc-600 shrink-0" />
+                  <div>
+                    <p className="text-[10px] text-zinc-600 uppercase tracking-widest">Account Type</p>
+                    <p className="text-sm text-white capitalize">{profile?.role ?? 'Member'}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ── Edit form ── */}
+            {editMode && (
+              <form
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  setSaving(true);
+                  setsaveError('');
+                  setSaveSuccess(false);
+                  const supabase = createClient();
+
+                  if (editEmail !== user?.email) {
+                    const { error } = await supabase.auth.updateUser({ email: editEmail });
+                    if (error) { setsaveError(error.message); setSaving(false); return; }
+                  }
+
+                  const { error } = await supabase.from('profiles').upsert({
+                    id: user!.id,
+                    first_name: editFirstName,
+                    last_name: editLastName,
+                    address_line1: editAddress,
+                    city: editCity,
+                    state: editState,
+                    zip: editZip,
+                    role: profile?.role ?? 'member',
+                  });
+                  if (error) { setsaveError(error.message); setSaving(false); return; }
+
+                  setProfile((p) => p ? { ...p, first_name: editFirstName, last_name: editLastName, address_line1: editAddress, city: editCity, state: editState, zip: editZip } : p);
+                  setSaveSuccess(true);
+                  setSaving(false);
+                  setEditMode(false);
+                }}
+                className="rounded-xl border border-[#2a2a2a] bg-[#141414] p-6 space-y-4"
               >
-                {saving
-                  ? <><Loader2 className="w-4 h-4 animate-spin" /> Saving…</>
-                  : saveSuccess
-                  ? <><CheckCircle2 className="w-4 h-4" /> Saved!</>
-                  : 'Save Changes'}
-              </button>
-            </form>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1.5">First Name</label>
+                    <input type="text" value={editFirstName} onChange={(e) => setEditFirstName(e.target.value)} placeholder="Alex" className="w-full rounded-lg px-3 py-2.5 text-sm" />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1.5">Last Name</label>
+                    <input type="text" value={editLastName} onChange={(e) => setEditLastName(e.target.value)} placeholder="Reyes" className="w-full rounded-lg px-3 py-2.5 text-sm" />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1.5">Email</label>
+                  <input type="email" value={editEmail} onChange={(e) => setEditEmail(e.target.value)} className="w-full rounded-lg px-3 py-2.5 text-sm" />
+                  {editEmail !== user?.email && (
+                    <p className="text-[10px] text-amber-400 mt-1">A confirmation link will be sent to your new email.</p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1.5">Street Address</label>
+                  <input type="text" value={editAddress} onChange={(e) => setEditAddress(e.target.value)} placeholder="123 Main St" className="w-full rounded-lg px-3 py-2.5 text-sm" />
+                </div>
+
+                <div className="grid grid-cols-5 gap-2">
+                  <div className="col-span-2">
+                    <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1.5">City</label>
+                    <input type="text" value={editCity} onChange={(e) => setEditCity(e.target.value)} placeholder="Austin" className="w-full rounded-lg px-3 py-2.5 text-sm" />
+                  </div>
+                  <div className="col-span-1">
+                    <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1.5">State</label>
+                    <input type="text" value={editState} onChange={(e) => setEditState(e.target.value)} placeholder="TX" maxLength={2} className="w-full rounded-lg px-3 py-2.5 text-sm" />
+                  </div>
+                  <div className="col-span-2">
+                    <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1.5">ZIP</label>
+                    <input type="text" value={editZip} onChange={(e) => setEditZip(e.target.value)} placeholder="78701" className="w-full rounded-lg px-3 py-2.5 text-sm" />
+                  </div>
+                </div>
+
+                {saveError && <p className="text-xs text-[#E8000D]">{saveError}</p>}
+
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => { setEditMode(false); setsaveError(''); }}
+                    className="flex-1 border border-[#2a2a2a] hover:border-zinc-600 text-zinc-400 hover:text-white text-xs font-bold py-3 rounded-xl transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={saving}
+                    className="flex-1 btn-primary py-3 text-sm rounded-xl flex items-center justify-center gap-2 disabled:opacity-60"
+                  >
+                    {saving ? <><Loader2 className="w-4 h-4 animate-spin" /> Saving…</> : 'Save Changes'}
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {saveSuccess && (
+              <div className="flex items-center gap-2 text-xs text-green-400 bg-green-400/10 border border-green-400/20 rounded-lg px-4 py-3">
+                <CheckCircle2 className="w-4 h-4 shrink-0" /> Profile updated successfully.
+              </div>
+            )}
           </div>
         )}
 
