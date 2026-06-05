@@ -49,7 +49,7 @@ function DownloadBtn({ url, label }: { url: string; label: string }) {
   );
 }
 
-type Tab = 'overview' | 'downloads' | 'profile';
+type Tab = 'overview' | 'downloads' | 'profile' | 'creator';
 
 export default function AccountPage() {
   const router = useRouter();
@@ -95,6 +95,7 @@ export default function AccountPage() {
     { id: 'overview', label: 'Overview', icon: <Star className="w-3.5 h-3.5" /> },
     { id: 'downloads', label: `Downloads (${fileDownloads.length})`, icon: <Download className="w-3.5 h-3.5" /> },
     { id: 'profile', label: 'Profile', icon: <Settings className="w-3.5 h-3.5" /> },
+    { id: 'creator', label: 'Become a Creator', icon: <Wrench className="w-3.5 h-3.5" /> },
   ];
 
   return (
@@ -363,6 +364,59 @@ export default function AccountPage() {
                 Apply Now <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
+          </div>
+        )}
+
+        {/* ── Become a Creator ── */}
+        {tab === 'creator' && (
+          <div className="max-w-lg space-y-5">
+            <h2 className="text-xs font-black uppercase tracking-widest text-zinc-500 mb-4">Become a Creator</h2>
+
+            {/* What you get */}
+            <div className="rounded-xl border border-[#2a2a2a] bg-[#141414] p-6 space-y-4">
+              <p className="text-sm font-black text-white">What Creator accounts unlock</p>
+              {[
+                { icon: <Wrench className="w-4 h-4 text-[#E8000D]" />, title: 'Upload & sell parts', desc: 'List STL, 3MF, and STEP files on the marketplace and earn from every sale.' },
+                { icon: <Package className="w-4 h-4 text-[#00d4ff]" />, title: 'Creator dashboard', desc: 'Full analytics, submission management, and earnings overview.' },
+                { icon: <Star className="w-4 h-4 text-amber-400" />, title: 'Creator profile page', desc: 'A public profile showcasing all your parts and vehicle specialties.' },
+              ].map((item) => (
+                <div key={item.title} className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-[#1a1a1a] border border-[#2a2a2a] flex items-center justify-center shrink-0 mt-0.5">
+                    {item.icon}
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-white">{item.title}</p>
+                    <p className="text-[11px] text-zinc-500 leading-relaxed">{item.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* How it works */}
+            <div className="rounded-xl border border-[#2a2a2a] bg-[#141414] p-6">
+              <p className="text-sm font-black text-white mb-4">How it works</p>
+              <div className="space-y-3">
+                {[
+                  { step: '1', text: 'Fill out the creator application with your handle, bio, and vehicle specialties.' },
+                  { step: '2', text: 'Our team reviews your application within 48 hours.' },
+                  { step: '3', text: 'Once approved your account is upgraded and you can start uploading.' },
+                ].map((s) => (
+                  <div key={s.step} className="flex items-start gap-3">
+                    <div className="w-6 h-6 rounded-full bg-[#E8000D]/10 border border-[#E8000D]/30 flex items-center justify-center shrink-0 text-[10px] font-black text-[#E8000D]">
+                      {s.step}
+                    </div>
+                    <p className="text-[11px] text-zinc-400 leading-relaxed pt-0.5">{s.text}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <Link
+              href="/creator/signup?type=creator"
+              className="w-full btn-primary py-3.5 text-sm rounded-xl flex items-center justify-center gap-2"
+            >
+              Apply to Become a Creator <ArrowRight className="w-4 h-4" />
+            </Link>
           </div>
         )}
 
