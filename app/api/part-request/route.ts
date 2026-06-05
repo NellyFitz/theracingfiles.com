@@ -1,7 +1,10 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { checkRateLimit } from '@/lib/rateLimit';
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+  const limited = await checkRateLimit(request, 'submission');
+  if (limited) return limited;
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
     return NextResponse.json({ error: 'Missing Supabase env vars on server' }, { status: 500 });
   }

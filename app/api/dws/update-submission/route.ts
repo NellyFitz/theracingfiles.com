@@ -1,8 +1,11 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { cookies } from 'next/headers';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { checkRateLimit } from '@/lib/rateLimit';
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
+  const limited = await checkRateLimit(req, 'admin');
+  if (limited) return limited;
   const cookieStore = await cookies();
   if (cookieStore.get('dws_session')?.value !== 'dws-active') {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
