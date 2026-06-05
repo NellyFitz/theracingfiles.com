@@ -1,7 +1,11 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Star, Download, Printer, Wrench } from 'lucide-react';
+import { Star, Download, Printer, Wrench, Bookmark } from 'lucide-react';
 import type { Product } from '@/lib/types';
 import Badge from './Badge';
+import { createClient } from '@/lib/supabase/client';
 
 interface ProductCardProps {
   product: Product;
@@ -17,6 +21,46 @@ const categoryColors: Record<string, string> = {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const catColor = categoryColors[product.category] ?? 'text-zinc-400';
+  const [saved, setSaved] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [toggling, setToggling] = useState(false);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (!user) return;
+      setUserId(user.id);
+      const { data } = await supabase
+        .from('user_saved_parts')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('submission_id', product.id)
+        .maybeSingle();
+      setSaved(!!data);
+    });
+  }, [product.id]);
+
+  async function toggleSave(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!userId || toggling) return;
+    setToggling(true);
+    const supabase = createClient();
+    if (saved) {
+      await supabase
+        .from('user_saved_parts')
+        .delete()
+        .eq('user_id', userId)
+        .eq('submission_id', product.id);
+      setSaved(false);
+    } else {
+      await supabase
+        .from('user_saved_parts')
+        .insert({ user_id: userId, submission_id: product.id });
+      setSaved(true);
+    }
+    setToggling(false);
+  }
 
   return (
     <Link
@@ -38,12 +82,30 @@ export default function ProductCard({ product }: ProductCardProps) {
             </div>
           </div>
         )}
+
         {/* Badges overlay */}
         <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
           {product.badges.map((b) => (
             <Badge key={b.type} type={b.type} label={b.label} />
           ))}
         </div>
+
+        {/* Save button — only shown when logged in */}
+        {userId && (
+          <button
+            onClick={toggleSave}
+            disabled={toggling}
+            title={saved ? 'Remove from saved' : 'Save part'}
+            className={`absolute top-3 right-3 w-7 h-7 rounded-lg flex items-center justify-center transition-all ${
+              saved
+                ? 'bg-[#E8000D] border border-[#E8000D] text-white'
+                : 'bg-[#0d0d0d]/80 backdrop-blur-sm border border-[#2a2a2a] text-zinc-500 hover:text-white hover:border-zinc-500'
+            }`}
+          >
+            <Bookmark className={`w-3.5 h-3.5 ${saved ? 'fill-white' : ''}`} />
+          </button>
+        )}
+
         {/* Year chip */}
         <div className="absolute bottom-3 right-3 bg-[#0d0d0d]/80 backdrop-blur-sm border border-[#2a2a2a] rounded px-2 py-0.5 text-[10px] text-zinc-400 font-mono">
           {product.yearStart}–{product.yearEnd}

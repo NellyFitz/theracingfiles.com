@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   User, Download, ShoppingBag, Wrench, ArrowRight, Loader2,
-  FileDown, Printer, Package, Settings, Mail, MapPin, Star, CheckCircle2,
+  FileDown, Printer, Package, Settings, Mail, MapPin, Star, CheckCircle2, Bookmark,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
@@ -52,13 +52,14 @@ function DownloadBtn({ url, label }: { url: string; label: string }) {
   );
 }
 
-type Tab = 'overview' | 'downloads' | 'profile' | 'creator';
+type Tab = 'overview' | 'downloads' | 'saved' | 'profile' | 'creator';
 
 export default function AccountPage() {
   const router = useRouter();
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [purchases, setPurchases] = useState<Purchase[]>([]);
+  const [savedParts, setSavedParts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<Tab>('overview');
 
@@ -82,11 +83,16 @@ export default function AccountPage() {
       if (!user) { router.push('/creator/login'); return; }
       setUser(user);
 
-      const [{ data: prof }, { data: purch }] = await Promise.all([
+      const [{ data: prof }, { data: purch }, { data: saved }] = await Promise.all([
         supabase.from('profiles').select('first_name,last_name,address_line1,city,state,zip,role,avatar_url').eq('id', user.id).single(),
         supabase
           .from('user_purchases')
           .select('*, part_submissions(stl_url, threemf_url, step_url)')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false }),
+        supabase
+          .from('user_saved_parts')
+          .select('id, submission_id, created_at, part_submissions(id, name, category, make, model, file_price, images, slug:id)')
           .eq('user_id', user.id)
           .order('created_at', { ascending: false }),
       ]);
@@ -107,6 +113,7 @@ export default function AccountPage() {
         step_url: p.part_submissions?.step_url ?? null,
       }));
       setPurchases(flat);
+      setSavedParts(saved ?? []);
       setLoading(false);
     });
   }, [router]);
@@ -128,6 +135,7 @@ export default function AccountPage() {
   const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
     { id: 'overview', label: 'Overview', icon: <Star className="w-3.5 h-3.5" /> },
     { id: 'downloads', label: `Downloads (${fileDownloads.length})`, icon: <Download className="w-3.5 h-3.5" /> },
+    { id: 'saved', label: `Saved (${savedParts.length})`, icon: <Bookmark className="w-3.5 h-3.5" /> },
     { id: 'profile', label: 'Profile', icon: <Settings className="w-3.5 h-3.5" /> },
     { id: 'creator', label: 'Become a Creator', icon: <Wrench className="w-3.5 h-3.5" /> },
   ];
@@ -326,6 +334,66 @@ export default function AccountPage() {
                           {p.tier === 'file' ? 'Files not yet attached by creator.' : 'Physical order — check your email for updates.'}
                         </p>
                       )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── Saved ── */}
+        {tab === 'saved' && (
+          <div>
+            <h2 className="text-xs font-black uppercase tracking-widest text-zinc-500 mb-4">Saved Parts</h2>
+            {savedParts.length === 0 ? (
+              <div className="rounded-xl border border-[#2a2a2a] bg-[#141414] p-10 text-center">
+                <Bookmark className="w-8 h-8 text-zinc-700 mx-auto mb-3" />
+                <p className="text-sm text-zinc-500 mb-4">No saved parts yet.</p>
+                <Link href="/browse" className="inline-flex items-center gap-2 btn-primary px-5 py-2.5 text-xs rounded-xl">
+                  Browse Marketplace <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
+            ) : (
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {savedParts.map((s) => {
+                  const part = s.part_submissions;
+                  if (!part) return null;
+                  const image = part.images?.[0] ?? null;
+                  return (
+                    <div key={s.id} className="rounded-xl border border-[#2a2a2a] bg-[#141414] overflow-hidden group">
+                      {/* Image */}
+                      <div className="relative h-36 bg-[#1a1a1a] overflow-hidden">
+                        {image
+                          ? <img src={image} alt={part.name} className="w-full h-full object-cover" />
+                          : <div className="w-full h-full flex items-center justify-center"><Printer className="w-8 h-8 text-zinc-700" /></div>}
+                        {/* Unsave button */}
+                        <button
+                          onClick={async () => {
+                            const supabase = createClient();
+                            await supabase.from('user_saved_parts').delete().eq('id', s.id);
+                            setSavedParts((prev) => prev.filter((p) => p.id !== s.id));
+                          }}
+                          title="Remove from saved"
+                          className="absolute top-2 right-2 w-7 h-7 rounded-lg bg-[#E8000D] border border-[#E8000D] flex items-center justify-center"
+                        >
+                          <Bookmark className="w-3.5 h-3.5 text-white fill-white" />
+                        </button>
+                      </div>
+                      {/* Info */}
+                      <div className="p-4">
+                        <p className="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">{part.category}</p>
+                        <Link
+                          href={`/products/${part.id}`}
+                          className="text-sm font-bold text-white group-hover:text-[#E8000D] transition-colors line-clamp-2 block mb-2"
+                        >
+                          {part.name}
+                        </Link>
+                        <div className="flex items-center justify-between">
+                          <p className="text-xs text-zinc-500">{part.make} {part.model}</p>
+                          <p className="text-sm font-black text-white">${part.file_price}</p>
+                        </div>
+                      </div>
                     </div>
                   );
                 })}
