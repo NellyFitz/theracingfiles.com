@@ -22,7 +22,7 @@ export default async function CreatorDashboard() {
     .eq('id', user.id)
     .single();
 
-  if (!profile) redirect('/creator/signup');
+  if (!profile) redirect('/account');
 
   const { data: submissions } = await supabase
     .from('part_submissions')

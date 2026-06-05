@@ -10,7 +10,7 @@ import { createClient } from '@/lib/supabase/client';
 function LoginForm() {
   const router = useRouter();
   const params = useSearchParams();
-  const next = params.get('next') ?? '/creator/dashboard';
+  const next = params.get('next') ?? null;
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -32,7 +32,18 @@ function LoginForm() {
       return;
     }
 
-    router.push(next);
+    if (next) {
+      router.push(next);
+    } else {
+      // Route by role
+      const supabase = createClient();
+      const { data: prof } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', (await supabase.auth.getUser()).data.user!.id)
+        .single();
+      router.push(prof?.role === 'creator' ? '/creator/dashboard' : '/account');
+    }
     router.refresh();
   };
 
