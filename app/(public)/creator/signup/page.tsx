@@ -75,6 +75,7 @@ export default function SignupPage() {
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [signedUpUserId, setSignedUpUserId] = useState<string | null>(null);
 
   // Step 1
   const [email, setEmail] = useState('');
@@ -109,12 +110,14 @@ export default function SignupPage() {
     setLoading(true);
     setError('');
     const supabase = createClient();
-    const { error: authError } = await supabase.auth.signUp({
+    const { data, error: authError } = await supabase.auth.signUp({
       email,
       password,
       options: { emailRedirectTo: `${window.location.origin}/creator/dashboard` },
     });
     if (authError) { setError(authError.message); setLoading(false); return; }
+    if (!data.user) { setError('Could not create account. Please try again.'); setLoading(false); return; }
+    setSignedUpUserId(data.user.id);
     setStep('profile');
     setLoading(false);
   };
@@ -125,12 +128,12 @@ export default function SignupPage() {
     setError('');
 
     const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { setError('Session expired — please sign in again.'); setLoading(false); return; }
+    const userId = signedUpUserId ?? (await supabase.auth.getUser()).data.user?.id;
+    if (!userId) { setError('Session expired — please sign in again.'); setLoading(false); return; }
 
     // Insert universal profile
-    const { error: profileError } = await supabase.from('profiles').insert({
-      id: user.id,
+    const { error: profileError } = await supabase.from('profiles').upsert({
+      id: userId,
       first_name: firstName,
       last_name: lastName,
       address_line1: address1,
@@ -158,13 +161,13 @@ export default function SignupPage() {
     setError('');
 
     const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { setError('Session expired — please sign in again.'); setLoading(false); return; }
+    const userId = signedUpUserId ?? (await supabase.auth.getUser()).data.user?.id;
+    if (!userId) { setError('Session expired — please sign in again.'); setLoading(false); return; }
 
     const resolvedHandle = handle || generateHandle(firstName, lastName);
 
-    const { error: creatorError } = await supabase.from('user_profiles').insert({
-      id: user.id,
+    const { error: creatorError } = await supabase.from('user_profiles').upsert({
+      id: userId,
       name: `${firstName} ${lastName}`.trim(),
       handle: resolvedHandle.toLowerCase().replace(/[^a-z0-9_]/g, ''),
       bio: bio || null,
