@@ -18,14 +18,30 @@ const navLinks = [
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const [role, setRole] = useState<'member' | 'creator' | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const { count: cartCount } = useCart();
 
+  async function fetchRole(userId: string) {
+    const supabase = createClient();
+    const { data } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', userId)
+      .single();
+    setRole((data?.role as 'member' | 'creator') ?? 'member');
+  }
+
   useEffect(() => {
     const supabase = createClient();
-    supabase.auth.getUser().then(({ data: { user } }) => setUser(user));
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUser(user);
+      if (user) fetchRole(user.id);
+    });
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
       setUser(session?.user ?? null);
+      if (session?.user) fetchRole(session.user.id);
+      else setRole(null);
     });
 
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -91,10 +107,10 @@ export default function Navbar() {
 
             {user ? (
               <div className="flex items-center gap-2">
-                <Link href="/creator/dashboard"
+                <Link href={role === 'creator' ? '/creator/dashboard' : '/account'}
                   className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-zinc-400 hover:text-white transition-colors border border-[#222] px-3 py-1.5">
                   <LayoutDashboard className="w-3.5 h-3.5" />
-                  Dashboard
+                  {role === 'creator' ? 'Dashboard' : 'Account'}
                 </Link>
                 <button onClick={handleSignOut}
                   className="text-zinc-600 hover:text-red-400 transition-colors" title="Sign out">
@@ -131,10 +147,10 @@ export default function Navbar() {
             <div className="pt-3 border-t border-[#1a1a1a] flex flex-col gap-3">
               {user ? (
                 <>
-                  <Link href="/creator/dashboard"
+                  <Link href={role === 'creator' ? '/creator/dashboard' : '/account'}
                     className="text-xs font-bold uppercase tracking-widest text-zinc-400 hover:text-white flex items-center gap-2"
                     onClick={() => setMobileOpen(false)}>
-                    <LayoutDashboard className="w-3.5 h-3.5" /> Dashboard
+                    <LayoutDashboard className="w-3.5 h-3.5" /> {role === 'creator' ? 'Dashboard' : 'Account'}
                   </Link>
                   <button onClick={handleSignOut}
                     className="text-xs font-bold uppercase tracking-widest text-zinc-600 hover:text-red-400 text-left flex items-center gap-2">
