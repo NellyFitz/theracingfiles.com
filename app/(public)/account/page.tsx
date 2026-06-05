@@ -18,6 +18,7 @@ interface Profile {
   state: string | null;
   zip: string | null;
   role: string;
+  avatar_url: string | null;
 }
 
 interface Purchase {
@@ -73,6 +74,7 @@ export default function AccountPage() {
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [saveError, setsaveError] = useState('');
+  const [avatarUploading, setAvatarUploading] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();
@@ -81,7 +83,7 @@ export default function AccountPage() {
       setUser(user);
 
       const [{ data: prof }, { data: purch }] = await Promise.all([
-        supabase.from('profiles').select('first_name,last_name,address_line1,city,state,zip,role').eq('id', user.id).single(),
+        supabase.from('profiles').select('first_name,last_name,address_line1,city,state,zip,role,avatar_url').eq('id', user.id).single(),
         supabase
           .from('user_purchases')
           .select('*, part_submissions(stl_url, threemf_url, step_url)')
@@ -137,8 +139,10 @@ export default function AccountPage() {
       <section className="border-b border-[#1e1e1e] bg-[#0a0a0a]">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-2xl bg-zinc-700/20 border border-zinc-700/30 flex items-center justify-center shrink-0">
-              <User className="w-8 h-8 text-zinc-400" />
+            <div className="w-16 h-16 rounded-2xl bg-zinc-700/20 border border-zinc-700/30 flex items-center justify-center shrink-0 overflow-hidden">
+              {profile?.avatar_url
+                ? <img src={profile.avatar_url} alt="avatar" className="w-full h-full object-cover" />
+                : <User className="w-8 h-8 text-zinc-400" />}
             </div>
             <div>
               <div className="flex items-center gap-2 mb-1">
@@ -353,6 +357,56 @@ export default function AccountPage() {
                   Edit
                 </button>
               )}
+            </div>
+
+            {/* ── Avatar upload (always visible) ── */}
+            <div className="rounded-xl border border-[#2a2a2a] bg-[#141414] p-5 flex items-center gap-5">
+              <div className="w-16 h-16 rounded-2xl bg-zinc-700/20 border border-zinc-700/30 flex items-center justify-center shrink-0 overflow-hidden">
+                {profile?.avatar_url
+                  ? <img src={profile.avatar_url} alt="avatar" className="w-full h-full object-cover" />
+                  : <User className="w-8 h-8 text-zinc-400" />}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-bold text-white mb-0.5">Profile Picture</p>
+                <p className="text-[11px] text-zinc-500 mb-3">JPG or PNG, max 2 MB</p>
+                <label className={`inline-flex items-center gap-2 border border-[#2a2a2a] hover:border-zinc-600 text-zinc-400 hover:text-white text-xs font-bold px-3 py-2 rounded-lg transition-colors cursor-pointer ${avatarUploading ? 'opacity-50 pointer-events-none' : ''}`}>
+                  {avatarUploading ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Uploading…</> : 'Upload Photo'}
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    className="hidden"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file || !user) return;
+                      setAvatarUploading(true);
+                      const supabase = createClient();
+                      const ext = file.name.split('.').pop();
+                      const path = `${user.id}/avatar.${ext}`;
+                      const { error: upErr } = await supabase.storage.from('avatars').upload(path, file, { upsert: true });
+                      if (!upErr) {
+                        const { data } = supabase.storage.from('avatars').getPublicUrl(path);
+                        const url = `${data.publicUrl}?t=${Date.now()}`;
+                        await supabase.from('profiles').upsert({ id: user.id, avatar_url: url, role: profile?.role ?? 'member' });
+                        setProfile((p) => p ? { ...p, avatar_url: url } : p);
+                      }
+                      setAvatarUploading(false);
+                      e.target.value = '';
+                    }}
+                  />
+                </label>
+                {profile?.avatar_url && (
+                  <button
+                    onClick={async () => {
+                      const supabase = createClient();
+                      await supabase.from('profiles').upsert({ id: user!.id, avatar_url: null, role: profile?.role ?? 'member' });
+                      setProfile((p) => p ? { ...p, avatar_url: null } : p);
+                    }}
+                    className="ml-2 text-[11px] text-zinc-600 hover:text-[#E8000D] transition-colors"
+                  >
+                    Remove
+                  </button>
+                )}
+              </div>
             </div>
 
             {/* ── Read-only display ── */}
