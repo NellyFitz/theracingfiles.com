@@ -25,16 +25,16 @@ export default async function AdminReviewPage({ params }: { params: Promise<{ id
   const adminClient = createAdminClient();
   const { data } = await adminClient
     .from('part_submissions')
-    .select('*, creator_profiles(name, handle, bio, software)')
+    .select('*, user_profiles(name, handle, bio, software)')
     .eq('id', id)
     .single();
 
   if (!data) notFound();
   const sub = data as PartSubmission & {
-    creator_profiles: { name: string; handle: string; bio: string | null; software: string | null };
+    user_profiles: { name: string; handle: string; bio: string | null; software: string | null };
   };
 
-  const creator = sub.creator_profiles;
+  const creator = sub.user_profiles;
 
   return (
     <main className="min-h-screen">

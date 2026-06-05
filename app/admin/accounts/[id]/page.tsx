@@ -35,7 +35,7 @@ export default async function AdminAccountDetailPage({ params }: { params: Promi
   const adminClient = createAdminClient();
 
   const { data: profile } = await adminClient
-    .from('creator_profiles')
+    .from('user_profiles')
     .select('*')
     .eq('id', id)
     .single();

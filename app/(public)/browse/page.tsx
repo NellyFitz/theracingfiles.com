@@ -167,7 +167,7 @@ export default function BrowsePage() {
   useEffect(() => {
     createClient()
       .from('part_submissions')
-      .select('*, creator_profiles(name, handle)')
+      .select('*, user_profiles(name, handle)')
       .eq('status', 'approved')
       .order('published_at', { ascending: false })
       .then(({ data }) => {

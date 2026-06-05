@@ -2,7 +2,7 @@ import type { Product } from './types';
 import type { PartSubmission } from './supabase/db-types';
 
 type SubWithCreator = PartSubmission & {
-  creator_profiles?: { name: string; handle: string } | null;
+  user_profiles?: { name: string; handle: string } | null;
 };
 
 export function subToProduct(sub: SubWithCreator): Product {

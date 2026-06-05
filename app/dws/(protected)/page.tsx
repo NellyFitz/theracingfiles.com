@@ -24,7 +24,7 @@ export default async function AdminDashboard({
 
   let query = supabase
     .from('part_submissions')
-    .select('*, creator_profiles(name, handle, bio, software, experience_level)')
+    .select('*, user_profiles(name, handle, bio, software, experience_level)')
     .order('created_at', { ascending: true });
 
   if (status !== 'all') {
@@ -33,7 +33,7 @@ export default async function AdminDashboard({
 
   const { data: submissions } = await query;
   const subs = (submissions ?? []) as (PartSubmission & {
-    creator_profiles: { name: string; handle: string; bio: string | null; software: string | null; experience_level: string | null } | null;
+    user_profiles: { name: string; handle: string; bio: string | null; software: string | null; experience_level: string | null } | null;
   })[];
 
   return (

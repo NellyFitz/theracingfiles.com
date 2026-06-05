@@ -29,7 +29,7 @@ export async function POST(request: Request) {
 
   const adminClient = createAdminClient();
   const { error } = await adminClient
-    .from('creator_profiles')
+    .from('user_profiles')
     .update(updates)
     .eq('id', creatorId);
 

@@ -11,7 +11,7 @@ import SubmissionStatusBadge from '@/components/SubmissionStatusBadge';
 import type { PartSubmission, SubmissionStatus } from '@/lib/supabase/db-types';
 
 type Sub = PartSubmission & {
-  creator_profiles: { name: string; handle: string; bio: string | null; software: string | null; experience_level: string | null } | null;
+  user_profiles: { name: string; handle: string; bio: string | null; software: string | null; experience_level: string | null } | null;
 };
 
 function formatDate(iso: string) {
@@ -138,7 +138,7 @@ function ReviewModal({ sub, onClose, onUpdated }: {
                 <InfoRow label="Bed Temp" value={sub.print_bed_temp} />
               </div>
 
-              {sub.creator_profiles && (
+              {sub.user_profiles && (
                 <div className="rounded-xl border border-[#2a2a2a] bg-[#0d0d0d] p-4">
                   <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-600 mb-3">Creator</p>
                   <div className="flex items-center gap-2 mb-2">
@@ -146,15 +146,15 @@ function ReviewModal({ sub, onClose, onUpdated }: {
                       <User className="w-3.5 h-3.5 text-zinc-500" />
                     </div>
                     <div>
-                      <p className="text-xs font-bold text-white">{sub.creator_profiles.name}</p>
-                      <p className="text-[10px] text-zinc-500">@{sub.creator_profiles.handle}</p>
+                      <p className="text-xs font-bold text-white">{sub.user_profiles.name}</p>
+                      <p className="text-[10px] text-zinc-500">@{sub.user_profiles.handle}</p>
                     </div>
                   </div>
-                  {sub.creator_profiles.experience_level && (
-                    <p className="text-[10px] text-zinc-600">{sub.creator_profiles.experience_level}</p>
+                  {sub.user_profiles.experience_level && (
+                    <p className="text-[10px] text-zinc-600">{sub.user_profiles.experience_level}</p>
                   )}
-                  {sub.creator_profiles.software && (
-                    <p className="text-[10px] text-zinc-600 mt-0.5">Software: {sub.creator_profiles.software}</p>
+                  {sub.user_profiles.software && (
+                    <p className="text-[10px] text-zinc-600 mt-0.5">Software: {sub.user_profiles.software}</p>
                   )}
                 </div>
               )}
@@ -377,7 +377,7 @@ export default function ScansPageClient({
                     </p>
                   </div>
                   <div className="hidden sm:block">
-                    <p className="text-xs text-zinc-400">@{sub.creator_profiles?.handle ?? '—'}</p>
+                    <p className="text-xs text-zinc-400">@{sub.user_profiles?.handle ?? '—'}</p>
                     <p className="text-xs text-zinc-600">{formatDate(sub.created_at)}</p>
                   </div>
                   <div className="hidden sm:flex items-center gap-3">

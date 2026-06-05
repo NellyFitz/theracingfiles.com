@@ -163,7 +163,7 @@ export default function SignupPage() {
 
     const resolvedHandle = handle || generateHandle(firstName, lastName);
 
-    const { error: creatorError } = await supabase.from('creator_profiles').insert({
+    const { error: creatorError } = await supabase.from('user_profiles').insert({
       id: user.id,
       name: `${firstName} ${lastName}`.trim(),
       handle: resolvedHandle.toLowerCase().replace(/[^a-z0-9_]/g, ''),

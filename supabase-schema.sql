@@ -5,7 +5,7 @@
 
 -- ── Creator Profiles ────────────────────────────────────────
 -- Extends auth.users — one row per creator account
-create table if not exists public.creator_profiles (
+create table if not exists public.user_profiles (
   id uuid references auth.users on delete cascade primary key,
   name text not null,
   handle text unique not null,
@@ -22,7 +22,7 @@ create table if not exists public.creator_profiles (
 -- ── Part Submissions ─────────────────────────────────────────
 create table if not exists public.part_submissions (
   id uuid primary key default gen_random_uuid(),
-  creator_id uuid references public.creator_profiles on delete cascade not null,
+  creator_id uuid references public.user_profiles on delete cascade not null,
 
   -- Part identity
   name text not null,
@@ -95,19 +95,19 @@ create trigger set_part_submissions_updated_at
 -- Row Level Security
 -- ============================================================
 
-alter table public.creator_profiles enable row level security;
+alter table public.user_profiles enable row level security;
 alter table public.part_submissions enable row level security;
 
 -- Creator profiles: anyone can read, only owner can write
 create policy "Public profiles are viewable by all"
-  on public.creator_profiles for select using (true);
+  on public.user_profiles for select using (true);
 
 create policy "Creators can insert their own profile"
-  on public.creator_profiles for insert
+  on public.user_profiles for insert
   with check (auth.uid() = id);
 
 create policy "Creators can update their own profile"
-  on public.creator_profiles for update
+  on public.user_profiles for update
   using (auth.uid() = id);
 
 -- Part submissions: creators see only their own; admins see all

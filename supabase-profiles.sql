@@ -23,11 +23,11 @@ CREATE POLICY "own profile insert" ON profiles FOR INSERT WITH CHECK (auth.uid()
 CREATE POLICY "own profile update" ON profiles FOR UPDATE USING (auth.uid() = id);
 
 -- ============================================================
--- creator_profiles: keep as-is, but role in profiles governs
+-- user_profiles: keep as-is, but role in profiles governs
 -- access. Drop the address columns we added earlier since they
 -- now live in profiles (run only if you ran the previous migration).
 -- ============================================================
--- ALTER TABLE creator_profiles
+-- ALTER TABLE user_profiles
 --   DROP COLUMN IF EXISTS address_line1,
 --   DROP COLUMN IF EXISTS address_line2,
 --   DROP COLUMN IF EXISTS city,

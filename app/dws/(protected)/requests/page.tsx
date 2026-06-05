@@ -7,7 +7,7 @@ export default async function RequestsPage() {
 
   const [requestsRes, creatorsRes] = await Promise.all([
     admin.from('part_requests').select('*').order('created_at', { ascending: false }),
-    admin.from('creator_profiles').select('id, name, handle, vehicle_specialties, experience_level, approved, verified').eq('approved', true),
+    admin.from('user_profiles').select('id, name, handle, vehicle_specialties, experience_level, approved, verified').eq('approved', true),
   ]);
 
   return (

@@ -219,7 +219,7 @@ export default function SubmitPartPage() {
     }
 
     const { data: profile } = await supabase
-      .from('creator_profiles')
+      .from('user_profiles')
       .select('name, handle')
       .eq('id', user.id)
       .single();

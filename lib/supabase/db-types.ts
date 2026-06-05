@@ -51,7 +51,7 @@ export interface PartSubmission {
   published_at: string | null;
   created_at: string;
   updated_at: string;
-  creator_profiles?: CreatorProfile;
+  user_profiles?: CreatorProfile;
 }
 
 export interface CreatorApplication {

@@ -17,7 +17,7 @@ export default async function CreatorDashboard() {
   if (!user) redirect('/creator/login');
 
   const { data: profile } = await supabase
-    .from('creator_profiles')
+    .from('user_profiles')
     .select('*')
     .eq('id', user.id)
     .single();

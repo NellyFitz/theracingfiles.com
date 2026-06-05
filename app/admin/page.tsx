@@ -43,7 +43,7 @@ export default async function AdminDashboard({
   // Fetch filtered submissions with creator info
   let query = supabase
     .from('part_submissions')
-    .select('*, creator_profiles(name, handle)')
+    .select('*, user_profiles(name, handle)')
     .order('created_at', { ascending: true });
 
   if (status !== 'all') {
@@ -51,7 +51,7 @@ export default async function AdminDashboard({
   }
 
   const { data: submissions } = await query;
-  const subs = (submissions ?? []) as (PartSubmission & { creator_profiles: { name: string; handle: string } })[];
+  const subs = (submissions ?? []) as (PartSubmission & { user_profiles: { name: string; handle: string } })[];
 
   const tabs: { key: string; label: string; icon: React.ElementType; color: string }[] = [
     { key: 'pending', label: 'Pending', icon: Clock, color: 'text-amber-400' },
@@ -142,7 +142,7 @@ export default async function AdminDashboard({
                   </div>
                   <div className="hidden sm:block">
                     <p className="text-xs text-zinc-400">
-                      @{sub.creator_profiles?.handle ?? '—'}
+                      @{sub.user_profiles?.handle ?? '—'}
                     </p>
                     <p className="text-xs text-zinc-600">{formatDate(sub.created_at)}</p>
                   </div>

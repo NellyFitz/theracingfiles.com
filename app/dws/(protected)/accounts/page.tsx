@@ -17,7 +17,7 @@ export default async function AdminAccountsPage({
   const adminClient = createAdminClient();
 
   const { data: allProfiles } = await adminClient
-    .from('creator_profiles')
+    .from('user_profiles')
     .select('id, verified, approved');
 
   const counts = {
@@ -27,7 +27,7 @@ export default async function AdminAccountsPage({
   };
 
   let query = adminClient
-    .from('creator_profiles')
+    .from('user_profiles')
     .select('*')
     .order('created_at', { ascending: true });
 
