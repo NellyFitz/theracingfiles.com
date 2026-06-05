@@ -71,7 +71,7 @@ function CheckoutModal({
     try {
       const supabase = createClient();
 
-      // Fetch file URLs for all file-tier items
+      // Fetch live file URLs for the download screen
       const files: PurchasedFile[] = [];
       for (const item of fileItems) {
         const { data } = await supabase
@@ -88,22 +88,18 @@ function CheckoutModal({
         });
       }
 
-      // Save purchase records for logged-in users
+      // Save purchase records — store submission_id reference only so
+      // the member's download library always fetches live file URLs
       if (user) {
-        const rows = items.map((item) => {
-          const f = files.find((f) => f.productId === item.productId);
-          return {
-            user_id: user.id,
-            submission_id: item.productId,
-            product_name: item.productName,
-            tier: item.tier,
-            price_paid: item.price ?? 0,
-            stl_url: f?.stl_url ?? null,
-            threemf_url: f?.threemf_url ?? null,
-            step_url: f?.step_url ?? null,
-          };
-        });
-        await supabase.from('user_purchases').insert(rows);
+        const rows = items.map((item) => ({
+          user_id: user.id,
+          submission_id: item.productId,
+          product_name: item.productName,
+          tier: item.tier,
+          price_paid: item.price ?? 0,
+        }));
+        const { error: insertError } = await supabase.from('user_purchases').insert(rows);
+        if (insertError) throw new Error(insertError.message);
       }
 
       setPurchasedFiles(files);

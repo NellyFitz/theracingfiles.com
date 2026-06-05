@@ -22,13 +22,15 @@ interface Profile {
 
 interface Purchase {
   id: string;
+  submission_id: string | null;
   product_name: string;
   tier: 'file' | 'printed' | 'finished';
   price_paid: number;
-  stl_url: string | null;
-  threemf_url: string | null;
-  step_url: string | null;
   created_at: string;
+  // joined from part_submissions
+  stl_url?: string | null;
+  threemf_url?: string | null;
+  step_url?: string | null;
 }
 
 const tierIcon = { file: FileDown, printed: Printer, finished: Wrench };
@@ -67,11 +69,22 @@ export default function AccountPage() {
 
       const [{ data: prof }, { data: purch }] = await Promise.all([
         supabase.from('profiles').select('first_name,last_name,address_line1,city,state,zip,role').eq('id', user.id).single(),
-        supabase.from('user_purchases').select('*').eq('user_id', user.id).order('created_at', { ascending: false }),
+        supabase
+          .from('user_purchases')
+          .select('*, part_submissions(stl_url, threemf_url, step_url)')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false }),
       ]);
 
       setProfile(prof ?? null);
-      setPurchases(purch ?? []);
+      // Flatten joined part_submissions file URLs into each purchase row
+      const flat = (purch ?? []).map((p: any) => ({
+        ...p,
+        stl_url: p.part_submissions?.stl_url ?? null,
+        threemf_url: p.part_submissions?.threemf_url ?? null,
+        step_url: p.part_submissions?.step_url ?? null,
+      }));
+      setPurchases(flat);
       setLoading(false);
     });
   }, [router]);
