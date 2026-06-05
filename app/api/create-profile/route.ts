@@ -14,8 +14,7 @@ export async function POST(req: NextRequest) {
 
   const admin = createAdminClient();
 
-  const { error } = await admin.from('profiles').upsert({
-    id: userId,
+  const { error } = await admin.from('profiles').update({
     first_name: firstName ?? null,
     last_name: lastName ?? null,
     address_line1: address1 ?? null,
@@ -24,7 +23,7 @@ export async function POST(req: NextRequest) {
     state: state ?? null,
     zip: zip ?? null,
     role,
-  });
+  }).eq('id', userId);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ ok: true });
