@@ -129,22 +129,25 @@ export default function SignupPage() {
 
     const supabase = createClient();
     const userId = signedUpUserId ?? (await supabase.auth.getUser()).data.user?.id;
-    if (!userId) { setError('Session expired — please sign in again.'); setLoading(false); return; }
+    if (!userId) { setError('Could not create account. Please try again.'); setLoading(false); return; }
 
-    // Insert universal profile
-    const { error: profileError } = await supabase.from('profiles').upsert({
-      id: userId,
-      first_name: firstName,
-      last_name: lastName,
-      address_line1: address1,
-      address_line2: address2 || null,
-      city,
-      state,
-      zip,
-      role: accountType === 'creator' ? 'creator' : 'member',
+    const res = await fetch('/api/create-profile', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userId,
+        firstName,
+        lastName,
+        address1,
+        address2: address2 || null,
+        city,
+        state,
+        zip,
+        role: accountType === 'creator' ? 'creator' : 'member',
+      }),
     });
-
-    if (profileError) { setError(profileError.message); setLoading(false); return; }
+    const json = await res.json();
+    if (!res.ok) { setError(json.error ?? 'Failed to save profile.'); setLoading(false); return; }
 
     // Members are done; creators continue to the application step
     if (accountType === 'member') {
