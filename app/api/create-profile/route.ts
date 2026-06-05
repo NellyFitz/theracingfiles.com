@@ -13,8 +13,10 @@ export async function POST(req: NextRequest) {
   }
 
   const admin = createAdminClient();
+  const fullName = [firstName, lastName].filter(Boolean).join(' ') || null;
 
-  const { error } = await admin.from('profiles').update({
+  // Update profiles table
+  const { error: profilesError } = await admin.from('profiles').update({
     first_name: firstName ?? null,
     last_name: lastName ?? null,
     address_line1: address1 ?? null,
@@ -25,6 +27,25 @@ export async function POST(req: NextRequest) {
     role,
   }).eq('id', userId);
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (profilesError) return NextResponse.json({ error: profilesError.message }, { status: 500 });
+
+  // Update user_profiles table (shared by members and creators)
+  const { error: upError } = await admin.from('user_profiles').update({
+    name: fullName,
+    role,
+  }).eq('id', userId);
+
+  // user_profiles row may not exist yet if trigger hasn't fired — upsert as fallback
+  if (upError) {
+    await admin.from('user_profiles').upsert({
+      id: userId,
+      name: fullName,
+      handle: userId,
+      role,
+      verified: false,
+      approved: false,
+    });
+  }
+
   return NextResponse.json({ ok: true });
 }
