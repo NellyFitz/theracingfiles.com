@@ -283,7 +283,7 @@ export default function AccountPage() {
                   <p className="text-xs text-zinc-500 mb-4 leading-relaxed">
                     Apply for a Creator account to upload and sell 3D printable parts on the marketplace. Applications are reviewed within 48 hours.
                   </p>
-                  <Link href="/creator/signup?type=creator" className="inline-flex items-center gap-2 btn-primary px-5 py-2.5 text-xs rounded-xl">
+                  <Link href="/creator/apply" className="inline-flex items-center gap-2 btn-primary px-5 py-2.5 text-xs rounded-xl">
                     Apply to Become a Creator <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                 </div>
@@ -666,7 +666,7 @@ export default function AccountPage() {
             </div>
 
             <Link
-              href="/creator/signup?type=creator"
+              href="/creator/apply"
               className="w-full btn-primary py-3.5 text-sm rounded-xl flex items-center justify-center gap-2"
             >
               Apply to Become a Creator <ArrowRight className="w-4 h-4" />
