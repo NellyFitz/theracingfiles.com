@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { Menu, X, Search, LayoutDashboard, ShoppingCart, Settings, LogOut } from 'lucide-react';
+import { Menu, X, Search, LayoutDashboard, ShoppingCart } from 'lucide-react';
 import Image from 'next/image';
 import { createClient } from '@/lib/supabase/client';
 import { useCart } from '@/lib/cart';
@@ -20,7 +20,6 @@ export default function Navbar() {
   const [user, setUser] = useState<User | null>(null);
   const [role, setRole] = useState<'member' | 'creator' | null>(null);
   const [scrolled, setScrolled] = useState(false);
-  const [gearOpen, setGearOpen] = useState(false);
   const { count: cartCount } = useCart();
 
   async function fetchRole(userId: string) {
@@ -113,35 +112,6 @@ export default function Navbar() {
                   <LayoutDashboard className="w-3.5 h-3.5" />
                   Dashboard
                 </Link>
-                <div className="relative">
-                  <button
-                    onClick={() => setGearOpen((o) => !o)}
-                    className="text-zinc-500 hover:text-white transition-colors p-1"
-                    title="Settings"
-                  >
-                    <Settings className="w-4 h-4" />
-                  </button>
-                  {gearOpen && (
-                    <>
-                      <div className="fixed inset-0 z-40" onClick={() => setGearOpen(false)} />
-                      <div className="absolute right-0 top-8 z-50 w-40 bg-[#111] border border-[#222] rounded-xl shadow-xl overflow-hidden">
-                        <Link
-                          href={role === 'creator' ? '/creator/dashboard?tab=settings' : '/account?tab=profile'}
-                          className="flex items-center gap-2.5 px-4 py-3 text-xs font-bold uppercase tracking-widest text-zinc-400 hover:text-white hover:bg-[#1a1a1a] transition-colors"
-                          onClick={() => setGearOpen(false)}
-                        >
-                          <Settings className="w-3.5 h-3.5" /> Settings
-                        </Link>
-                        <button
-                          onClick={handleSignOut}
-                          className="w-full flex items-center gap-2.5 px-4 py-3 text-xs font-bold uppercase tracking-widest text-zinc-400 hover:text-red-400 hover:bg-[#1a1a1a] transition-colors border-t border-[#222]"
-                        >
-                          <LogOut className="w-3.5 h-3.5" /> Log Out
-                        </button>
-                      </div>
-                    </>
-                  )}
-                </div>
               </div>
             ) : (
               <Link href="/creator/login"
@@ -178,15 +148,6 @@ export default function Navbar() {
                     onClick={() => setMobileOpen(false)}>
                     <LayoutDashboard className="w-3.5 h-3.5" /> Dashboard
                   </Link>
-                  <Link href={role === 'creator' ? '/creator/dashboard?tab=settings' : '/account?tab=profile'}
-                    className="text-xs font-bold uppercase tracking-widest text-zinc-400 hover:text-white flex items-center gap-2"
-                    onClick={() => setMobileOpen(false)}>
-                    <Settings className="w-3.5 h-3.5" /> Settings
-                  </Link>
-                  <button onClick={handleSignOut}
-                    className="text-xs font-bold uppercase tracking-widest text-zinc-600 hover:text-red-400 text-left flex items-center gap-2">
-                    <LogOut className="w-3.5 h-3.5" /> Log Out
-                  </button>
                 </>
               ) : (
                 <Link href="/creator/login"
