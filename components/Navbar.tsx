@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { Menu, X, Search, LayoutDashboard, LogOut, ShoppingCart } from 'lucide-react';
+import { Menu, X, Search, LayoutDashboard, ShoppingCart } from 'lucide-react';
 import Image from 'next/image';
 import { createClient } from '@/lib/supabase/client';
 import { useCart } from '@/lib/cart';
@@ -112,10 +112,6 @@ export default function Navbar() {
                   <LayoutDashboard className="w-3.5 h-3.5" />
                   Dashboard
                 </Link>
-                <button onClick={handleSignOut}
-                  className="text-zinc-600 hover:text-red-400 transition-colors" title="Sign out">
-                  <LogOut className="w-4 h-4" />
-                </button>
               </div>
             ) : (
               <Link href="/creator/login"
@@ -152,10 +148,6 @@ export default function Navbar() {
                     onClick={() => setMobileOpen(false)}>
                     <LayoutDashboard className="w-3.5 h-3.5" /> Dashboard
                   </Link>
-                  <button onClick={handleSignOut}
-                    className="text-xs font-bold uppercase tracking-widest text-zinc-600 hover:text-red-400 text-left flex items-center gap-2">
-                    <LogOut className="w-3.5 h-3.5" /> Sign Out
-                  </button>
                 </>
               ) : (
                 <Link href="/creator/login"
