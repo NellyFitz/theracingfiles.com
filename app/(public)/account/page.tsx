@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   User, Download, ShoppingBag, Wrench, ArrowRight, Loader2,
-  FileDown, Printer, Package, Settings, Mail, MapPin, Star, CheckCircle2, Bookmark,
+  FileDown, Printer, Package, Settings, Mail, MapPin, Star, CheckCircle2, Bookmark, LogOut,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
@@ -62,6 +62,7 @@ export default function AccountPage() {
   const [savedParts, setSavedParts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<Tab>('overview');
+  const [gearOpen, setGearOpen] = useState(false);
 
   // Profile edit state
   const [editMode, setEditMode] = useState(false);
@@ -122,6 +123,12 @@ export default function AccountPage() {
     return () => subscription.unsubscribe();
   }, [router]);
 
+  const handleSignOut = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push('/creator/login');
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -150,20 +157,52 @@ export default function AccountPage() {
       {/* Header */}
       <section className="border-b border-[#1e1e1e] bg-[#0a0a0a]">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-2xl bg-zinc-700/20 border border-zinc-700/30 flex items-center justify-center shrink-0 overflow-hidden">
-              {profile?.avatar_url
-                ? <img src={profile.avatar_url} alt="avatar" className="w-full h-full object-cover" />
-                : <User className="w-8 h-8 text-zinc-400" />}
-            </div>
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-[10px] font-black uppercase tracking-widest text-zinc-600 border border-zinc-700/40 px-2 py-0.5 rounded">
-                  Member
-                </span>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 rounded-2xl bg-zinc-700/20 border border-zinc-700/30 flex items-center justify-center shrink-0 overflow-hidden">
+                {profile?.avatar_url
+                  ? <img src={profile.avatar_url} alt="avatar" className="w-full h-full object-cover" />
+                  : <User className="w-8 h-8 text-zinc-400" />}
               </div>
-              <h1 className="text-2xl font-black text-white leading-tight">{displayName}</h1>
-              <p className="text-xs text-zinc-500 mt-0.5">{user?.email}</p>
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-zinc-600 border border-zinc-700/40 px-2 py-0.5 rounded">
+                    Member
+                  </span>
+                </div>
+                <h1 className="text-2xl font-black text-white leading-tight">{displayName}</h1>
+                <p className="text-xs text-zinc-500 mt-0.5">{user?.email}</p>
+              </div>
+            </div>
+
+            {/* Gear dropdown */}
+            <div className="relative">
+              <button
+                onClick={() => setGearOpen((o) => !o)}
+                className="text-zinc-500 hover:text-white transition-colors p-2"
+                title="Settings"
+              >
+                <Settings className="w-5 h-5" />
+              </button>
+              {gearOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setGearOpen(false)} />
+                  <div className="absolute right-0 top-10 z-50 w-44 bg-[#111] border border-[#222] rounded-xl shadow-xl overflow-hidden">
+                    <button
+                      onClick={() => { setTab('profile'); setGearOpen(false); }}
+                      className="w-full flex items-center gap-2.5 px-4 py-3 text-xs font-bold uppercase tracking-widest text-zinc-400 hover:text-white hover:bg-[#1a1a1a] transition-colors"
+                    >
+                      <Settings className="w-3.5 h-3.5" /> Settings
+                    </button>
+                    <button
+                      onClick={handleSignOut}
+                      className="w-full flex items-center gap-2.5 px-4 py-3 text-xs font-bold uppercase tracking-widest text-zinc-400 hover:text-red-400 hover:bg-[#1a1a1a] transition-colors border-t border-[#222]"
+                    >
+                      <LogOut className="w-3.5 h-3.5" /> Log Out
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           </div>
 
