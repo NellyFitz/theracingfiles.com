@@ -79,6 +79,9 @@ export default function AccountPage() {
 
   useEffect(() => {
     const supabase = createClient();
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
+      if (!session) router.push('/creator/login');
+    });
     supabase.auth.getUser().then(async ({ data: { user } }) => {
       if (!user) { router.push('/creator/login'); return; }
       setUser(user);
@@ -116,6 +119,7 @@ export default function AccountPage() {
       setSavedParts(saved ?? []);
       setLoading(false);
     });
+    return () => subscription.unsubscribe();
   }, [router]);
 
   if (loading) {
