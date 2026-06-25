@@ -1,4 +1,4 @@
-import { redirect, notFound } from 'next/navigation';
+import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, FileBox } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
@@ -7,7 +7,6 @@ import AdminNav from '@/components/AdminNav';
 import AccountActions from './AccountActions';
 import SubmissionStatusBadge from '@/components/SubmissionStatusBadge';
 import type { CreatorProfile, PartSubmission } from '@/lib/supabase/db-types';
-import { use } from 'react';
 
 function InfoRow({ label, value }: { label: string; value: string | boolean | null | undefined }) {
   const display = typeof value === 'boolean' ? (value ? 'Yes' : 'No') : value;
@@ -24,7 +23,7 @@ function formatDate(iso: string) {
 }
 
 export default async function AdminAccountDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+  const { id } = await params;
 
   const authClient = await createClient();
   const { data: { user } } = await authClient.auth.getUser();
@@ -40,7 +39,7 @@ export default async function AdminAccountDetailPage({ params }: { params: Promi
     .eq('id', id)
     .single();
 
-  if (!profile) notFound();
+  if (!profile) redirect('/admin/accounts');
   const creator = profile as CreatorProfile;
 
   const { data: submissions } = await adminClient

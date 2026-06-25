@@ -1,12 +1,11 @@
-import { notFound } from 'next/navigation';
+import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, FileBox } from 'lucide-react';
+import { ArrowLeft, FileBox, User } from 'lucide-react';
 import { createAdminClient } from '@/lib/supabase/admin';
 import DwsNav from '@/components/DwsNav';
 import AccountActions from './AccountActions';
 import SubmissionStatusBadge from '@/components/SubmissionStatusBadge';
 import type { CreatorProfile, PartSubmission } from '@/lib/supabase/db-types';
-import { use } from 'react';
 
 function InfoRow({ label, value }: { label: string; value: string | boolean | null | undefined }) {
   const display = typeof value === 'boolean' ? (value ? 'Yes' : 'No') : value;
@@ -23,7 +22,7 @@ function formatDate(iso: string) {
 }
 
 export default async function AdminAccountDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+  const { id } = await params;
 
   const adminClient = createAdminClient();
 
@@ -33,8 +32,28 @@ export default async function AdminAccountDetailPage({ params }: { params: Promi
     .eq('id', id)
     .single();
 
-  if (!profile) notFound();
-  const creator = profile as CreatorProfile;
+  // Fall back to profiles table if user_profiles row doesn't exist
+  const { data: baseProfile } = await adminClient
+    .from('profiles')
+    .select('first_name, last_name, role')
+    .eq('id', id)
+    .single();
+
+  if (!profile && !baseProfile) redirect('/dws/accounts');
+
+  const creator = (profile ?? {
+    id,
+    name: [baseProfile?.first_name, baseProfile?.last_name].filter(Boolean).join(' ') || 'Unknown User',
+    handle: id.slice(0, 8),
+    bio: null,
+    website: null,
+    software: null,
+    experience_level: null,
+    vehicle_specialties: null,
+    verified: false,
+    approved: false,
+    created_at: new Date().toISOString(),
+  }) as CreatorProfile;
 
   const { data: submissions } = await adminClient
     .from('part_submissions')
