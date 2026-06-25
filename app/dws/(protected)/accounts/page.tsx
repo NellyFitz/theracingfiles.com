@@ -1,7 +1,8 @@
 import Link from 'next/link';
-import { CheckCircle, XCircle, Clock, ArrowRight, User } from 'lucide-react';
+import { CheckCircle, Clock, User } from 'lucide-react';
 import { createAdminClient } from '@/lib/supabase/admin';
 import DwsNav from '@/components/DwsNav';
+import AccountsClient from './AccountsClient';
 import type { CreatorProfile } from '@/lib/supabase/db-types';
 
 function formatDate(iso: string) {
@@ -92,55 +93,8 @@ export default async function AdminAccountsPage({
           ))}
         </div>
 
-        {/* List */}
-        {creators.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-[#2a2a2a] p-12 text-center">
-            <CheckCircle className="w-10 h-10 text-zinc-700 mx-auto mb-3" />
-            <p className="text-base font-bold text-white mb-1">No accounts here</p>
-            <p className="text-sm text-zinc-500">No creator accounts with this status.</p>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {creators.map((creator) => (
-              <Link
-                key={creator.id}
-                href={`/dws/accounts/${creator.id}`}
-                className="flex items-center gap-4 rounded-xl border border-[#2a2a2a] bg-[#141414] p-4 hover:border-[#39ff14]/30 transition-colors group"
-              >
-                <div className="w-12 h-12 rounded-xl bg-[#252525] border border-[#2a2a2a] flex items-center justify-center shrink-0">
-                  <span className="text-lg font-black text-[#39ff14]">{creator.name.charAt(0)}</span>
-                </div>
-
-                <div className="flex-1 min-w-0 grid grid-cols-1 sm:grid-cols-3 gap-1 sm:gap-4">
-                  <div className="min-w-0">
-                    <p className="text-sm font-bold text-white group-hover:text-[#39ff14] transition-colors truncate">
-                      {creator.name}
-                    </p>
-                    <p className="text-xs text-zinc-500">@{creator.handle}</p>
-                  </div>
-                  <div className="hidden sm:block">
-                    <p className="text-xs text-zinc-400 truncate">{creator.vehicle_specialties ?? '—'}</p>
-                    <p className="text-xs text-zinc-600">{creator.experience_level ?? '—'}</p>
-                  </div>
-                  <div className="hidden sm:block">
-                    <p className="text-xs text-zinc-600">Joined {formatDate(creator.created_at)}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3 shrink-0">
-                  <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${
-                    creator.verified && creator.approved
-                      ? 'bg-[#39ff14]/10 text-[#39ff14]'
-                      : 'bg-amber-500/10 text-amber-400'
-                  }`}>
-                    {creator.verified && creator.approved ? 'Verified' : 'Pending'}
-                  </span>
-                  <ArrowRight className="w-4 h-4 text-zinc-600 group-hover:text-[#39ff14] transition-colors" />
-                </div>
-              </Link>
-            ))}
-          </div>
-        )}
+        {/* List with modal */}
+        <AccountsClient creators={creators} />
       </div>
     </main>
   );
