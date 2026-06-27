@@ -76,10 +76,10 @@ export default function StorefrontPage({ params }: { params: Promise<{ handle: s
 
       {/* Profile header */}
       <div className="border-b border-[#1e1e1e] bg-[#080808]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-end gap-5 -mt-10 pb-6 flex-wrap">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex items-center gap-5 flex-wrap">
             {/* Avatar */}
-            <div className="w-20 h-20 rounded-2xl border-2 border-[#080808] overflow-hidden bg-[#1e1e1e] shrink-0">
+            <div className="w-20 h-20 rounded-2xl border-2 border-[#2a2a2a] overflow-hidden bg-[#1e1e1e] shrink-0">
               {creator.avatar_url
                 ? <img src={creator.avatar_url} alt={creator.name} className="w-full h-full object-cover" />
                 : <div className="w-full h-full flex items-center justify-center">
@@ -88,7 +88,7 @@ export default function StorefrontPage({ params }: { params: Promise<{ handle: s
               }
             </div>
 
-            <div className="flex-1 min-w-0 pt-3">
+            <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1 flex-wrap">
                 <h1 className="text-2xl font-black text-white">{creator.name}</h1>
                 {creator.verified && (
@@ -100,7 +100,7 @@ export default function StorefrontPage({ params }: { params: Promise<{ handle: s
               <p className="text-sm text-zinc-500">@{creator.handle}</p>
             </div>
 
-            <div className="shrink-0 text-right pb-1">
+            <div className="shrink-0 text-right">
               <p className="text-2xl font-black text-white">{listings.length}</p>
               <p className="text-[10px] text-zinc-600 uppercase tracking-widest">Listing{listings.length !== 1 ? 's' : ''}</p>
             </div>
