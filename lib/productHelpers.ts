@@ -32,6 +32,8 @@ export function subToProduct(sub: SubWithCreator): Product {
     badges: [],
     imageUrl: sub.images?.[0] ?? '',
     creatorId: sub.creator_id,
+    creatorName: sub.user_profiles?.name ?? '',
+    creatorHandle: sub.user_profiles?.handle ?? '',
     rating: 0,
     reviewCount: 0,
     description: sub.description ?? '',

@@ -65,6 +65,8 @@ export interface Product {
   badges: Badge[];
   imageUrl: string;
   creatorId: string;
+  creatorName: string;
+  creatorHandle: string;
   rating: number;
   reviewCount: number;
   description: string;

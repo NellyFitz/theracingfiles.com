@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Star, Download, Printer, Wrench, Bookmark } from 'lucide-react';
 import type { Product } from '@/lib/types';
 import Badge from './Badge';
@@ -24,6 +25,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   const [saved, setSaved] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [toggling, setToggling] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const supabase = createClient();
@@ -63,9 +65,9 @@ export default function ProductCard({ product }: ProductCardProps) {
   }
 
   return (
-    <Link
-      href={`/products/${product.slug}`}
-      className="group block rounded-xl border border-[#2a2a2a] bg-[#141414] overflow-hidden card-hover"
+    <div
+      className="group block rounded-xl border border-[#2a2a2a] bg-[#141414] overflow-hidden card-hover cursor-pointer"
+      onClick={() => router.push(`/products/${product.slug}`)}
     >
       {/* Image */}
       <div className="relative h-48 bg-[#1a1a1a] grid-bg overflow-hidden">
@@ -155,7 +157,25 @@ export default function ProductCard({ product }: ProductCardProps) {
             </div>
           )}
         </div>
+
+        {/* Creator badge */}
+        {product.creatorHandle && (
+          <Link
+            href={`/store/${product.creatorHandle}`}
+            onClick={(e) => e.stopPropagation()}
+            className="flex items-center gap-2 mt-3 pt-3 border-t border-[#1e1e1e] group/creator"
+          >
+            <div className="w-5 h-5 rounded-full bg-[#252525] border border-[#2a2a2a] flex items-center justify-center shrink-0">
+              <span className="text-[9px] font-black text-[#39ff14]">
+                {product.creatorName?.charAt(0) ?? '?'}
+              </span>
+            </div>
+            <span className="text-[10px] text-zinc-600 group-hover/creator:text-[#39ff14] transition-colors truncate">
+              @{product.creatorHandle}
+            </span>
+          </Link>
+        )}
       </div>
-    </Link>
+    </div>
   );
 }
