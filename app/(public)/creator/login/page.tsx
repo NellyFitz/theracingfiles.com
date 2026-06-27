@@ -116,8 +116,24 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-16">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen relative flex items-center justify-center px-4 py-16">
+      {/* Background image */}
+      <div className="absolute inset-0 z-0">
+        <Image
+          src="/login-bg.jpg"
+          alt=""
+          fill
+          className="object-cover object-center"
+          priority
+        />
+        {/* Dark overlay so the form stays readable */}
+        <div className="absolute inset-0 bg-black/60" />
+        {/* Subtle red vignette from bottom */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#E8000D]/10 via-transparent to-black/40" />
+      </div>
+
+      {/* Form card */}
+      <div className="relative z-10 w-full max-w-md">
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 mb-6">
             <Image src="/rf-logo.png" alt="The Racing Files" width={36} height={36} className="object-contain" />
@@ -126,10 +142,10 @@ export default function LoginPage() {
             </span>
           </Link>
           <h1 className="text-3xl font-black text-white mb-2">Sign In</h1>
-          <p className="text-sm text-zinc-500">Welcome back — sign in to your account.</p>
+          <p className="text-sm text-zinc-400">Welcome back — sign in to your account.</p>
         </div>
 
-        <div className="rounded-2xl border border-[#2a2a2a] bg-[#141414] p-8">
+        <div className="rounded-2xl border border-white/10 bg-black/70 backdrop-blur-md p-8">
           <Suspense>
             <LoginForm />
           </Suspense>
