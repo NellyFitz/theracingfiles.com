@@ -108,29 +108,22 @@ export default function CreatorDashboard() {
   };
 
   const uploadStorefrontImage = async (file: File, bucket: 'creator-avatars' | 'creator-banners', field: 'avatar_url' | 'banner_url') => {
-    const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-    const ext = file.name.split('.').pop();
-    const path = `${user.id}/${field}.${ext}`;
     if (field === 'avatar_url') setSfAvatarUploading(true);
     else setSfBannerUploading(true);
     setSfMsg('');
 
-    const { error: upErr } = await supabase.storage.from(bucket).upload(path, file, { upsert: true });
-    if (upErr) {
-      setSfMsg(`Upload failed: ${upErr.message}`);
-      if (field === 'avatar_url') setSfAvatarUploading(false);
-      else setSfBannerUploading(false);
-      return;
-    }
+    const form = new FormData();
+    form.append('file', file);
+    form.append('bucket', bucket);
+    form.append('field', field);
 
-    const { data: { publicUrl } } = supabase.storage.from(bucket).getPublicUrl(path);
-    const { error: dbErr } = await supabase.from('user_profiles').update({ [field]: publicUrl }).eq('id', user.id);
-    if (dbErr) {
-      setSfMsg(`Saved image but failed to update profile: ${dbErr.message}`);
+    const res = await fetch('/api/creator/upload-image', { method: 'POST', body: form });
+    const json = await res.json();
+
+    if (!res.ok) {
+      setSfMsg(`Upload failed: ${json.error ?? res.statusText}`);
     } else {
-      setProfile((p: any) => ({ ...p, [field]: publicUrl }));
+      setProfile((p: any) => ({ ...p, [field]: json.publicUrl }));
       setSfMsg(field === 'avatar_url' ? 'Icon updated!' : 'Banner updated!');
       setTimeout(() => setSfMsg(''), 3000);
     }
