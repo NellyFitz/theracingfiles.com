@@ -124,8 +124,6 @@ export default function CreatorDashboard() {
       setSfMsg(`Upload failed: ${json.error ?? res.statusText}`);
     } else {
       setProfile((p: any) => ({ ...p, [field]: json.publicUrl }));
-      setSfMsg(field === 'avatar_url' ? 'Icon updated!' : 'Banner updated!');
-      setTimeout(() => setSfMsg(''), 3000);
     }
 
     if (field === 'avatar_url') setSfAvatarUploading(false);
