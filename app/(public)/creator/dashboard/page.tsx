@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   Plus, FileText, CheckCircle, Clock, XCircle, Printer, DollarSign,
-  User, Store, List, Settings, Loader2, Globe, Wrench, Cpu, Star,
+  User, Store, List, Settings, Loader2, Globe, Wrench, Cpu, Star, Camera, ImagePlus,
 } from 'lucide-react';
 import DashboardCart from '@/components/DashboardCart';
 import SubmissionStatusBadge from '@/components/SubmissionStatusBadge';
@@ -36,6 +36,14 @@ export default function CreatorDashboard() {
   const [editExperience, setEditExperience] = useState('');
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState('');
+  const [sfEditMode, setSfEditMode] = useState(false);
+  const [sfBio, setSfBio] = useState('');
+  const [sfWebsite, setSfWebsite] = useState('');
+  const [sfSpecialties, setSfSpecialties] = useState('');
+  const [sfAvatarUploading, setSfAvatarUploading] = useState(false);
+  const [sfBannerUploading, setSfBannerUploading] = useState(false);
+  const [sfSaving, setSfSaving] = useState(false);
+  const [sfMsg, setSfMsg] = useState('');
 
   useEffect(() => {
     const supabase = createClient();
@@ -62,11 +70,51 @@ export default function CreatorDashboard() {
       setEditSpecialties(prof.vehicle_specialties ?? '');
       setEditSoftware(prof.software ?? '');
       setEditExperience(prof.experience_level ?? '');
+      setSfBio(prof.bio ?? '');
+      setSfWebsite(prof.website ?? '');
+      setSfSpecialties(prof.vehicle_specialties ?? '');
       setLoading(false);
     });
 
     return () => subscription.unsubscribe();
   }, [router]);
+
+  const uploadStorefrontImage = async (file: File, bucket: 'creator-avatars' | 'creator-banners', field: 'avatar_url' | 'banner_url') => {
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    const ext = file.name.split('.').pop();
+    const path = `${user.id}/${field}.${ext}`;
+    if (field === 'avatar_url') setSfAvatarUploading(true);
+    else setSfBannerUploading(true);
+    const { error: upErr } = await supabase.storage.from(bucket).upload(path, file, { upsert: true });
+    if (!upErr) {
+      const { data: { publicUrl } } = supabase.storage.from(bucket).getPublicUrl(path);
+      await supabase.from('user_profiles').update({ [field]: publicUrl }).eq('id', user.id);
+      setProfile((p: any) => ({ ...p, [field]: publicUrl }));
+    }
+    if (field === 'avatar_url') setSfAvatarUploading(false);
+    else setSfBannerUploading(false);
+  };
+
+  const saveStorefront = async () => {
+    setSfSaving(true);
+    setSfMsg('');
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    const { error } = await supabase.from('user_profiles').update({
+      bio: sfBio || null,
+      website: sfWebsite || null,
+      vehicle_specialties: sfSpecialties || null,
+    }).eq('id', user.id);
+    setSfSaving(false);
+    if (error) { setSfMsg('Failed to save: ' + error.message); return; }
+    setProfile((p: any) => ({ ...p, bio: sfBio, website: sfWebsite, vehicle_specialties: sfSpecialties }));
+    setSfMsg('Saved!');
+    setSfEditMode(false);
+    setTimeout(() => setSfMsg(''), 3000);
+  };
 
   const saveSettings = async () => {
     setSaving(true);
@@ -234,79 +282,117 @@ export default function CreatorDashboard() {
         {/* ── STORE FRONT ── */}
         {tab === 'storefront' && (
           <div className="max-w-2xl">
-            <div className="mb-6">
-              <h2 className="text-lg font-black text-white mb-1">Store Front</h2>
-              <p className="text-sm text-zinc-500">This is how buyers see your creator profile on the marketplace.</p>
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-lg font-black text-white mb-1">Store Front</h2>
+                <p className="text-sm text-zinc-500">Customize what buyers see on your public store page.</p>
+              </div>
+              {!sfEditMode ? (
+                <button onClick={() => setSfEditMode(true)} className="text-xs font-bold border border-[#2a2a2a] text-zinc-400 hover:text-white hover:border-zinc-600 px-4 py-2 rounded-lg transition-colors">
+                  Edit
+                </button>
+              ) : (
+                <div className="flex gap-2">
+                  <button onClick={() => { setSfEditMode(false); setSfMsg(''); }} className="text-xs font-bold border border-[#2a2a2a] text-zinc-500 hover:text-white px-4 py-2 rounded-lg transition-colors">Cancel</button>
+                  <button onClick={saveStorefront} disabled={sfSaving} className="text-xs font-bold btn-primary px-4 py-2 rounded-lg flex items-center gap-1.5 disabled:opacity-50">
+                    {sfSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null} Save
+                  </button>
+                </div>
+              )}
             </div>
 
-            <div className="rounded-2xl border border-[#2a2a2a] bg-[#141414] overflow-hidden">
-              <div className="h-1 bg-gradient-to-r from-[#39ff14] via-[#39ff14]/40 to-transparent" />
-              <div className="p-6">
-                <div className="flex items-center gap-4 mb-5">
-                  <div className="w-16 h-16 rounded-2xl bg-[#252525] border border-[#2a2a2a] flex items-center justify-center">
-                    <span className="text-2xl font-black text-[#39ff14]">{profile.name?.charAt(0) ?? '?'}</span>
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-black text-white">{profile.name}</h3>
-                    <p className="text-sm text-zinc-500">@{profile.handle}</p>
-                    <span className={`inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded ${profile.verified ? 'bg-[#39ff14]/10 text-[#39ff14]' : 'bg-amber-500/10 text-amber-400'}`}>
-                      {profile.verified ? '✓ Verified Creator' : 'Pending Verification'}
-                    </span>
+            {sfMsg && (
+              <div className={`rounded-lg border px-3 py-2 mb-4 text-xs font-bold ${sfMsg === 'Saved!' ? 'border-[#39ff14]/30 bg-[#39ff14]/5 text-[#39ff14]' : 'border-red-500/30 bg-red-500/10 text-red-400'}`}>
+                {sfMsg}
+              </div>
+            )}
+
+            {/* Banner */}
+            <div className="rounded-2xl border border-[#2a2a2a] bg-[#141414] overflow-hidden mb-4">
+              <div className="relative h-36 bg-[#0d0d0d] flex items-center justify-center overflow-hidden">
+                {profile.banner_url
+                  ? <img src={profile.banner_url} alt="banner" className="w-full h-full object-cover" />
+                  : <div className="absolute inset-0 bg-gradient-to-br from-[#39ff14]/5 to-transparent" />
+                }
+                <label className={`absolute inset-0 flex flex-col items-center justify-center gap-2 cursor-pointer group transition-colors ${profile.banner_url ? 'bg-black/0 hover:bg-black/50' : 'hover:bg-black/20'} ${sfBannerUploading ? 'pointer-events-none' : ''}`}>
+                  {sfBannerUploading
+                    ? <Loader2 className="w-6 h-6 animate-spin text-white" />
+                    : <>
+                        <ImagePlus className={`w-6 h-6 transition-opacity ${profile.banner_url ? 'opacity-0 group-hover:opacity-100' : 'opacity-40 group-hover:opacity-80'} text-white`} />
+                        <span className={`text-xs font-bold text-white transition-opacity ${profile.banner_url ? 'opacity-0 group-hover:opacity-100' : 'opacity-40 group-hover:opacity-80'}`}>
+                          {profile.banner_url ? 'Change Banner' : 'Upload Banner Image'}
+                        </span>
+                      </>
+                  }
+                  <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadStorefrontImage(f, 'creator-banners', 'banner_url'); }} />
+                </label>
+
+                {/* Avatar overlapping banner */}
+                <div className="absolute -bottom-8 left-6">
+                  <div className="relative w-16 h-16 rounded-2xl border-2 border-[#141414] overflow-hidden bg-[#252525]">
+                    {profile.avatar_url
+                      ? <img src={profile.avatar_url} alt="avatar" className="w-full h-full object-cover" />
+                      : <div className="w-full h-full flex items-center justify-center">
+                          <span className="text-xl font-black text-[#39ff14]">{profile.name?.charAt(0) ?? '?'}</span>
+                        </div>
+                    }
+                    <label className={`absolute inset-0 flex items-center justify-center bg-black/0 hover:bg-black/60 cursor-pointer transition-colors ${sfAvatarUploading ? 'pointer-events-none' : ''}`}>
+                      {sfAvatarUploading
+                        ? <Loader2 className="w-4 h-4 animate-spin text-white" />
+                        : <Camera className="w-4 h-4 text-white opacity-0 hover:opacity-100" />
+                      }
+                      <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadStorefrontImage(f, 'creator-avatars', 'avatar_url'); }} />
+                    </label>
                   </div>
                 </div>
+              </div>
 
-                {profile.bio && (
-                  <p className="text-sm text-zinc-400 leading-relaxed mb-5 pb-5 border-b border-[#1e1e1e]">{profile.bio}</p>
-                )}
-
-                <div className="grid grid-cols-2 gap-4">
-                  {profile.vehicle_specialties && (
-                    <div className="flex items-start gap-2">
-                      <Star className="w-3.5 h-3.5 text-zinc-600 mt-0.5 shrink-0" />
-                      <div>
-                        <p className="text-[10px] text-zinc-600 uppercase tracking-widest mb-0.5">Specialties</p>
-                        <p className="text-xs text-zinc-300">{profile.vehicle_specialties}</p>
-                      </div>
-                    </div>
-                  )}
-                  {profile.software && (
-                    <div className="flex items-start gap-2">
-                      <Cpu className="w-3.5 h-3.5 text-zinc-600 mt-0.5 shrink-0" />
-                      <div>
-                        <p className="text-[10px] text-zinc-600 uppercase tracking-widest mb-0.5">Software</p>
-                        <p className="text-xs text-zinc-300">{profile.software}</p>
-                      </div>
-                    </div>
-                  )}
-                  {profile.experience_level && (
-                    <div className="flex items-start gap-2">
-                      <Wrench className="w-3.5 h-3.5 text-zinc-600 mt-0.5 shrink-0" />
-                      <div>
-                        <p className="text-[10px] text-zinc-600 uppercase tracking-widest mb-0.5">Experience</p>
-                        <p className="text-xs text-zinc-300">{profile.experience_level}</p>
-                      </div>
-                    </div>
-                  )}
-                  {profile.website && (
-                    <div className="flex items-start gap-2">
-                      <Globe className="w-3.5 h-3.5 text-zinc-600 mt-0.5 shrink-0" />
-                      <div>
-                        <p className="text-[10px] text-zinc-600 uppercase tracking-widest mb-0.5">Website</p>
-                        <a href={profile.website} target="_blank" rel="noopener noreferrer" className="text-xs text-[#39ff14] hover:underline truncate block max-w-[140px]">{profile.website}</a>
-                      </div>
-                    </div>
-                  )}
+              {/* Profile info below banner */}
+              <div className="pt-12 pb-6 px-6">
+                <div className="mb-4">
+                  <h3 className="text-xl font-black text-white">{profile.name}</h3>
+                  <p className="text-sm text-zinc-500">@{profile.handle}</p>
+                  <span className={`inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded ${profile.verified ? 'bg-[#39ff14]/10 text-[#39ff14]' : 'bg-amber-500/10 text-amber-400'}`}>
+                    {profile.verified ? '✓ Verified Creator' : 'Pending Verification'}
+                  </span>
                 </div>
 
-                <div className="mt-5 pt-5 border-t border-[#1e1e1e]">
+                {/* Bio */}
+                <div className="mb-4">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-600 mb-1.5">Bio</p>
+                  {sfEditMode
+                    ? <textarea value={sfBio} onChange={(e) => setSfBio(e.target.value)} rows={3} placeholder="Tell buyers about yourself..." className="w-full bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#39ff14]/50 resize-none" />
+                    : <p className="text-sm text-zinc-400 leading-relaxed">{profile.bio || <span className="text-zinc-700 italic">No bio yet — click Edit to add one.</span>}</p>
+                  }
+                </div>
+
+                {/* Specialties */}
+                <div className="mb-4">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-600 mb-1.5">Vehicle Specialties</p>
+                  {sfEditMode
+                    ? <input value={sfSpecialties} onChange={(e) => setSfSpecialties(e.target.value)} placeholder="e.g. Japanese sports cars, trucks..." className="w-full bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#39ff14]/50" />
+                    : <p className="text-sm text-zinc-400">{profile.vehicle_specialties || <span className="text-zinc-700 italic">None set</span>}</p>
+                  }
+                </div>
+
+                {/* Website */}
+                <div className="mb-5">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-600 mb-1.5">Website</p>
+                  {sfEditMode
+                    ? <input value={sfWebsite} onChange={(e) => setSfWebsite(e.target.value)} placeholder="https://yoursite.com" className="w-full bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#39ff14]/50" />
+                    : profile.website
+                      ? <a href={profile.website} target="_blank" rel="noopener noreferrer" className="text-sm text-[#39ff14] hover:underline">{profile.website}</a>
+                      : <span className="text-zinc-700 italic text-sm">None set</span>
+                  }
+                </div>
+
+                <div className="pt-4 border-t border-[#1e1e1e]">
                   <p className="text-xs text-zinc-600">{approved.length} approved listing{approved.length !== 1 ? 's' : ''}</p>
                 </div>
               </div>
             </div>
 
-            <button onClick={() => setTab('settings')} className="mt-4 text-xs text-zinc-500 hover:text-[#39ff14] transition-colors">
-              Edit your profile in Settings →
-            </button>
+            <p className="text-[10px] text-zinc-600">Click the banner or avatar to upload a new image. Changes save instantly.</p>
           </div>
         )}
 
