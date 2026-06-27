@@ -115,12 +115,26 @@ export default function CreatorDashboard() {
     const path = `${user.id}/${field}.${ext}`;
     if (field === 'avatar_url') setSfAvatarUploading(true);
     else setSfBannerUploading(true);
+    setSfMsg('');
+
     const { error: upErr } = await supabase.storage.from(bucket).upload(path, file, { upsert: true });
-    if (!upErr) {
-      const { data: { publicUrl } } = supabase.storage.from(bucket).getPublicUrl(path);
-      await supabase.from('user_profiles').update({ [field]: publicUrl }).eq('id', user.id);
-      setProfile((p: any) => ({ ...p, [field]: publicUrl }));
+    if (upErr) {
+      setSfMsg(`Upload failed: ${upErr.message}`);
+      if (field === 'avatar_url') setSfAvatarUploading(false);
+      else setSfBannerUploading(false);
+      return;
     }
+
+    const { data: { publicUrl } } = supabase.storage.from(bucket).getPublicUrl(path);
+    const { error: dbErr } = await supabase.from('user_profiles').update({ [field]: publicUrl }).eq('id', user.id);
+    if (dbErr) {
+      setSfMsg(`Saved image but failed to update profile: ${dbErr.message}`);
+    } else {
+      setProfile((p: any) => ({ ...p, [field]: publicUrl }));
+      setSfMsg(field === 'avatar_url' ? 'Icon updated!' : 'Banner updated!');
+      setTimeout(() => setSfMsg(''), 3000);
+    }
+
     if (field === 'avatar_url') setSfAvatarUploading(false);
     else setSfBannerUploading(false);
   };
