@@ -88,8 +88,8 @@ export default function AccountPage() {
       setUser(user);
 
       const [{ data: prof }, { data: userProf }, { data: purch }, { data: saved }] = await Promise.all([
-        supabase.from('profiles').select('first_name,last_name,address_line1,city,state,zip,role,avatar_url').eq('id', user.id).single(),
-        supabase.from('user_profiles').select('role, approved').eq('id', user.id).single(),
+        supabase.from('profiles').select('first_name,last_name,address_line1,city,state,zip,role,avatar_url').eq('id', user.id).maybeSingle(),
+        supabase.from('user_profiles').select('role, approved').eq('id', user.id).maybeSingle(),
         supabase
           .from('user_purchases')
           .select('*, part_submissions(stl_url, threemf_url, step_url)')

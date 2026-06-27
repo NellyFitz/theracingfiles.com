@@ -67,7 +67,7 @@ export default function CreatorDashboard() {
         { count: followingCount },
         { data: saved },
       ] = await Promise.all([
-        supabase.from('user_profiles').select('*').eq('id', user.id).single(),
+        supabase.from('user_profiles').select('*').eq('id', user.id).maybeSingle(),
         supabase.from('part_submissions').select('*').eq('creator_id', user.id).order('created_at', { ascending: false }),
         supabase.from('follows').select('*', { count: 'exact', head: true }).eq('following_id', user.id),
         supabase.from('follows').select('*', { count: 'exact', head: true }).eq('follower_id', user.id),

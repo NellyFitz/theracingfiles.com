@@ -39,8 +39,8 @@ function LoginForm() {
       const userId = (await supabase.auth.getUser()).data.user!.id;
 
       const [{ data: prof }, { data: userProf }] = await Promise.all([
-        supabase.from('profiles').select('role').eq('id', userId).single(),
-        supabase.from('user_profiles').select('role').eq('id', userId).single(),
+        supabase.from('profiles').select('role').eq('id', userId).maybeSingle(),
+        supabase.from('user_profiles').select('role').eq('id', userId).maybeSingle(),
       ]);
 
       const isCreator = prof?.role === 'creator' || userProf?.role === 'creator';

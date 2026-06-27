@@ -25,8 +25,8 @@ export default function Navbar() {
   async function fetchRole(userId: string) {
     const supabase = createClient();
     const [{ data: prof }, { data: userProf }] = await Promise.all([
-      supabase.from('profiles').select('role').eq('id', userId).single(),
-      supabase.from('user_profiles').select('role, approved').eq('id', userId).single(),
+      supabase.from('profiles').select('role').eq('id', userId).maybeSingle(),
+      supabase.from('user_profiles').select('role, approved').eq('id', userId).maybeSingle(),
     ]);
     const isCreator = prof?.role === 'creator' || userProf?.role === 'creator' || userProf?.approved === true;
     setRole(isCreator ? 'creator' : 'member');
