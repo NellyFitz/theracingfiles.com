@@ -66,6 +66,8 @@ export const products: Product[] = [
     ],
     imageUrl: '',
     creatorId: 'creator-1',
+    creatorName: '',
+    creatorHandle: '',
     rating: 4.9,
     reviewCount: 47,
     description:
@@ -110,6 +112,8 @@ export const products: Product[] = [
     ],
     imageUrl: '',
     creatorId: 'creator-1',
+    creatorName: '',
+    creatorHandle: '',
     rating: 4.7,
     reviewCount: 23,
     description:
@@ -155,6 +159,8 @@ export const products: Product[] = [
     ],
     imageUrl: '',
     creatorId: 'creator-3',
+    creatorName: '',
+    creatorHandle: '',
     rating: 4.8,
     reviewCount: 61,
     description:
@@ -199,6 +205,8 @@ export const products: Product[] = [
     ],
     imageUrl: '',
     creatorId: 'creator-2',
+    creatorName: '',
+    creatorHandle: '',
     rating: 4.6,
     reviewCount: 89,
     description:
@@ -241,6 +249,8 @@ export const products: Product[] = [
     ],
     imageUrl: '',
     creatorId: 'creator-1',
+    creatorName: '',
+    creatorHandle: '',
     rating: 4.8,
     reviewCount: 32,
     description:
@@ -283,6 +293,8 @@ export const products: Product[] = [
     ],
     imageUrl: '',
     creatorId: 'creator-2',
+    creatorName: '',
+    creatorHandle: '',
     rating: 4.3,
     reviewCount: 14,
     description:
