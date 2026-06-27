@@ -35,14 +35,16 @@ function LoginForm() {
     if (next) {
       router.push(next);
     } else {
-      // Route by role
       const supabase = createClient();
-      const { data: prof } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', (await supabase.auth.getUser()).data.user!.id)
-        .single();
-      router.push(prof?.role === 'creator' ? '/creator/dashboard' : '/account');
+      const userId = (await supabase.auth.getUser()).data.user!.id;
+
+      const [{ data: prof }, { data: userProf }] = await Promise.all([
+        supabase.from('profiles').select('role').eq('id', userId).single(),
+        supabase.from('user_profiles').select('role').eq('id', userId).single(),
+      ]);
+
+      const isCreator = prof?.role === 'creator' || userProf?.role === 'creator';
+      router.push(isCreator ? '/creator/dashboard' : '/account');
     }
     router.refresh();
   };

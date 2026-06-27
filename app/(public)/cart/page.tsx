@@ -168,10 +168,10 @@ function CheckoutModal({
               <p className="text-xs text-zinc-500 mb-4">Please read and agree before continuing.</p>
 
               <div className="rounded-xl border border-[#2a2a2a] bg-[#0d0d0d] p-4 h-48 overflow-y-auto text-[11px] text-zinc-400 leading-relaxed mb-4 space-y-3">
-                <p><span className="text-white font-semibold">License Grant.</span> Upon payment, PrintShift grants you a non-exclusive, non-transferable license to print the purchased files for personal or commercial use. You may not redistribute, resell, or sublicense the files themselves.</p>
-                <p><span className="text-white font-semibold">Fitment Disclaimer.</span> All files are provided "as-is." PrintShift and its creators make no guarantees regarding fitment, structural integrity, or suitability for any specific application. Always verify parts before installation.</p>
+                <p><span className="text-white font-semibold">License Grant.</span> Upon payment, The Racing Files grants you a non-exclusive, non-transferable license to print the purchased files for personal or commercial use. You may not redistribute, resell, or sublicense the files themselves.</p>
+                <p><span className="text-white font-semibold">Fitment Disclaimer.</span> All files are provided "as-is." The Racing Files and its creators make no guarantees regarding fitment, structural integrity, or suitability for any specific application. Always verify parts before installation.</p>
                 <p><span className="text-white font-semibold">No Refunds.</span> All digital file sales are final. Once a file is downloaded it cannot be returned. If you have a technical issue with a file, contact support within 7 days.</p>
-                <p><span className="text-white font-semibold">Print Quality.</span> Print quality is the sole responsibility of the end user. PrintShift is not liable for failures caused by improper print settings, material selection, or printer calibration.</p>
+                <p><span className="text-white font-semibold">Print Quality.</span> Print quality is the sole responsibility of the end user. The Racing Files is not liable for failures caused by improper print settings, material selection, or printer calibration.</p>
                 <p><span className="text-white font-semibold">Safety.</span> Do not use 3D-printed parts in safety-critical applications including but not limited to braking systems, steering components, or roll cages without engineering validation.</p>
                 <p><span className="text-white font-semibold">Privacy.</span> We collect your email to deliver your files and send order receipts. We do not sell your data to third parties.</p>
               </div>
