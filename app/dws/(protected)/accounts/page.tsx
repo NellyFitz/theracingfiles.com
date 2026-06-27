@@ -94,7 +94,7 @@ export default async function AdminAccountsPage({
         </div>
 
         {/* List with modal */}
-        <AccountsClient creators={creators} />
+        <AccountsClient key={filter} creators={creators} />
       </div>
     </main>
   );
