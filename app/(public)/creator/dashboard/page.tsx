@@ -5,8 +5,8 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   Plus, FileText, CheckCircle, Clock, XCircle, Printer, DollarSign,
-  User, Store, List, Settings, Loader2, Camera, ImagePlus, LogOut,
-  Bookmark, Users, Heart,
+  Store, List, Settings, Loader2, Camera, ImagePlus, LogOut,
+  Bookmark, Zap,
 } from 'lucide-react';
 import DashboardCart from '@/components/DashboardCart';
 import SubmissionStatusBadge from '@/components/SubmissionStatusBadge';
@@ -225,22 +225,31 @@ export default function CreatorDashboard() {
           </div>
         </div>
 
-        {/* Tabs */}
+        {/* Tabs + Request Portal link */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex gap-1 overflow-x-auto">
-            {tabs.map(({ id, label, icon }) => (
-              <button
-                key={id}
-                onClick={() => setTab(id)}
-                className={`flex items-center gap-2 px-4 py-3 text-xs font-bold uppercase tracking-widest whitespace-nowrap border-b-2 transition-colors ${
-                  tab === id
-                    ? 'border-[#39ff14] text-[#39ff14]'
-                    : 'border-transparent text-zinc-500 hover:text-zinc-200'
-                }`}
-              >
-                {icon} {label}
-              </button>
-            ))}
+          <div className="flex items-end justify-between">
+            <div className="flex gap-1 overflow-x-auto">
+              {tabs.map(({ id, label, icon }) => (
+                <button
+                  key={id}
+                  onClick={() => setTab(id)}
+                  className={`flex items-center gap-2 px-4 py-3 text-xs font-bold uppercase tracking-widest whitespace-nowrap border-b-2 transition-colors ${
+                    tab === id
+                      ? 'border-[#39ff14] text-[#39ff14]'
+                      : 'border-transparent text-zinc-500 hover:text-zinc-200'
+                  }`}
+                >
+                  {icon} {label}
+                </button>
+              ))}
+            </div>
+            <Link
+              href="/creator/requests"
+              className="shrink-0 mb-1 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-[#E8000D] hover:text-red-400 transition-colors border border-[#E8000D]/20 hover:border-[#E8000D]/40 px-3 py-1.5 rounded-lg bg-[#E8000D]/5"
+            >
+              <Zap className="w-3 h-3" fill="currentColor" />
+              Request Portal
+            </Link>
           </div>
         </div>
       </div>
