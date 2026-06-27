@@ -57,7 +57,7 @@ export default function StorefrontPage({ params }: { params: Promise<{ handle: s
   }
 
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen pt-16">
       {/* Banner */}
       <div className="relative h-52 bg-[#0a0a0a] overflow-hidden">
         {creator.banner_url
