@@ -72,8 +72,8 @@ export default function CreatorDashboard() {
         supabase.from('follows').select('*', { count: 'exact', head: true }).eq('following_id', user.id),
         supabase.from('follows').select('*', { count: 'exact', head: true }).eq('follower_id', user.id),
         supabase
-          .from('saved_listings')
-          .select('*, part_submissions(*, user_profiles(name, handle))')
+          .from('user_saved_parts')
+          .select('id, submission_id, created_at, part_submissions(id, name, make, model, file_price, images, user_profiles(name, handle))')
           .eq('user_id', user.id)
           .order('created_at', { ascending: false }),
       ]);
@@ -520,11 +520,11 @@ export default function CreatorDashboard() {
               </div>
             ) : (
               <div className="space-y-3">
-                {savedListings.map((saved) => {
-                  const sub = saved.part_submissions;
+                {savedListings.map((row: any) => {
+                  const sub = row.part_submissions;
                   if (!sub) return null;
                   return (
-                    <Link key={saved.id} href={`/products/${sub.id}`}
+                    <Link key={row.id} href={`/products/${sub.id}`}
                       className="flex items-center gap-4 rounded-xl border border-[#2a2a2a] bg-[#141414] p-4 hover:border-[#39ff14]/30 transition-colors group">
                       <div className="w-12 h-12 rounded-lg bg-[#252525] border border-[#2a2a2a] flex items-center justify-center shrink-0 overflow-hidden">
                         {sub.images?.[0]
