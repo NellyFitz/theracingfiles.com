@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
-import { Search, SlidersHorizontal, X, ChevronDown, ChevronUp } from 'lucide-react';
+import { useState, useMemo, useEffect, useRef } from 'react';
+import { Search, SlidersHorizontal, X, ChevronDown, ChevronUp, Loader2 } from 'lucide-react';
 import { filterProducts } from '@/lib/data';
 import { createClient } from '@/lib/supabase/client';
 import { subToProduct } from '@/lib/productHelpers';
@@ -9,42 +9,48 @@ import ProductCard from '@/components/ProductCard';
 import SkeletonCard from '@/components/SkeletonCard';
 import type { FilterState, Product } from '@/lib/types';
 
-/* ── Data ─────────────────────────────────────────────────────────── */
+/* ── Static data ──────────────────────────────────────────────────── */
 
 const VEHICLE_TYPES = ['All', 'Car', 'Motorcycle', 'Truck', 'Tool'];
 
-const MAKE_MODELS: Record<string, string[]> = {
-  All: [],
-  Mazda: ['All Models', 'Miata NA', 'Miata NB', 'Miata NC', 'Miata ND', 'RX-7', 'RX-8', 'MX-5'],
-  Nissan: ['All Models', 'Skyline R32', 'Skyline R33', 'Skyline R34', 'GT-R (R35)', '370Z', '350Z', 'S13', 'S14', 'S15'],
-  Toyota: ['All Models', 'Supra A80', 'Supra A90', 'AE86', 'GR86', 'Celica', 'MR2'],
-  Honda: ['All Models', 'S2000 AP1', 'S2000 AP2', 'Civic EG', 'Civic EK', 'Civic Type R', 'Integra DC2'],
-  Subaru: ['All Models', 'WRX GC', 'WRX GD', 'WRX VA', 'STI', 'BRZ', 'Impreza', 'Forester'],
-  Mitsubishi: ['All Models', 'Evo IV–VI', 'Evo VII–IX', 'Evo X', 'Eclipse', '3000GT'],
-  Yamaha: ['All Models', 'R1', 'R6', 'MT-07', 'MT-09', 'YZF'],
-  Ducati: ['All Models', 'Monster 696', 'Monster 797', 'Panigale V2', 'Panigale V4', '916', '996', 'Hypermotard', 'Scrambler'],
-  Kawasaki: ['All Models', 'Ninja ZX-6R', 'Ninja ZX-10R', 'Z900', 'Z650'],
-  BMW: ['All Models', 'E30', 'E36', 'E46', 'E92', 'F80 M3', 'G80 M3'],
-  Ford: ['All Models', 'Mustang GT', 'Mustang GT500', 'Focus RS', 'Fiesta ST'],
-  Chevrolet: ['All Models', 'C5 Corvette', 'C6 Corvette', 'C7 Corvette', 'Camaro SS'],
-  Jeep: ['All Models', 'Wrangler JK', 'Wrangler JL', 'Gladiator'],
-  Other: ['All Models'],
-};
-
-const MAKES = Object.keys(MAKE_MODELS);
+// Curated popular US makes — shown immediately before any NHTSA call
+const POPULAR_MAKES = [
+  'Acura', 'Alfa Romeo', 'Aston Martin', 'Audi', 'BMW', 'Bentley', 'Buick',
+  'Cadillac', 'Chevrolet', 'Chrysler', 'Dodge', 'Ducati', 'Ferrari', 'Fiat',
+  'Ford', 'GMC', 'Genesis', 'Harley-Davidson', 'Honda', 'Hyundai', 'Infiniti',
+  'Jaguar', 'Jeep', 'Kawasaki', 'Kia', 'KTM', 'Lamborghini', 'Land Rover',
+  'Lexus', 'Lincoln', 'Lotus', 'Maserati', 'Mazda', 'McLaren', 'Mercedes-Benz',
+  'Mini', 'Mitsubishi', 'Nissan', 'Pontiac', 'Porsche', 'Ram', 'Rolls-Royce',
+  'Subaru', 'Suzuki', 'Tesla', 'Toyota', 'Volkswagen', 'Volvo', 'Yamaha',
+];
 
 const CATEGORIES = ['All', 'Aero & Body', 'Interior', 'Truck & Off-Road', 'Motorcycle', 'Exterior', 'Garage'];
 const FILE_TYPES = ['All', 'STL', '3MF', 'STEP'];
-const YEAR_MIN = 1970;
-const YEAR_MAX = 2025;
+const CURRENT_YEAR = new Date().getFullYear();
+const YEARS = Array.from({ length: CURRENT_YEAR - 1949 }, (_, i) => String(CURRENT_YEAR - i));
+
+/* ── NHTSA helpers ────────────────────────────────────────────────── */
+
+async function fetchModels(make: string, year: string): Promise<string[]> {
+  try {
+    const url = year
+      ? `https://vpic.nhtsa.dot.gov/api/vehicles/GetModelsForMakeYear/make/${encodeURIComponent(make)}/modelyear/${year}?format=json`
+      : `https://vpic.nhtsa.dot.gov/api/vehicles/getmodelsformake/${encodeURIComponent(make)}?format=json`;
+    const res = await fetch(url);
+    const json = await res.json();
+    const names: string[] = (json.Results ?? []).map((r: any) => r.Model_Name as string);
+    return [...new Set(names)].sort();
+  } catch {
+    return [];
+  }
+}
 
 /* ── Default state ────────────────────────────────────────────────── */
 
 const defaultFilters: FilterState = {
   vehicleType: 'All',
-  yearMin: '',
-  yearMax: '',
-  make: 'All',
+  year: '',
+  make: '',
   model: '',
   category: 'All',
   fileType: 'All',
@@ -104,9 +110,10 @@ function FilterChip({
 }
 
 function SelectFilter({
-  label, value, options, onChange, placeholder,
+  label, value, options, onChange, placeholder, loading,
 }: {
-  label: string; value: string; options: string[]; onChange: (v: string) => void; placeholder?: string;
+  label: string; value: string; options: string[]; onChange: (v: string) => void;
+  placeholder?: string; loading?: boolean;
 }) {
   return (
     <div>
@@ -115,12 +122,16 @@ function SelectFilter({
         <select
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full rounded-lg px-3 py-2 pr-8 text-sm appearance-none cursor-pointer"
+          disabled={loading}
+          className="w-full rounded-lg px-3 py-2 pr-8 text-sm appearance-none cursor-pointer disabled:opacity-50"
         >
           {placeholder && <option value="">{placeholder}</option>}
           {options.map((o) => <option key={o} value={o}>{o}</option>)}
         </select>
-        <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-500 pointer-events-none" />
+        {loading
+          ? <Loader2 className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-500 animate-spin" />
+          : <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-500 pointer-events-none" />
+        }
       </div>
     </div>
   );
@@ -164,6 +175,11 @@ export default function BrowsePage() {
   const [dbProducts, setDbProducts] = useState<Product[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
 
+  // NHTSA state
+  const [models, setModels] = useState<string[]>([]);
+  const [modelsLoading, setModelsLoading] = useState(false);
+  const modelsAbort = useRef<AbortController | null>(null);
+
   useEffect(() => {
     createClient()
       .from('part_submissions')
@@ -176,20 +192,33 @@ export default function BrowsePage() {
       });
   }, []);
 
+  // Fetch models from NHTSA whenever make or year changes
+  useEffect(() => {
+    if (!filters.make) {
+      setModels([]);
+      return;
+    }
+    modelsAbort.current?.abort();
+    modelsAbort.current = new AbortController();
+    setModelsLoading(true);
+    fetchModels(filters.make, filters.year).then((list) => {
+      setModels(list);
+      setModelsLoading(false);
+    });
+  }, [filters.make, filters.year]);
+
   const update = <K extends keyof FilterState>(key: K, value: FilterState[K]) =>
     setFilters((prev) => ({ ...prev, [key]: value }));
 
-  const reset = () => setFilters(defaultFilters);
-
-  const modelOptions = filters.make !== 'All'
-    ? (MAKE_MODELS[filters.make] ?? ['All Models'])
-    : [];
+  const reset = () => {
+    setFilters(defaultFilters);
+    setModels([]);
+  };
 
   const hasActiveFilters =
     filters.vehicleType !== 'All' ||
-    filters.yearMin !== '' ||
-    filters.yearMax !== '' ||
-    filters.make !== 'All' ||
+    filters.year !== '' ||
+    filters.make !== '' ||
     filters.model !== '' ||
     filters.category !== 'All' ||
     filters.fileType !== 'All' ||
@@ -199,8 +228,8 @@ export default function BrowsePage() {
 
   const activeCount = [
     filters.vehicleType !== 'All',
-    filters.yearMin !== '' || filters.yearMax !== '',
-    filters.make !== 'All',
+    filters.year !== '',
+    filters.make !== '',
     filters.model !== '',
     filters.category !== 'All',
     filters.fileType !== 'All',
@@ -212,7 +241,9 @@ export default function BrowsePage() {
     () => filterProducts(dbProducts, {
       search: filters.search,
       vehicleType: filters.vehicleType,
+      year: filters.year,
       make: filters.make,
+      model: filters.model,
       category: filters.category,
       verifiedOnly: filters.verifiedOnly,
       printedAvailable: filters.printedAvailable,
@@ -241,47 +272,71 @@ export default function BrowsePage() {
           onChange={(v) => update('vehicleType', v)}
         />
 
-        {/* Year range */}
-        <div>
-          <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-600 mb-1.5">Year Range</label>
-          <div className="flex items-center gap-2">
-            <input
-              type="number"
-              min={YEAR_MIN}
-              max={YEAR_MAX}
-              value={filters.yearMin}
-              onChange={(e) => update('yearMin', e.target.value)}
-              placeholder="From"
-              className="w-full rounded-lg px-3 py-2 text-sm text-center"
-            />
-            <span className="text-zinc-600 shrink-0 text-xs">—</span>
-            <input
-              type="number"
-              min={YEAR_MIN}
-              max={YEAR_MAX}
-              value={filters.yearMax}
-              onChange={(e) => update('yearMax', e.target.value)}
-              placeholder="To"
-              className="w-full rounded-lg px-3 py-2 text-sm text-center"
-            />
-          </div>
-        </div>
+        {/* Year */}
+        <SelectFilter
+          label="Year"
+          value={filters.year}
+          options={YEARS}
+          placeholder="Any Year"
+          onChange={(v) => {
+            update('year', v);
+            update('model', '');
+          }}
+        />
 
+        {/* Make */}
         <SelectFilter
           label="Make"
           value={filters.make}
-          options={MAKES}
-          onChange={(v) => { update('make', v); update('model', ''); }}
+          options={POPULAR_MAKES}
+          placeholder="Any Make"
+          onChange={(v) => {
+            update('make', v);
+            update('model', '');
+            setModels([]);
+          }}
         />
 
-        {filters.make !== 'All' && modelOptions.length > 0 && (
+        {/* Model — appears once make is selected */}
+        {filters.make && (
           <SelectFilter
             label="Model"
             value={filters.model}
-            options={modelOptions}
-            placeholder="All Models"
-            onChange={(v) => update('model', v === 'All Models' ? '' : v)}
+            options={models}
+            placeholder={modelsLoading ? 'Loading…' : models.length === 0 ? 'No models found' : 'Any Model'}
+            onChange={(v) => update('model', v)}
+            loading={modelsLoading}
           />
+        )}
+
+        {/* Active vehicle filter summary pill */}
+        {(filters.year || filters.make || filters.model) && (
+          <div className="flex flex-wrap gap-1.5 pt-1">
+            {filters.year && (
+              <span className="inline-flex items-center gap-1 text-[10px] font-semibold bg-[#E8000D]/10 text-[#E8000D] border border-[#E8000D]/20 px-2 py-1 rounded-full">
+                {filters.year}
+                <button onClick={() => { update('year', ''); update('model', ''); }} className="hover:text-white">
+                  <X className="w-2.5 h-2.5" />
+                </button>
+              </span>
+            )}
+            {filters.make && (
+              <span className="inline-flex items-center gap-1 text-[10px] font-semibold bg-[#E8000D]/10 text-[#E8000D] border border-[#E8000D]/20 px-2 py-1 rounded-full">
+                {filters.make}
+                <button onClick={() => { update('make', ''); update('model', ''); setModels([]); }} className="hover:text-white">
+                  <X className="w-2.5 h-2.5" />
+                </button>
+              </span>
+            )}
+            {filters.model && (
+              <span className="inline-flex items-center gap-1 text-[10px] font-semibold bg-[#E8000D]/10 text-[#E8000D] border border-[#E8000D]/20 px-2 py-1 rounded-full">
+                {filters.model}
+                <button onClick={() => update('model', '')} className="hover:text-white">
+                  <X className="w-2.5 h-2.5" />
+                </button>
+              </span>
+            )}
+          </div>
         )}
       </FilterSection>
 
@@ -314,7 +369,7 @@ export default function BrowsePage() {
       </FilterSection>
 
       {/* Availability */}
-      <FilterSection title="Availability" defaultOpen={true}>
+      <FilterSection title="Availability">
         <Checkbox
           label="Verified Fitment Only"
           checked={filters.verifiedOnly}

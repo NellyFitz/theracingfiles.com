@@ -5,14 +5,15 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   Plus, FileText, CheckCircle, Clock, XCircle, Printer, DollarSign,
-  User, Store, List, Settings, Loader2, Globe, Wrench, Cpu, Star, Camera, ImagePlus,
+  User, Store, List, Settings, Loader2, Camera, ImagePlus, LogOut,
+  Bookmark, Users, Heart,
 } from 'lucide-react';
 import DashboardCart from '@/components/DashboardCart';
 import SubmissionStatusBadge from '@/components/SubmissionStatusBadge';
 import { createClient } from '@/lib/supabase/client';
 import type { PartSubmission } from '@/lib/supabase/db-types';
 
-type Tab = 'main' | 'storefront' | 'listings' | 'settings';
+type Tab = 'main' | 'storefront' | 'listings' | 'saved' | 'settings';
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -24,6 +25,9 @@ export default function CreatorDashboard() {
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<any>(null);
   const [submissions, setSubmissions] = useState<PartSubmission[]>([]);
+  const [followers, setFollowers] = useState(0);
+  const [following, setFollowing] = useState(0);
+  const [savedListings, setSavedListings] = useState<any[]>([]);
 
   // Settings edit state
   const [editMode, setEditMode] = useState(false);
@@ -36,6 +40,8 @@ export default function CreatorDashboard() {
   const [editExperience, setEditExperience] = useState('');
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState('');
+
+  // Store front edit state
   const [sfEditMode, setSfEditMode] = useState(false);
   const [sfBio, setSfBio] = useState('');
   const [sfWebsite, setSfWebsite] = useState('');
@@ -54,15 +60,31 @@ export default function CreatorDashboard() {
     supabase.auth.getUser().then(async ({ data: { user } }) => {
       if (!user) { router.push('/creator/login'); return; }
 
-      const [{ data: prof }, { data: subs }] = await Promise.all([
+      const [
+        { data: prof },
+        { data: subs },
+        { count: followerCount },
+        { count: followingCount },
+        { data: saved },
+      ] = await Promise.all([
         supabase.from('user_profiles').select('*').eq('id', user.id).single(),
         supabase.from('part_submissions').select('*').eq('creator_id', user.id).order('created_at', { ascending: false }),
+        supabase.from('follows').select('*', { count: 'exact', head: true }).eq('following_id', user.id),
+        supabase.from('follows').select('*', { count: 'exact', head: true }).eq('follower_id', user.id),
+        supabase
+          .from('saved_listings')
+          .select('*, part_submissions(*, user_profiles(name, handle))')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false }),
       ]);
 
       if (!prof) { router.push('/account'); return; }
 
       setProfile(prof);
       setSubmissions((subs ?? []) as PartSubmission[]);
+      setFollowers(followerCount ?? 0);
+      setFollowing(followingCount ?? 0);
+      setSavedListings(saved ?? []);
       setEditName(prof.name ?? '');
       setEditHandle(prof.handle ?? '');
       setEditBio(prof.bio ?? '');
@@ -78,6 +100,12 @@ export default function CreatorDashboard() {
 
     return () => subscription.unsubscribe();
   }, [router]);
+
+  const handleLogout = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push('/creator/login');
+  };
 
   const uploadStorefrontImage = async (file: File, bucket: 'creator-avatars' | 'creator-banners', field: 'avatar_url' | 'banner_url') => {
     const supabase = createClient();
@@ -158,6 +186,7 @@ export default function CreatorDashboard() {
     { id: 'main', label: 'Main', icon: <FileText className="w-3.5 h-3.5" /> },
     { id: 'storefront', label: 'Store Front', icon: <Store className="w-3.5 h-3.5" /> },
     { id: 'listings', label: 'Listings', icon: <List className="w-3.5 h-3.5" /> },
+    { id: 'saved', label: 'Saved', icon: <Bookmark className="w-3.5 h-3.5" /> },
     { id: 'settings', label: 'Settings', icon: <Settings className="w-3.5 h-3.5" /> },
   ];
 
@@ -166,9 +195,34 @@ export default function CreatorDashboard() {
       {/* Header */}
       <div className="border-b border-[#1e1e1e] bg-[#0a0a0a]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <p className="text-xs font-bold uppercase tracking-widest text-[#39ff14] mb-1">Creator Dashboard</p>
-          <h1 className="text-3xl font-black text-white">Hey, {profile.name?.split(' ')[0]} 👋</h1>
-          <p className="text-zinc-500 text-sm mt-1">@{profile.handle}</p>
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-widest text-[#39ff14] mb-1">Creator Dashboard</p>
+              <h1 className="text-3xl font-black text-white">Hey, {profile.name?.split(' ')[0]} 👋</h1>
+              <p className="text-zinc-500 text-sm mt-1">@{profile.handle}</p>
+            </div>
+
+            {/* Followers / Following */}
+            <div className="flex items-center gap-4 shrink-0 mt-1">
+              <button
+                onClick={() => {}}
+                className="text-center group"
+                title="Followers"
+              >
+                <p className="text-xl font-black text-white group-hover:text-[#39ff14] transition-colors">{followers}</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-600">Followers</p>
+              </button>
+              <div className="w-px h-8 bg-[#2a2a2a]" />
+              <button
+                onClick={() => {}}
+                className="text-center group"
+                title="Following"
+              >
+                <p className="text-xl font-black text-white group-hover:text-[#39ff14] transition-colors">{following}</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-600">Following</p>
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Tabs */}
@@ -196,7 +250,6 @@ export default function CreatorDashboard() {
         {/* ── MAIN ── */}
         {tab === 'main' && (
           <>
-            {/* Stats */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
               {[
                 { label: 'Total Submitted', value: allSubs.length, icon: FileText, color: 'text-zinc-400' },
@@ -238,8 +291,10 @@ export default function CreatorDashboard() {
                   allSubs.slice(0, 5).map((sub) => (
                     <Link key={sub.id} href={`/creator/submissions/${sub.id}`}
                       className="flex items-center gap-4 rounded-xl border border-[#2a2a2a] bg-[#141414] p-4 hover:border-[#39ff14]/30 transition-colors group">
-                      <div className="w-12 h-12 rounded-lg bg-[#252525] border border-[#2a2a2a] flex items-center justify-center shrink-0">
-                        <Printer className="w-6 h-6 text-zinc-600" />
+                      <div className="w-12 h-12 rounded-lg bg-[#252525] border border-[#2a2a2a] flex items-center justify-center shrink-0 overflow-hidden">
+                        {sub.images?.[0]
+                          ? <img src={sub.images[0]} alt={sub.name} className="w-full h-full object-cover" />
+                          : <Printer className="w-6 h-6 text-zinc-600" />}
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-bold text-white group-hover:text-[#39ff14] transition-colors truncate">{sub.name}</p>
@@ -307,7 +362,6 @@ export default function CreatorDashboard() {
               </div>
             )}
 
-            {/* Banner */}
             <div className="rounded-2xl border border-[#2a2a2a] bg-[#141414] overflow-hidden mb-4">
               <div className="relative h-36 bg-[#0d0d0d] flex items-center justify-center overflow-hidden">
                 {profile.banner_url
@@ -327,7 +381,6 @@ export default function CreatorDashboard() {
                   <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadStorefrontImage(f, 'creator-banners', 'banner_url'); }} />
                 </label>
 
-                {/* Avatar overlapping banner */}
                 <div className="absolute -bottom-8 left-6">
                   <div className="relative w-16 h-16 rounded-2xl border-2 border-[#141414] overflow-hidden bg-[#252525]">
                     {profile.avatar_url
@@ -347,7 +400,6 @@ export default function CreatorDashboard() {
                 </div>
               </div>
 
-              {/* Profile info below banner */}
               <div className="pt-12 pb-6 px-6">
                 <div className="mb-4">
                   <h3 className="text-xl font-black text-white">{profile.name}</h3>
@@ -357,7 +409,6 @@ export default function CreatorDashboard() {
                   </span>
                 </div>
 
-                {/* Bio */}
                 <div className="mb-4">
                   <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-600 mb-1.5">Bio</p>
                   {sfEditMode
@@ -366,7 +417,6 @@ export default function CreatorDashboard() {
                   }
                 </div>
 
-                {/* Specialties */}
                 <div className="mb-4">
                   <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-600 mb-1.5">Vehicle Specialties</p>
                   {sfEditMode
@@ -375,7 +425,6 @@ export default function CreatorDashboard() {
                   }
                 </div>
 
-                {/* Website */}
                 <div className="mb-5">
                   <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-600 mb-1.5">Website</p>
                   {sfEditMode
@@ -391,7 +440,6 @@ export default function CreatorDashboard() {
                 </div>
               </div>
             </div>
-
             <p className="text-[10px] text-zinc-600">Click the banner or avatar to upload a new image. Changes save instantly.</p>
           </div>
         )}
@@ -444,6 +492,52 @@ export default function CreatorDashboard() {
           </div>
         )}
 
+        {/* ── SAVED ── */}
+        {tab === 'saved' && (
+          <div>
+            <div className="mb-6">
+              <h2 className="text-lg font-black text-white mb-1">Saved</h2>
+              <p className="text-sm text-zinc-500">Marketplace listings you've bookmarked.</p>
+            </div>
+
+            {savedListings.length === 0 ? (
+              <div className="rounded-xl border border-dashed border-[#2a2a2a] p-16 text-center">
+                <Bookmark className="w-10 h-10 text-zinc-700 mx-auto mb-4" />
+                <h3 className="text-base font-bold text-white mb-2">No saved listings yet</h3>
+                <p className="text-sm text-zinc-500 mb-6">Browse the marketplace and save parts you like.</p>
+                <Link href="/browse" className="btn-primary px-6 py-3 text-sm rounded-lg inline-flex items-center gap-2">
+                  Browse Marketplace
+                </Link>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {savedListings.map((saved) => {
+                  const sub = saved.part_submissions;
+                  if (!sub) return null;
+                  return (
+                    <Link key={saved.id} href={`/products/${sub.id}`}
+                      className="flex items-center gap-4 rounded-xl border border-[#2a2a2a] bg-[#141414] p-4 hover:border-[#39ff14]/30 transition-colors group">
+                      <div className="w-12 h-12 rounded-lg bg-[#252525] border border-[#2a2a2a] flex items-center justify-center shrink-0 overflow-hidden">
+                        {sub.images?.[0]
+                          ? <img src={sub.images[0]} alt={sub.name} className="w-full h-full object-cover" />
+                          : <Printer className="w-6 h-6 text-zinc-600" />}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-bold text-white group-hover:text-[#39ff14] transition-colors truncate">{sub.name}</p>
+                        <p className="text-xs text-zinc-500 mt-0.5 truncate">{sub.make} · {sub.model}</p>
+                        {sub.user_profiles?.name && (
+                          <p className="text-[10px] text-zinc-600 mt-0.5">by {sub.user_profiles.name}</p>
+                        )}
+                      </div>
+                      <span className="text-xs font-bold text-zinc-400 shrink-0">${sub.file_price}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* ── SETTINGS ── */}
         {tab === 'settings' && (
           <div className="max-w-lg">
@@ -474,7 +568,7 @@ export default function CreatorDashboard() {
               </div>
             )}
 
-            <div className="rounded-xl border border-[#2a2a2a] bg-[#141414] divide-y divide-[#1e1e1e]">
+            <div className="rounded-xl border border-[#2a2a2a] bg-[#141414] divide-y divide-[#1e1e1e] mb-6">
               {[
                 { label: 'Store Name', value: editName, set: setEditName, key: 'name' },
                 { label: 'Handle', value: editHandle, set: setEditHandle, key: 'handle', prefix: '@' },
@@ -529,6 +623,18 @@ export default function CreatorDashboard() {
                   )}
                 </div>
               ))}
+            </div>
+
+            {/* Logout */}
+            <div className="rounded-xl border border-red-500/20 bg-[#141414] p-5">
+              <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-500 mb-3">Account</h3>
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-2 text-sm font-bold text-red-400 hover:text-red-300 transition-colors"
+              >
+                <LogOut className="w-4 h-4" />
+                Log Out
+              </button>
             </div>
           </div>
         )}

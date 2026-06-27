@@ -338,7 +338,9 @@ export const filterProducts = (
   filters: {
     search?: string;
     vehicleType?: string;
+    year?: string;
     make?: string;
+    model?: string;
     category?: string;
     verifiedOnly?: boolean;
     printedAvailable?: boolean;
@@ -356,7 +358,16 @@ export const filterProducts = (
         return false;
     }
     if (filters.vehicleType && filters.vehicleType !== 'All' && p.vehicleType !== filters.vehicleType) return false;
-    if (filters.make && filters.make !== 'All' && p.make !== filters.make) return false;
+    if (filters.year) {
+      const y = parseInt(filters.year, 10);
+      if (!isNaN(y) && (p.yearStart > y || p.yearEnd < y)) return false;
+    }
+    if (filters.make && filters.make !== 'All') {
+      if (!p.make.toLowerCase().includes(filters.make.toLowerCase())) return false;
+    }
+    if (filters.model && filters.model !== 'All Models') {
+      if (!p.model.toLowerCase().includes(filters.model.toLowerCase())) return false;
+    }
     if (filters.category && filters.category !== 'All' && p.category !== filters.category) return false;
     if (filters.verifiedOnly && !p.badges.some((b) => b.type === 'verified')) return false;
     if (filters.printedAvailable && !p.printedPrice) return false;
