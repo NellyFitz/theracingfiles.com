@@ -423,8 +423,10 @@ export default function CreatorDashboard() {
                 {allSubs.map((sub) => (
                   <Link key={sub.id} href={`/creator/submissions/${sub.id}`}
                     className="flex items-center gap-4 rounded-xl border border-[#2a2a2a] bg-[#141414] p-4 hover:border-[#39ff14]/30 transition-colors group">
-                    <div className="w-12 h-12 rounded-lg bg-[#252525] border border-[#2a2a2a] flex items-center justify-center shrink-0">
-                      <Printer className="w-6 h-6 text-zinc-600" />
+                    <div className="w-12 h-12 rounded-lg bg-[#252525] border border-[#2a2a2a] flex items-center justify-center shrink-0 overflow-hidden">
+                      {sub.images?.[0]
+                        ? <img src={sub.images[0]} alt={sub.name} className="w-full h-full object-cover" />
+                        : <Printer className="w-6 h-6 text-zinc-600" />}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-bold text-white group-hover:text-[#39ff14] transition-colors truncate">{sub.name}</p>
