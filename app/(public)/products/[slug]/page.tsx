@@ -56,6 +56,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
   const [activeTab, setActiveTab] = useState<Tab>('Description');
   const [selectedTier, setSelectedTier] = useState<'file' | 'printed' | 'finished'>('file');
   const [added, setAdded] = useState(false);
+  const [activeImage, setActiveImage] = useState(0);
   const { addItem } = useCart();
 
   useEffect(() => {
@@ -68,7 +69,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
       .single()
       .then(({ data }) => {
         if (!data) { setLoading(false); return; }
-        const mapped = subToProduct(data);
+        const mapped = { ...subToProduct(data), images: data.images ?? [] };
         setProduct(mapped);
         // Fetch related (same make)
         supabase
@@ -146,17 +147,25 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
           {/* Left: image */}
           <div className="lg:col-span-3">
             <div className="rounded-2xl border border-[#2a2a2a] bg-[#141414] aspect-[4/3] grid-bg flex items-center justify-center relative overflow-hidden">
-              {/* Wireframe visual */}
-              <div className="text-center">
-                <div className="w-32 h-32 mx-auto mb-4 relative">
-                  <div className="absolute inset-0 border-2 border-[#39ff14]/30 rounded-2xl rotate-12 animate-float" />
-                  <div className="absolute inset-4 border-2 border-[#39ff14]/20 rounded-xl -rotate-6 animate-float" style={{ animationDelay: '1s' }} />
-                  <div className="absolute inset-8 border-2 border-[#39ff14]/40 rounded-lg rotate-3 animate-float" style={{ animationDelay: '0.5s' }} />
-                  <Printer className="absolute inset-0 m-auto w-12 h-12 text-[#39ff14] opacity-40" />
+              {product.imageUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={(product as any).images?.[activeImage] ?? product.imageUrl}
+                  alt={product.name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="text-center">
+                  <div className="w-32 h-32 mx-auto mb-4 relative">
+                    <div className="absolute inset-0 border-2 border-[#39ff14]/30 rounded-2xl rotate-12 animate-float" />
+                    <div className="absolute inset-4 border-2 border-[#39ff14]/20 rounded-xl -rotate-6 animate-float" style={{ animationDelay: '1s' }} />
+                    <div className="absolute inset-8 border-2 border-[#39ff14]/40 rounded-lg rotate-3 animate-float" style={{ animationDelay: '0.5s' }} />
+                    <Printer className="absolute inset-0 m-auto w-12 h-12 text-[#39ff14] opacity-40" />
+                  </div>
+                  <p className="text-xs text-zinc-600 uppercase tracking-widest">{product.name}</p>
+                  <p className="text-[10px] text-zinc-700 mt-1">No photos uploaded yet</p>
                 </div>
-                <p className="text-xs text-zinc-600 uppercase tracking-widest">{product.name}</p>
-                <p className="text-[10px] text-zinc-700 mt-1">Render / Photos Coming Soon</p>
-              </div>
+              )}
 
               {/* Badges */}
               <div className="absolute top-4 left-4 flex flex-wrap gap-2">
@@ -167,16 +176,22 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
             </div>
 
             {/* Thumbnail strip */}
-            <div className="flex gap-3 mt-4">
-              {['Front', 'Side', 'Install', 'Printed'].map((v) => (
-                <div
-                  key={v}
-                  className="w-20 h-16 rounded-lg border border-[#2a2a2a] bg-[#141414] grid-bg flex items-center justify-center cursor-pointer hover:border-[#39ff14]/40 transition-colors"
-                >
-                  <p className="text-[9px] text-zinc-600 uppercase tracking-wider">{v}</p>
-                </div>
-              ))}
-            </div>
+            {(product as any).images?.length > 1 && (
+              <div className="flex gap-3 mt-4 overflow-x-auto pb-1">
+                {(product as any).images.map((url: string, i: number) => (
+                  <button
+                    key={url}
+                    onClick={() => setActiveImage(i)}
+                    className={`shrink-0 w-20 h-16 rounded-lg border overflow-hidden transition-all ${
+                      activeImage === i ? 'border-[#39ff14]' : 'border-[#2a2a2a] hover:border-[#39ff14]/40'
+                    }`}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={url} alt={`Photo ${i + 1}`} className="w-full h-full object-cover" />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Right: info + purchase */}
