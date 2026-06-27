@@ -87,8 +87,9 @@ export default function AccountPage() {
       if (!user) { router.push('/creator/login'); return; }
       setUser(user);
 
-      const [{ data: prof }, { data: purch }, { data: saved }] = await Promise.all([
+      const [{ data: prof }, { data: userProf }, { data: purch }, { data: saved }] = await Promise.all([
         supabase.from('profiles').select('first_name,last_name,address_line1,city,state,zip,role,avatar_url').eq('id', user.id).single(),
+        supabase.from('user_profiles').select('role, approved').eq('id', user.id).single(),
         supabase
           .from('user_purchases')
           .select('*, part_submissions(stl_url, threemf_url, step_url)')
@@ -100,6 +101,10 @@ export default function AccountPage() {
           .eq('user_id', user.id)
           .order('created_at', { ascending: false }),
       ]);
+
+      // Creators should never land here — bounce them to their dashboard
+      const isCreator = prof?.role === 'creator' || userProf?.role === 'creator' || userProf?.approved === true;
+      if (isCreator) { router.replace('/creator/dashboard'); return; }
 
       setProfile(prof ?? null);
       setEditFirstName(prof?.first_name ?? '');

@@ -24,12 +24,12 @@ export default function Navbar() {
 
   async function fetchRole(userId: string) {
     const supabase = createClient();
-    const { data } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', userId)
-      .single();
-    setRole((data?.role as 'member' | 'creator') ?? 'member');
+    const [{ data: prof }, { data: userProf }] = await Promise.all([
+      supabase.from('profiles').select('role').eq('id', userId).single(),
+      supabase.from('user_profiles').select('role, approved').eq('id', userId).single(),
+    ]);
+    const isCreator = prof?.role === 'creator' || userProf?.role === 'creator' || userProf?.approved === true;
+    setRole(isCreator ? 'creator' : 'member');
   }
 
   useEffect(() => {
