@@ -197,7 +197,7 @@ export default function CreatorDashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="text-xs font-bold uppercase tracking-widest text-[#39ff14] mb-1">Creator Dashboard</p>
+              <p className="text-xs font-bold uppercase tracking-widest text-[#E8000D] mb-1">Creator Dashboard</p>
               <h1 className="text-3xl font-black text-white">Hey, {profile.name?.split(' ')[0]} 👋</h1>
               <p className="text-zinc-500 text-sm mt-1">@{profile.handle}</p>
             </div>
@@ -209,7 +209,7 @@ export default function CreatorDashboard() {
                 className="text-center group"
                 title="Followers"
               >
-                <p className="text-xl font-black text-white group-hover:text-[#39ff14] transition-colors">{followers}</p>
+                <p className="text-xl font-black text-white group-hover:text-[#E8000D] transition-colors">{followers}</p>
                 <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-600">Followers</p>
               </button>
               <div className="w-px h-8 bg-[#2a2a2a]" />
@@ -218,7 +218,7 @@ export default function CreatorDashboard() {
                 className="text-center group"
                 title="Following"
               >
-                <p className="text-xl font-black text-white group-hover:text-[#39ff14] transition-colors">{following}</p>
+                <p className="text-xl font-black text-white group-hover:text-[#E8000D] transition-colors">{following}</p>
                 <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-600">Following</p>
               </button>
             </div>
@@ -235,7 +235,7 @@ export default function CreatorDashboard() {
                   onClick={() => setTab(id)}
                   className={`flex items-center gap-2 px-4 py-3 text-xs font-bold uppercase tracking-widest whitespace-nowrap border-b-2 transition-colors ${
                     tab === id
-                      ? 'border-[#39ff14] text-[#39ff14]'
+                      ? 'border-[#E8000D] text-[#E8000D]'
                       : 'border-transparent text-zinc-500 hover:text-zinc-200'
                   }`}
                 >
@@ -263,7 +263,7 @@ export default function CreatorDashboard() {
               {[
                 { label: 'Total Submitted', value: allSubs.length, icon: FileText, color: 'text-zinc-400' },
                 { label: 'Pending Review', value: pending.length, icon: Clock, color: 'text-amber-400' },
-                { label: 'Approved', value: approved.length, icon: CheckCircle, color: 'text-[#39ff14]' },
+                { label: 'Approved', value: approved.length, icon: CheckCircle, color: 'text-[#E8000D]' },
                 { label: 'Rejected', value: rejected.length, icon: XCircle, color: 'text-red-400' },
               ].map(({ label, value, icon: Icon, color }) => (
                 <div key={label} className="rounded-xl border border-[#2a2a2a] bg-[#141414] p-5">
@@ -299,14 +299,14 @@ export default function CreatorDashboard() {
                 ) : (
                   allSubs.slice(0, 5).map((sub) => (
                     <Link key={sub.id} href={`/creator/submissions/${sub.id}`}
-                      className="flex items-center gap-4 rounded-xl border border-[#2a2a2a] bg-[#141414] p-4 hover:border-[#39ff14]/30 transition-colors group">
+                      className="flex items-center gap-4 rounded-xl border border-[#2a2a2a] bg-[#141414] p-4 hover:border-[#E8000D]/30 transition-colors group">
                       <div className="w-12 h-12 rounded-lg bg-[#252525] border border-[#2a2a2a] flex items-center justify-center shrink-0 overflow-hidden">
                         {sub.images?.[0]
                           ? <img src={sub.images[0]} alt={sub.name} className="w-full h-full object-cover" />
                           : <Printer className="w-6 h-6 text-zinc-600" />}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold text-white group-hover:text-[#39ff14] transition-colors truncate">{sub.name}</p>
+                        <p className="text-sm font-bold text-white group-hover:text-[#E8000D] transition-colors truncate">{sub.name}</p>
                         <p className="text-xs text-zinc-500 mt-0.5 truncate">{sub.make} · {sub.model} · {sub.category}</p>
                         <p className="text-[10px] text-zinc-700 mt-0.5">{formatDate(sub.created_at)}</p>
                       </div>
@@ -315,7 +315,7 @@ export default function CreatorDashboard() {
                   ))
                 )}
                 {allSubs.length > 5 && (
-                  <button onClick={() => setTab('listings')} className="text-xs text-zinc-500 hover:text-[#39ff14] transition-colors mt-2">
+                  <button onClick={() => setTab('listings')} className="text-xs text-zinc-500 hover:text-[#E8000D] transition-colors mt-2">
                     View all {allSubs.length} listings →
                   </button>
                 )}
@@ -333,7 +333,7 @@ export default function CreatorDashboard() {
                   <ul className="space-y-3">
                     {['Include both STL and 3MF formats', 'Validated print settings = faster approval', 'Fitment photos speed up verification', 'Clear install notes = better reviews'].map((tip) => (
                       <li key={tip} className="flex items-start gap-2 text-xs text-zinc-400">
-                        <span className="text-[#39ff14] mt-0.5 shrink-0">→</span>{tip}
+                        <span className="text-[#E8000D] mt-0.5 shrink-0">→</span>{tip}
                       </li>
                     ))}
                   </ul>
@@ -366,7 +366,7 @@ export default function CreatorDashboard() {
             </div>
 
             {sfMsg && (
-              <div className={`rounded-lg border px-3 py-2 mb-4 text-xs font-bold ${sfMsg === 'Saved!' ? 'border-[#39ff14]/30 bg-[#39ff14]/5 text-[#39ff14]' : 'border-red-500/30 bg-red-500/10 text-red-400'}`}>
+              <div className={`rounded-lg border px-3 py-2 mb-4 text-xs font-bold ${sfMsg === 'Saved!' ? 'border-[#E8000D]/30 bg-[#E8000D]/5 text-[#E8000D]' : 'border-red-500/30 bg-red-500/10 text-red-400'}`}>
                 {sfMsg}
               </div>
             )}
@@ -375,7 +375,7 @@ export default function CreatorDashboard() {
               <div className="relative h-36 bg-[#0d0d0d] flex items-center justify-center">
                 {profile.banner_url
                   ? <img src={profile.banner_url} alt="banner" className="w-full h-full object-cover rounded-t-2xl" />
-                  : <div className="absolute inset-0 bg-gradient-to-br from-[#39ff14]/5 to-transparent rounded-t-2xl" />
+                  : <div className="absolute inset-0 bg-gradient-to-br from-[#E8000D]/5 to-transparent rounded-t-2xl" />
                 }
                 <label className={`absolute inset-0 flex flex-col items-center justify-center gap-2 cursor-pointer group transition-colors ${profile.banner_url ? 'bg-black/0 hover:bg-black/50' : 'hover:bg-black/20'} ${sfBannerUploading ? 'pointer-events-none' : ''}`}>
                   {sfBannerUploading
@@ -395,7 +395,7 @@ export default function CreatorDashboard() {
                     {profile.avatar_url
                       ? <img src={profile.avatar_url} alt="avatar" className="w-full h-full object-cover" />
                       : <div className="w-full h-full flex items-center justify-center">
-                          <span className="text-xl font-black text-[#39ff14]">{profile.name?.charAt(0) ?? '?'}</span>
+                          <span className="text-xl font-black text-[#E8000D]">{profile.name?.charAt(0) ?? '?'}</span>
                         </div>
                     }
                     <label className={`absolute inset-0 flex items-center justify-center bg-black/0 hover:bg-black/60 cursor-pointer transition-colors ${sfAvatarUploading ? 'pointer-events-none' : ''}`}>
@@ -413,7 +413,7 @@ export default function CreatorDashboard() {
                 <div className="mb-4">
                   <h3 className="text-xl font-black text-white">{profile.name}</h3>
                   <p className="text-sm text-zinc-500">@{profile.handle}</p>
-                  <span className={`inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded ${profile.verified ? 'bg-[#39ff14]/10 text-[#39ff14]' : 'bg-amber-500/10 text-amber-400'}`}>
+                  <span className={`inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded ${profile.verified ? 'bg-[#E8000D]/10 text-[#E8000D]' : 'bg-amber-500/10 text-amber-400'}`}>
                     {profile.verified ? '✓ Verified Creator' : 'Pending Verification'}
                   </span>
                 </div>
@@ -421,7 +421,7 @@ export default function CreatorDashboard() {
                 <div className="mb-4">
                   <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-600 mb-1.5">Bio</p>
                   {sfEditMode
-                    ? <textarea value={sfBio} onChange={(e) => setSfBio(e.target.value)} rows={3} placeholder="Tell buyers about yourself..." className="w-full bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#39ff14]/50 resize-none" />
+                    ? <textarea value={sfBio} onChange={(e) => setSfBio(e.target.value)} rows={3} placeholder="Tell buyers about yourself..." className="w-full bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#E8000D]/50 resize-none" />
                     : <p className="text-sm text-zinc-400 leading-relaxed">{profile.bio || <span className="text-zinc-700 italic">No bio yet — click Edit to add one.</span>}</p>
                   }
                 </div>
@@ -429,7 +429,7 @@ export default function CreatorDashboard() {
                 <div className="mb-4">
                   <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-600 mb-1.5">Vehicle Specialties</p>
                   {sfEditMode
-                    ? <input value={sfSpecialties} onChange={(e) => setSfSpecialties(e.target.value)} placeholder="e.g. Japanese sports cars, trucks..." className="w-full bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#39ff14]/50" />
+                    ? <input value={sfSpecialties} onChange={(e) => setSfSpecialties(e.target.value)} placeholder="e.g. Japanese sports cars, trucks..." className="w-full bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#E8000D]/50" />
                     : <p className="text-sm text-zinc-400">{profile.vehicle_specialties || <span className="text-zinc-700 italic">None set</span>}</p>
                   }
                 </div>
@@ -437,9 +437,9 @@ export default function CreatorDashboard() {
                 <div className="mb-5">
                   <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-600 mb-1.5">Website</p>
                   {sfEditMode
-                    ? <input value={sfWebsite} onChange={(e) => setSfWebsite(e.target.value)} placeholder="https://yoursite.com" className="w-full bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#39ff14]/50" />
+                    ? <input value={sfWebsite} onChange={(e) => setSfWebsite(e.target.value)} placeholder="https://yoursite.com" className="w-full bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#E8000D]/50" />
                     : profile.website
-                      ? <a href={profile.website} target="_blank" rel="noopener noreferrer" className="text-sm text-[#39ff14] hover:underline">{profile.website}</a>
+                      ? <a href={profile.website} target="_blank" rel="noopener noreferrer" className="text-sm text-[#E8000D] hover:underline">{profile.website}</a>
                       : <span className="text-zinc-700 italic text-sm">None set</span>
                   }
                 </div>
@@ -479,14 +479,14 @@ export default function CreatorDashboard() {
               <div className="space-y-3">
                 {allSubs.map((sub) => (
                   <Link key={sub.id} href={`/creator/submissions/${sub.id}`}
-                    className="flex items-center gap-4 rounded-xl border border-[#2a2a2a] bg-[#141414] p-4 hover:border-[#39ff14]/30 transition-colors group">
+                    className="flex items-center gap-4 rounded-xl border border-[#2a2a2a] bg-[#141414] p-4 hover:border-[#E8000D]/30 transition-colors group">
                     <div className="w-12 h-12 rounded-lg bg-[#252525] border border-[#2a2a2a] flex items-center justify-center shrink-0 overflow-hidden">
                       {sub.images?.[0]
                         ? <img src={sub.images[0]} alt={sub.name} className="w-full h-full object-cover" />
                         : <Printer className="w-6 h-6 text-zinc-600" />}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold text-white group-hover:text-[#39ff14] transition-colors truncate">{sub.name}</p>
+                      <p className="text-sm font-bold text-white group-hover:text-[#E8000D] transition-colors truncate">{sub.name}</p>
                       <p className="text-xs text-zinc-500 mt-0.5 truncate">{sub.make} · {sub.model} · {sub.category}</p>
                       <p className="text-[10px] text-zinc-700 mt-0.5">{formatDate(sub.created_at)}</p>
                     </div>
@@ -525,14 +525,14 @@ export default function CreatorDashboard() {
                   if (!sub) return null;
                   return (
                     <Link key={row.id} href={`/products/${sub.id}`}
-                      className="flex items-center gap-4 rounded-xl border border-[#2a2a2a] bg-[#141414] p-4 hover:border-[#39ff14]/30 transition-colors group">
+                      className="flex items-center gap-4 rounded-xl border border-[#2a2a2a] bg-[#141414] p-4 hover:border-[#E8000D]/30 transition-colors group">
                       <div className="w-12 h-12 rounded-lg bg-[#252525] border border-[#2a2a2a] flex items-center justify-center shrink-0 overflow-hidden">
                         {sub.images?.[0]
                           ? <img src={sub.images[0]} alt={sub.name} className="w-full h-full object-cover" />
                           : <Printer className="w-6 h-6 text-zinc-600" />}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold text-white group-hover:text-[#39ff14] transition-colors truncate">{sub.name}</p>
+                        <p className="text-sm font-bold text-white group-hover:text-[#E8000D] transition-colors truncate">{sub.name}</p>
                         <p className="text-xs text-zinc-500 mt-0.5 truncate">{sub.make} · {sub.model}</p>
                         {sub.user_profiles?.name && (
                           <p className="text-[10px] text-zinc-600 mt-0.5">by {sub.user_profiles.name}</p>
@@ -572,7 +572,7 @@ export default function CreatorDashboard() {
             </div>
 
             {saveMsg && (
-              <div className={`rounded-lg border px-3 py-2 mb-4 text-xs font-bold ${saveMsg === 'Saved!' ? 'border-[#39ff14]/30 bg-[#39ff14]/5 text-[#39ff14]' : 'border-red-500/30 bg-red-500/10 text-red-400'}`}>
+              <div className={`rounded-lg border px-3 py-2 mb-4 text-xs font-bold ${saveMsg === 'Saved!' ? 'border-[#E8000D]/30 bg-[#E8000D]/5 text-[#E8000D]' : 'border-red-500/30 bg-red-500/10 text-red-400'}`}>
                 {saveMsg}
               </div>
             )}
@@ -591,7 +591,7 @@ export default function CreatorDashboard() {
                       <input
                         value={value}
                         onChange={(e) => set(e.target.value)}
-                        className="flex-1 bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:border-[#39ff14]/50"
+                        className="flex-1 bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:border-[#E8000D]/50"
                       />
                     </div>
                   ) : (
@@ -607,7 +607,7 @@ export default function CreatorDashboard() {
                     value={editBio}
                     onChange={(e) => setEditBio(e.target.value)}
                     rows={3}
-                    className="flex-1 bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:border-[#39ff14]/50 resize-none"
+                    className="flex-1 bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:border-[#E8000D]/50 resize-none"
                   />
                 ) : (
                   <span className="text-xs text-zinc-200 text-right flex-1">{editBio || '—'}</span>
@@ -625,7 +625,7 @@ export default function CreatorDashboard() {
                     <input
                       value={value}
                       onChange={(e) => set(e.target.value)}
-                      className="flex-1 bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:border-[#39ff14]/50"
+                      className="flex-1 bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:border-[#E8000D]/50"
                     />
                   ) : (
                     <span className="text-xs text-zinc-200 text-right">{value || '—'}</span>
