@@ -37,5 +37,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
+  // Sync role in profiles table so login routing and RLS reflect the change
+  const role = action === 'approve' ? 'creator' : 'member';
+  await adminClient.from('profiles').update({ role }).eq('id', creatorId);
+  await adminClient.from('user_profiles').update({ role }).eq('id', creatorId);
+
   return NextResponse.json({ ok: true });
 }

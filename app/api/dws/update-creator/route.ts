@@ -38,12 +38,10 @@ export async function POST(req: NextRequest) {
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-  // Also update profiles.role so the user gets creator access on login
-  if (action === 'approve') {
-    await admin.from('profiles').update({ role: 'creator' }).eq('id', creatorId);
-  } else if (action === 'reject') {
-    await admin.from('profiles').update({ role: 'member' }).eq('id', creatorId);
-  }
+  // Sync role in both tables so login routing and RLS reflect the change
+  const role = action === 'approve' ? 'creator' : 'member';
+  await admin.from('profiles').update({ role }).eq('id', creatorId);
+  await admin.from('user_profiles').update({ role }).eq('id', creatorId);
 
   return NextResponse.json({ ok: true });
 }
