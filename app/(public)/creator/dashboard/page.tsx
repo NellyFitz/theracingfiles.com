@@ -371,11 +371,11 @@ export default function CreatorDashboard() {
               </div>
             )}
 
-            <div className="rounded-2xl border border-[#2a2a2a] bg-[#141414] overflow-hidden mb-4">
-              <div className="relative h-36 bg-[#0d0d0d] flex items-center justify-center overflow-hidden">
+            <div className="rounded-2xl border border-[#2a2a2a] bg-[#141414] mb-4">
+              <div className="relative h-36 bg-[#0d0d0d] flex items-center justify-center">
                 {profile.banner_url
-                  ? <img src={profile.banner_url} alt="banner" className="w-full h-full object-cover" />
-                  : <div className="absolute inset-0 bg-gradient-to-br from-[#39ff14]/5 to-transparent" />
+                  ? <img src={profile.banner_url} alt="banner" className="w-full h-full object-cover rounded-t-2xl" />
+                  : <div className="absolute inset-0 bg-gradient-to-br from-[#39ff14]/5 to-transparent rounded-t-2xl" />
                 }
                 <label className={`absolute inset-0 flex flex-col items-center justify-center gap-2 cursor-pointer group transition-colors ${profile.banner_url ? 'bg-black/0 hover:bg-black/50' : 'hover:bg-black/20'} ${sfBannerUploading ? 'pointer-events-none' : ''}`}>
                   {sfBannerUploading
