@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase/client';
 import { subToProduct } from '@/lib/productHelpers';
 import ProductCard from '@/components/ProductCard';
 import SkeletonCard from '@/components/SkeletonCard';
+import { VehicleAutocomplete } from '@/components/VehicleAutocomplete';
 import type { FilterState, Product } from '@/lib/types';
 
 /* ── Static data ──────────────────────────────────────────────────── */
@@ -29,6 +30,25 @@ const FILE_TYPES = ['All', 'STL', '3MF', 'STEP'];
 const CURRENT_YEAR = new Date().getFullYear();
 const YEARS = Array.from({ length: CURRENT_YEAR - 1949 }, (_, i) => String(CURRENT_YEAR - i));
 
+/* ── Enthusiast models not in NHTSA ──────────────────────────────── */
+
+const ENTHUSIAST_MODELS: Record<string, string[]> = {
+  Nissan: ['Skyline R32 GT-R','Skyline R32 GTS-T','Skyline R33 GT-R','Skyline R34 GT-R','Silvia S13','Silvia S14','Silvia S15','180SX','200SX','300ZX Z31','300ZX Z32'],
+  Toyota: ['AE86 Corolla Trueno','AE86 Sprinter Trueno','AE86 Levin','Supra A60','Supra A70','MR2 AW11','MR2 SW20','Celica GT-Four ST185','Celica GT-Four ST205','Chaser JZX100','Mark II JZX90'],
+  Honda: ['Civic EG','Civic EK','Civic EF','Integra DC2 Type R','Integra DC5 Type R','NSX NA1','NSX NA2','Beat','CR-X'],
+  Mazda: ['RX-7 SA22C','RX-7 FC3S','RX-7 FD3S','Miata NA','Miata NB'],
+  Mitsubishi: ['Lancer Evolution I','Lancer Evolution II','Lancer Evolution III','Lancer Evolution IV','Lancer Evolution V','Lancer Evolution VI','Eclipse 1G','Eclipse 2G','GTO / 3000GT','Starion'],
+  Subaru: ['Impreza WRX GC8','Impreza WRX STI GC8','Impreza WRX GD','Legacy GT','Alcyone SVX'],
+  BMW: ['E21','E30','E30 M3','E36 M3','E46 M3','E92 M3','E28 M5','E34 M5','2002 Turbo','2002 Tii'],
+  Volkswagen: ['Golf Mk1','Golf Mk2','Golf Mk3','Golf Mk4','Corrado','Scirocco','Polo G40'],
+  Porsche: ['356','911 964','911 993','911 996','911 997','914','944','968'],
+  Datsun: ['240Z','260Z','280Z','280ZX','510','1200','620 Pickup','Roadster 2000'],
+  'Mercedes-Benz': ['190E 2.3-16','190E 2.5-16 Evo','C36 AMG','C43 AMG','W124 E500'],
+  'Alfa Romeo': ['GTV6','Spider Series 1','Spider Series 2','155 GTA','156 GTA'],
+  Suzuki: ['Cappuccino','Swift GTi','Alto Works','Jimny SJ'],
+  Acura: ['Integra GS-R','Integra Type R DC2','Integra Type R DC5','RSX Type-S'],
+};
+
 /* ── NHTSA helpers ────────────────────────────────────────────────── */
 
 async function fetchModels(make: string, year: string): Promise<string[]> {
@@ -38,10 +58,11 @@ async function fetchModels(make: string, year: string): Promise<string[]> {
       : `https://vpic.nhtsa.dot.gov/api/vehicles/getmodelsformake/${encodeURIComponent(make)}?format=json`;
     const res = await fetch(url);
     const json = await res.json();
-    const names: string[] = (json.Results ?? []).map((r: any) => r.Model_Name as string);
-    return [...new Set(names)].sort();
+    const nhtsaNames: string[] = (json.Results ?? []).map((r: any) => r.Model_Name as string);
+    const extras: string[] = ENTHUSIAST_MODELS[make] ?? [];
+    return [...new Set<string>([...extras, ...nhtsaNames])].sort();
   } catch {
-    return [];
+    return ENTHUSIAST_MODELS[make] ?? [];
   }
 }
 
@@ -198,12 +219,15 @@ export default function BrowsePage() {
       setModels([]);
       return;
     }
+    const currentMake = filters.make;
     modelsAbort.current?.abort();
     modelsAbort.current = new AbortController();
     setModelsLoading(true);
-    fetchModels(filters.make, filters.year).then((list) => {
-      setModels(list);
-      setModelsLoading(false);
+    fetchModels(currentMake, filters.year).then((list) => {
+      if (filters.make === currentMake) {
+        setModels(list);
+        setModelsLoading(false);
+      }
     });
   }, [filters.make, filters.year]);
 
@@ -285,28 +309,32 @@ export default function BrowsePage() {
         />
 
         {/* Make */}
-        <SelectFilter
-          label="Make"
-          value={filters.make}
-          options={POPULAR_MAKES}
-          placeholder="Any Make"
-          onChange={(v) => {
-            update('make', v);
-            update('model', '');
-            setModels([]);
-          }}
-        />
+        <div>
+          <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-600 mb-1.5">Make</label>
+          <VehicleAutocomplete
+            value={filters.make}
+            suggestions={POPULAR_MAKES}
+            placeholder="Any Make"
+            onChange={(v) => {
+              update('make', v);
+              update('model', '');
+              setModels(ENTHUSIAST_MODELS[v] ?? []);
+            }}
+          />
+        </div>
 
         {/* Model — appears once make is selected */}
         {filters.make && (
-          <SelectFilter
-            label="Model"
-            value={filters.model}
-            options={models}
-            placeholder={modelsLoading ? 'Loading…' : models.length === 0 ? 'No models found' : 'Any Model'}
-            onChange={(v) => update('model', v)}
-            loading={modelsLoading}
-          />
+          <div>
+            <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-600 mb-1.5">Model</label>
+            <VehicleAutocomplete
+              value={filters.model}
+              suggestions={models}
+              placeholder={modelsLoading ? 'Loading…' : 'Any Model'}
+              loading={modelsLoading}
+              onChange={(v) => update('model', v)}
+            />
+          </div>
         )}
 
         {/* Active vehicle filter summary pill */}
