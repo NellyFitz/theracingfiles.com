@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -10,6 +10,7 @@ import {
 import { createClient } from '@/lib/supabase/client';
 import FileUpload from '@/components/FileUpload';
 import ImageUpload from '@/components/ImageUpload';
+import { VehicleAutocomplete } from '@/components/VehicleAutocomplete';
 
 const STEPS = [
   { id: 'vehicle', label: 'Vehicle & Part', icon: Car },
@@ -25,9 +26,17 @@ type StepId = typeof STEPS[number]['id'];
 
 const VEHICLE_TYPES = ['Car', 'Motorcycle', 'Truck', 'Tool'];
 const CATEGORIES = ['Aero & Body', 'Interior', 'Exterior', 'Truck & Off-Road', 'Motorcycle', 'Garage & Tools', 'Electrical', 'Other'];
-const MAKES = ['Mazda', 'Nissan', 'Toyota', 'Honda', 'Subaru', 'Mitsubishi', 'Ford', 'Chevrolet', 'Jeep', 'BMW', 'Yamaha', 'Kawasaki', 'Ducati', 'Suzuki', 'Honda (Moto)', 'Other'];
+const POPULAR_MAKES = [
+  'Acura', 'Alfa Romeo', 'Aston Martin', 'Audi', 'BMW', 'Bentley', 'Buick',
+  'Cadillac', 'Chevrolet', 'Chrysler', 'Dodge', 'Ducati', 'Ferrari', 'Fiat',
+  'Ford', 'GMC', 'Genesis', 'Harley-Davidson', 'Honda', 'Hyundai', 'Infiniti',
+  'Jaguar', 'Jeep', 'Kawasaki', 'Kia', 'KTM', 'Lamborghini', 'Land Rover',
+  'Lexus', 'Lincoln', 'Lotus', 'Maserati', 'Mazda', 'McLaren', 'Mercedes-Benz',
+  'Mini', 'Mitsubishi', 'Nissan', 'Pontiac', 'Porsche', 'Ram', 'Rolls-Royce',
+  'Subaru', 'Suzuki', 'Tesla', 'Toyota', 'Triumph', 'Volkswagen', 'Volvo', 'Yamaha',
+];
 const DIFFICULTIES = ['Beginner', 'Intermediate', 'Advanced'];
-const YEARS = Array.from({ length: 56 }, (_, i) => String(2025 - i));
+const YEARS = Array.from({ length: 76 }, (_, i) => String(2025 - i));
 
 interface FormData {
   // Step 1
@@ -128,6 +137,29 @@ export default function SubmitPartPage() {
   const [error, setError] = useState('');
   const [vinLoading, setVinLoading] = useState(false);
   const [vinError, setVinError] = useState('');
+  const [modelSuggestions, setModelSuggestions] = useState<string[]>([]);
+  const [modelsLoading, setModelsLoading] = useState(false);
+  const modelFetchRef = useRef<string>('');
+
+  const handleMakeChange = useCallback(async (make: string) => {
+    update('make', make);
+    update('model', '');
+    setModelSuggestions([]);
+    if (!make.trim()) return;
+    modelFetchRef.current = make;
+    setModelsLoading(true);
+    try {
+      const res = await fetch(`https://vpic.nhtsa.dot.gov/api/vehicles/getmodelsformake/${encodeURIComponent(make)}?format=json`);
+      const json = await res.json();
+      if (modelFetchRef.current !== make) return; // stale
+      const names: string[] = [...new Set((json.Results ?? []).map((r: any) => r.Model_Name as string))].sort();
+      setModelSuggestions(names);
+    } catch {
+      setModelSuggestions([]);
+    } finally {
+      setModelsLoading(false);
+    }
+  }, []);
 
   const decodeVin = async () => {
     const vin = form.vin.trim().toUpperCase();
@@ -143,7 +175,10 @@ export default function SubmitPartPage() {
       const model = get('Model');
       const year = get('Model Year');
       if (!make && !model) { setVinError('VIN not recognized — fill in details manually'); return; }
-      if (make) update('make', make.charAt(0) + make.slice(1).toLowerCase());
+      if (make) {
+        const formatted = make.charAt(0) + make.slice(1).toLowerCase();
+        handleMakeChange(formatted);
+      }
       if (model) update('model', model);
       if (year) { update('yearStart', year); update('yearEnd', year); }
     } catch {
@@ -298,14 +333,21 @@ export default function SubmitPartPage() {
 
               <div className="grid sm:grid-cols-2 gap-5">
                 <Field label="Make" required>
-                  <select value={form.make} onChange={(e) => update('make', e.target.value)} className={`${inputClass} appearance-none`}>
-                    <option value="">Select make...</option>
-                    {MAKES.map((m) => <option key={m}>{m}</option>)}
-                  </select>
+                  <VehicleAutocomplete
+                    value={form.make}
+                    onChange={handleMakeChange}
+                    placeholder="Start typing a make…"
+                    suggestions={POPULAR_MAKES}
+                  />
                 </Field>
                 <Field label="Model" required>
-                  <input type="text" value={form.model} onChange={(e) => update('model', e.target.value)}
-                    placeholder="Miata NA, R32 GTR..." className={inputClass} />
+                  <VehicleAutocomplete
+                    value={form.model}
+                    onChange={(v) => update('model', v)}
+                    placeholder={form.make ? 'Start typing a model…' : 'Select a make first'}
+                    suggestions={modelSuggestions}
+                    loading={modelsLoading}
+                  />
                 </Field>
               </div>
 
