@@ -26,6 +26,68 @@ type StepId = typeof STEPS[number]['id'];
 
 const VEHICLE_TYPES = ['Car', 'Motorcycle', 'Truck', 'Tool'];
 const CATEGORIES = ['Aero & Body', 'Interior', 'Exterior', 'Truck & Off-Road', 'Motorcycle', 'Garage & Tools', 'Electrical', 'Other'];
+// Cars that were never officially sold in the US so NHTSA won't return them
+const ENTHUSIAST_MODELS: Record<string, string[]> = {
+  Nissan: [
+    'Skyline R32 GT-R', 'Skyline R32 GTS-T', 'Skyline R33 GT-R', 'Skyline R34 GT-R',
+    'Silvia S13', 'Silvia S14', 'Silvia S15', '180SX', '200SX', '300ZX Z31', '300ZX Z32',
+  ],
+  Toyota: [
+    'AE86 Corolla Trueno', 'AE86 Sprinter Trueno', 'AE86 Levin', 'Supra A60', 'Supra A70',
+    'MR2 AW11', 'MR2 SW20', 'Celica GT-Four ST185', 'Celica GT-Four ST205',
+    'Chaser JZX100', 'Mark II JZX90', 'Aristo JZS147',
+  ],
+  Honda: [
+    'Civic EG', 'Civic EK', 'Civic EF', 'Integra DC2 Type R', 'Integra DC5 Type R',
+    'NSX NA1', 'NSX NA2', 'Beat', 'S800', 'CR-X',
+  ],
+  Mazda: [
+    'RX-7 SA22C', 'RX-7 FC3S', 'RX-7 FD3S', 'Miata NA', 'Miata NB',
+    'Cosmo', 'Luce', 'Familia',
+  ],
+  Mitsubishi: [
+    'Lancer Evolution I', 'Lancer Evolution II', 'Lancer Evolution III',
+    'Lancer Evolution IV', 'Lancer Evolution V', 'Lancer Evolution VI',
+    'Eclipse 1G', 'Eclipse 2G', 'GTO / 3000GT', 'Starion',
+  ],
+  Subaru: [
+    'Impreza WRX GC8', 'Impreza WRX STI GC8', 'Impreza WRX GD', 'Legacy GT',
+    'Alcyone SVX',
+  ],
+  BMW: [
+    'E21', 'E30', 'E30 M3', 'E36 M3', 'E46 M3', 'E92 M3', 'E28 M5', 'E34 M5',
+    '2002 Turbo', '2002 Tii',
+  ],
+  Ford: [
+    'Escort Cosworth', 'Sierra Cosworth', 'RS200', 'Puma Racing',
+  ],
+  Volkswagen: [
+    'Golf Mk1', 'Golf Mk2', 'Golf Mk3', 'Golf Mk4', 'Corrado', 'Scirocco',
+    'Polo G40',
+  ],
+  Porsche: [
+    '356', '911 964', '911 993', '911 996', '911 997', '914', '944', '968',
+  ],
+  'Mercedes-Benz': [
+    '190E 2.3-16', '190E 2.5-16 Evo', 'W124 E500', 'C36 AMG', 'C43 AMG',
+  ],
+  Datsun: [
+    '240Z', '260Z', '280Z', '280ZX', '510', '1200', '620 Pickup', 'Roadster 2000',
+  ],
+  'Alfa Romeo': [
+    'GTV6', 'Spider Series 1', 'Spider Series 2', '155 GTA', '156 GTA', 'Giulia Sprint GTA',
+  ],
+  Suzuki: [
+    'Cappuccino', 'Swift GTi', 'Alto Works', 'Jimny SJ',
+  ],
+  Daihatsu: [
+    'Copen', 'Mira TR-XX', 'Charade De Tomaso',
+  ],
+  Acura: [
+    'Integra GS-R', 'Integra Type R DC2', 'Integra Type R DC5', 'RSX Type-S',
+  ],
+};
+
 const POPULAR_MAKES = [
   'Acura', 'Alfa Romeo', 'Aston Martin', 'Audi', 'BMW', 'Bentley', 'Buick',
   'Cadillac', 'Chevrolet', 'Chrysler', 'Dodge', 'Ducati', 'Ferrari', 'Fiat',
@@ -144,7 +206,9 @@ export default function SubmitPartPage() {
   const handleMakeChange = useCallback(async (make: string) => {
     update('make', make);
     update('model', '');
-    setModelSuggestions([]);
+    // Show enthusiast models immediately while NHTSA loads
+    const immediate = ENTHUSIAST_MODELS[make] ?? [];
+    setModelSuggestions(immediate);
     if (!make.trim()) return;
     modelFetchRef.current = make;
     setModelsLoading(true);
@@ -152,7 +216,9 @@ export default function SubmitPartPage() {
       const res = await fetch(`https://vpic.nhtsa.dot.gov/api/vehicles/getmodelsformake/${encodeURIComponent(make)}?format=json`);
       const json = await res.json();
       if (modelFetchRef.current !== make) return; // stale
-      const names: string[] = [...new Set<string>((json.Results ?? []).map((r: any) => r.Model_Name as string))].sort();
+      const nhtsaNames: string[] = (json.Results ?? []).map((r: any) => r.Model_Name as string);
+      const extras: string[] = ENTHUSIAST_MODELS[make] ?? [];
+      const names: string[] = [...new Set<string>([...extras, ...nhtsaNames])].sort();
       setModelSuggestions(names);
     } catch {
       setModelSuggestions([]);
