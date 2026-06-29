@@ -25,7 +25,11 @@ const STEPS = [
 type StepId = typeof STEPS[number]['id'];
 
 const VEHICLE_TYPES = ['Car', 'Motorcycle', 'Truck', 'Tool'];
-const CATEGORIES = ['Aero & Body', 'Interior', 'Exterior', 'Truck & Off-Road', 'Motorcycle', 'Garage & Tools', 'Electrical', 'Other'];
+const CATEGORIES = [
+  'Exterior', 'Interior', 'Engine', 'Transmission', 'Suspension',
+  'Brakes', 'Bumper & Aero', 'Exhaust', 'Cooling', 'Electrical',
+  'Lighting', 'Body Panels', 'Truck & Off-Road', 'Motorcycle', 'Garage & Tools', 'Other',
+];
 // Cars that were never officially sold in the US so NHTSA won't return them
 const ENTHUSIAST_MODELS: Record<string, string[]> = {
   Nissan: [

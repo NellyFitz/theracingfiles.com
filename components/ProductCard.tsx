@@ -13,11 +13,22 @@ interface ProductCardProps {
 }
 
 const categoryColors: Record<string, string> = {
-  'Aero & Body': 'text-purple-400',
-  'Interior': 'text-amber-400',
-  'Truck & Off-Road': 'text-orange-400',
-  'Motorcycle': 'text-sky-400',
   'Exterior': 'text-teal-400',
+  'Interior': 'text-amber-400',
+  'Engine': 'text-red-400',
+  'Transmission': 'text-orange-400',
+  'Suspension': 'text-lime-400',
+  'Brakes': 'text-rose-400',
+  'Bumper & Aero': 'text-purple-400',
+  'Exhaust': 'text-yellow-400',
+  'Cooling': 'text-cyan-400',
+  'Electrical': 'text-blue-400',
+  'Lighting': 'text-yellow-300',
+  'Body Panels': 'text-indigo-400',
+  'Truck & Off-Road': 'text-orange-300',
+  'Motorcycle': 'text-sky-400',
+  'Garage & Tools': 'text-zinc-300',
+  'Other': 'text-zinc-400',
 };
 
 export default function ProductCard({ product }: ProductCardProps) {

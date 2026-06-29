@@ -45,7 +45,7 @@ export const products: Product[] = [
     slug: 'na-miata-ducktail-spoiler',
     name: 'NA Miata Ducktail Spoiler',
     shortName: 'NA Miata Ducktail',
-    category: 'Aero & Body',
+    category: 'Bumper & Aero',
     vehicleType: 'Car',
     make: 'Mazda',
     model: 'Miata NA',

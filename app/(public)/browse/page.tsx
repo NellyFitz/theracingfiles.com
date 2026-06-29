@@ -25,7 +25,11 @@ const POPULAR_MAKES = [
   'Subaru', 'Suzuki', 'Tesla', 'Toyota', 'Volkswagen', 'Volvo', 'Yamaha',
 ];
 
-const CATEGORIES = ['All', 'Aero & Body', 'Interior', 'Truck & Off-Road', 'Motorcycle', 'Exterior', 'Garage'];
+const CATEGORIES = [
+  'All', 'Exterior', 'Interior', 'Engine', 'Transmission', 'Suspension',
+  'Brakes', 'Bumper & Aero', 'Exhaust', 'Cooling', 'Electrical',
+  'Lighting', 'Body Panels', 'Truck & Off-Road', 'Motorcycle', 'Garage & Tools', 'Other',
+];
 const FILE_TYPES = ['All', 'STL', '3MF', 'STEP'];
 const CURRENT_YEAR = new Date().getFullYear();
 const YEARS = Array.from({ length: CURRENT_YEAR - 1949 }, (_, i) => String(CURRENT_YEAR - i));
