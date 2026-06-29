@@ -323,10 +323,10 @@ export default function BrowsePage() {
           />
         </div>
 
-        {/* Model — appears once make is selected */}
-        {filters.make && (
-          <div>
-            <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-600 mb-1.5">Model</label>
+        {/* Model */}
+        <div>
+          <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-600 mb-1.5">Model</label>
+          {filters.make ? (
             <VehicleAutocomplete
               value={filters.model}
               suggestions={models}
@@ -334,8 +334,15 @@ export default function BrowsePage() {
               loading={modelsLoading}
               onChange={(v) => update('model', v)}
             />
-          </div>
-        )}
+          ) : (
+            <input
+              type="text"
+              disabled
+              placeholder="Select a make first"
+              className="w-full rounded-lg px-4 py-3 text-sm opacity-40 cursor-not-allowed"
+            />
+          )}
+        </div>
 
         {/* Active vehicle filter summary pill */}
         {(filters.year || filters.make || filters.model) && (
