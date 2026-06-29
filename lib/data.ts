@@ -338,7 +338,8 @@ export const filterProducts = (
   filters: {
     search?: string;
     vehicleType?: string;
-    year?: string;
+    yearFrom?: string;
+    yearTo?: string;
     make?: string;
     model?: string;
     category?: string;
@@ -358,9 +359,13 @@ export const filterProducts = (
         return false;
     }
     if (filters.vehicleType && filters.vehicleType !== 'All' && p.vehicleType !== filters.vehicleType) return false;
-    if (filters.year) {
-      const y = parseInt(filters.year, 10);
-      if (!isNaN(y) && (p.yearStart > y || p.yearEnd < y)) return false;
+    if (filters.yearFrom) {
+      const from = parseInt(filters.yearFrom, 10);
+      if (!isNaN(from) && p.yearEnd < from) return false;
+    }
+    if (filters.yearTo) {
+      const to = parseInt(filters.yearTo, 10);
+      if (!isNaN(to) && p.yearStart > to) return false;
     }
     if (filters.make && filters.make !== 'All') {
       if (!p.make.toLowerCase().includes(filters.make.toLowerCase())) return false;

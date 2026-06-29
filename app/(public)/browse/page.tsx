@@ -70,7 +70,8 @@ async function fetchModels(make: string, year: string): Promise<string[]> {
 
 const defaultFilters: FilterState = {
   vehicleType: 'All',
-  year: '',
+  yearFrom: '',
+  yearTo: '',
   make: '',
   model: '',
   category: 'All',
@@ -223,13 +224,13 @@ export default function BrowsePage() {
     modelsAbort.current?.abort();
     modelsAbort.current = new AbortController();
     setModelsLoading(true);
-    fetchModels(currentMake, filters.year).then((list) => {
+    fetchModels(currentMake, filters.yearFrom).then((list) => {
       if (filters.make === currentMake) {
         setModels(list);
         setModelsLoading(false);
       }
     });
-  }, [filters.make, filters.year]);
+  }, [filters.make, filters.yearFrom]);
 
   const update = <K extends keyof FilterState>(key: K, value: FilterState[K]) =>
     setFilters((prev) => ({ ...prev, [key]: value }));
@@ -241,7 +242,8 @@ export default function BrowsePage() {
 
   const hasActiveFilters =
     filters.vehicleType !== 'All' ||
-    filters.year !== '' ||
+    filters.yearFrom !== '' ||
+    filters.yearTo !== '' ||
     filters.make !== '' ||
     filters.model !== '' ||
     filters.category !== 'All' ||
@@ -252,7 +254,7 @@ export default function BrowsePage() {
 
   const activeCount = [
     filters.vehicleType !== 'All',
-    filters.year !== '',
+    filters.yearFrom !== '' || filters.yearTo !== '',
     filters.make !== '',
     filters.model !== '',
     filters.category !== 'All',
@@ -265,7 +267,8 @@ export default function BrowsePage() {
     () => filterProducts(dbProducts, {
       search: filters.search,
       vehicleType: filters.vehicleType,
-      year: filters.year,
+      yearFrom: filters.yearFrom,
+      yearTo: filters.yearTo,
       make: filters.make,
       model: filters.model,
       category: filters.category,
@@ -296,17 +299,29 @@ export default function BrowsePage() {
           onChange={(v) => update('vehicleType', v)}
         />
 
-        {/* Year */}
-        <SelectFilter
-          label="Year"
-          value={filters.year}
-          options={YEARS}
-          placeholder="Any Year"
-          onChange={(v) => {
-            update('year', v);
-            update('model', '');
-          }}
-        />
+        {/* Year Range */}
+        <div>
+          <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-600 mb-1.5">Year</label>
+          <div className="flex items-center gap-2">
+            <select
+              value={filters.yearFrom}
+              onChange={(e) => update('yearFrom', e.target.value)}
+              className="flex-1 rounded-lg px-3 py-2 text-sm appearance-none cursor-pointer"
+            >
+              <option value="">From</option>
+              {YEARS.slice().reverse().map((y) => <option key={y} value={y}>{y}</option>)}
+            </select>
+            <span className="text-zinc-600 text-xs shrink-0">–</span>
+            <select
+              value={filters.yearTo}
+              onChange={(e) => update('yearTo', e.target.value)}
+              className="flex-1 rounded-lg px-3 py-2 text-sm appearance-none cursor-pointer"
+            >
+              <option value="">To</option>
+              {YEARS.slice().reverse().map((y) => <option key={y} value={y}>{y}</option>)}
+            </select>
+          </div>
+        </div>
 
         {/* Make */}
         <div>
@@ -345,12 +360,12 @@ export default function BrowsePage() {
         </div>
 
         {/* Active vehicle filter summary pill */}
-        {(filters.year || filters.make || filters.model) && (
+        {(filters.yearFrom || filters.yearTo || filters.make || filters.model) && (
           <div className="flex flex-wrap gap-1.5 pt-1">
-            {filters.year && (
+            {(filters.yearFrom || filters.yearTo) && (
               <span className="inline-flex items-center gap-1 text-[10px] font-semibold bg-[#E8000D]/10 text-[#E8000D] border border-[#E8000D]/20 px-2 py-1 rounded-full">
-                {filters.year}
-                <button onClick={() => { update('year', ''); update('model', ''); }} className="hover:text-white">
+                {filters.yearFrom || '…'} – {filters.yearTo || '…'}
+                <button onClick={() => { update('yearFrom', ''); update('yearTo', ''); }} className="hover:text-white">
                   <X className="w-2.5 h-2.5" />
                 </button>
               </span>
