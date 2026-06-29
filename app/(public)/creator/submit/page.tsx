@@ -152,7 +152,7 @@ export default function SubmitPartPage() {
       const res = await fetch(`https://vpic.nhtsa.dot.gov/api/vehicles/getmodelsformake/${encodeURIComponent(make)}?format=json`);
       const json = await res.json();
       if (modelFetchRef.current !== make) return; // stale
-      const names: string[] = [...new Set((json.Results ?? []).map((r: any) => r.Model_Name as string))].sort();
+      const names: string[] = [...new Set<string>((json.Results ?? []).map((r: any) => r.Model_Name as string))].sort();
       setModelSuggestions(names);
     } catch {
       setModelSuggestions([]);
